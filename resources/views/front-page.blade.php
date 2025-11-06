@@ -47,7 +47,8 @@
           @while ($featured_opere->have_posts())
             @php($featured_opere->the_post())
             @php
-              $stato = get_field('stato') ?: 'disponibile';
+              $stato = function_exists('get_field') ? get_field('stato') : 'disponibile';
+              $stato = $stato ?: 'disponibile';
               $is_venduto = $stato === 'venduto';
             @endphp
 
@@ -66,7 +67,7 @@
                     <div class="opera-card__hover-overlay">
                       <div class="opera-card__info">
                         <h3 class="opera-card__title">{{ get_the_title() }}</h3>
-                        @if ($anno = get_field('anno'))
+                        @if (function_exists('get_field') && ($anno = get_field('anno')))
                           <p class="opera-card__meta">{{ $anno }}</p>
                         @endif
                       </div>
@@ -78,8 +79,10 @@
                   <h3 class="opera-card__title-below">{{ get_the_title() }}</h3>
                   @php
                     $meta_items = [];
-                    if ($anno = get_field('anno')) $meta_items[] = $anno;
-                    if ($tecnica = get_field('tecnica')) $meta_items[] = ucfirst($tecnica);
+                    if (function_exists('get_field')) {
+                      if ($anno = get_field('anno')) $meta_items[] = $anno;
+                      if ($tecnica = get_field('tecnica')) $meta_items[] = ucfirst($tecnica);
+                    }
                   @endphp
                   @if (count($meta_items) > 0)
                     <p class="opera-card__meta-below">{{ implode(' • ', $meta_items) }}</p>

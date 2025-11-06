@@ -4,14 +4,14 @@
   @while (have_posts())
     @php(the_post())
     @php
-      // Get ACF fields
-      $dimensioni = get_field('dimensioni');
-      $anno = get_field('anno');
-      $tecnica = get_field('tecnica');
-      $prezzo = get_field('prezzo');
-      $stato = get_field('stato') ?: 'disponibile';
-      $timeline_mostre = get_field('timeline_mostre');
-      $link_processo = get_field('link_processo_creativo');
+      // Get ACF fields with safety checks
+      $dimensioni = function_exists('get_field') ? get_field('dimensioni') : '';
+      $anno = function_exists('get_field') ? get_field('anno') : '';
+      $tecnica = function_exists('get_field') ? get_field('tecnica') : '';
+      $prezzo = function_exists('get_field') ? get_field('prezzo') : '';
+      $stato = function_exists('get_field') ? (get_field('stato') ?: 'disponibile') : 'disponibile';
+      $timeline_mostre = function_exists('get_field') ? get_field('timeline_mostre') : '';
+      $link_processo = function_exists('get_field') ? get_field('link_processo_creativo') : '';
       $is_venduto = $stato === 'venduto';
     @endphp
 

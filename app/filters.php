@@ -55,38 +55,48 @@ add_filter('query_vars', function ($vars) {
  * @return void
  */
 add_action('pre_get_posts', function ($query) {
-    if (!is_admin() && $query->is_main_query() && (is_home() || is_post_type_archive('post') || is_archive())) {
-        $tax_query = [];
+    // Only run on frontend, main query, and only once
+    if (is_admin() || !$query->is_main_query() || $query->get('suppress_filters')) {
+        return;
+    }
 
-        // Filter by category (categoria)
-        $categoria = get_query_var('categoria');
-        if (!empty($categoria) && !is_category()) {
-            $tax_query[] = [
-                'taxonomy' => 'category',
-                'field' => 'slug',
-                'terms' => $categoria,
-            ];
-        }
+    // Only run on post archives (not pages, not custom post types)
+    if (!is_home() && !is_post_type_archive('post') && !is_category() && !is_tag()) {
+        return;
+    }
 
-        // Filter by tag/tecnica
-        $tecnica = get_query_var('tecnica');
-        if (!empty($tecnica) && !is_tag()) {
-            $tax_query[] = [
-                'taxonomy' => 'post_tag',
-                'field' => 'slug',
-                'terms' => $tecnica,
-            ];
-        }
+    $tax_query = [];
 
-        if (count($tax_query) > 1) {
-            $tax_query['relation'] = 'AND';
-        }
+    // Filter by category (categoria)
+    $categoria = get_query_var('categoria');
+    if (!empty($categoria) && !is_category()) {
+        $tax_query[] = [
+            'taxonomy' => 'category',
+            'field' => 'slug',
+            'terms' => sanitize_text_field($categoria),
+        ];
+    }
 
-        if (!empty($tax_query)) {
-            $query->set('tax_query', $tax_query);
-        }
+    // Filter by tag/tecnica
+    $tecnica = get_query_var('tecnica');
+    if (!empty($tecnica) && !is_tag()) {
+        $tax_query[] = [
+            'taxonomy' => 'post_tag',
+            'field' => 'slug',
+            'terms' => sanitize_text_field($tecnica),
+        ];
+    }
 
-        // Set posts per page for opere archive
+    if (count($tax_query) > 1) {
+        $tax_query['relation'] = 'AND';
+    }
+
+    if (!empty($tax_query)) {
+        $query->set('tax_query', $tax_query);
+    }
+
+    // Set posts per page for opere archive
+    if (is_home() || is_post_type_archive('post') || is_archive()) {
         $query->set('posts_per_page', 12);
     }
-});
+}, 10, 1);
