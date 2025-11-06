@@ -50,10 +50,12 @@ add_filter('query_vars', function ($vars) {
 
 /**
  * Modify main query for opere archive filtering.
+ * TEMPORARILY DISABLED FOR DEBUGGING
  *
  * @param \WP_Query $query
  * @return void
  */
+/*
 add_action('pre_get_posts', function ($query) {
     // Only run on frontend, main query, and only once
     if (is_admin() || !$query->is_main_query() || $query->get('suppress_filters')) {
@@ -100,3 +102,4 @@ add_action('pre_get_posts', function ($query) {
         $query->set('posts_per_page', 12);
     }
 }, 10, 1);
+*/
