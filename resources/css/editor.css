@@ -1,0 +1,137 @@
+/**
+ * Gutenberg Block Editor Styles
+ * Matches frontend design system
+ */
+
+/* Import foundation tokens and typography */
+@import "./foundation/_tokens.css";
+@import "./foundation/_typography.css";
+
+/* Editor-specific wrapper styles */
+.editor-styles-wrapper {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-base);
+}
+
+/* Match frontend typography */
+.editor-styles-wrapper h1 {
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-text-primary);
+}
+
+.editor-styles-wrapper h2 {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-text-primary);
+}
+
+.editor-styles-wrapper h3 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+  color: var(--color-text-primary);
+}
+
+.editor-styles-wrapper h4 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+  color: var(--color-text-primary);
+}
+
+.editor-styles-wrapper h5 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+}
+
+.editor-styles-wrapper h6 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+}
+
+.editor-styles-wrapper p {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  max-width: 75ch;
+}
+
+.editor-styles-wrapper a {
+  color: var(--color-brand-primary);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* Container constraints for editor */
+.editor-styles-wrapper .wp-block {
+  max-width: var(--container-lg);
+}
+
+/* Ensure dark mode works in editor */
+.editor-styles-wrapper[data-theme="dark"] {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-base);
+}
+
+/* Block spacing */
+.editor-styles-wrapper .wp-block + .wp-block {
+  margin-block-start: var(--space-md);
+}
+
+/* Lists */
+.editor-styles-wrapper ul,
+.editor-styles-wrapper ol {
+  padding-inline-start: var(--space-lg);
+  margin-block: var(--space-md);
+}
+
+.editor-styles-wrapper li {
+  margin-block: var(--space-xs);
+}
+
+/* Blockquotes */
+.editor-styles-wrapper blockquote {
+  border-inline-start: 4px solid var(--color-brand-primary);
+  padding-inline-start: var(--space-lg);
+  padding-block: var(--space-md);
+  margin-block: var(--space-lg);
+  font-size: var(--font-size-lg);
+  font-style: italic;
+  color: var(--color-text-secondary);
+}
+
+/* Code blocks */
+.editor-styles-wrapper code {
+  font-family: var(--font-family-mono);
+  font-size: 0.9em;
+  background-color: var(--color-surface-raised);
+  padding: 0.2em 0.4em;
+  border-radius: var(--radius-sm);
+}
+
+.editor-styles-wrapper pre {
+  font-family: var(--font-family-mono);
+  background-color: var(--color-surface-raised);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin-block: var(--space-lg);
+}
+
+.editor-styles-wrapper pre code {
+  background: none;
+  padding: 0;
+}

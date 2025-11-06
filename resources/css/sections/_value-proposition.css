@@ -1,0 +1,182 @@
+@layer sections {
+  /* ============================================
+     VALUE PROPOSITION - Why Choose Alpacode
+     ============================================ */
+
+  .value-proposition {
+    padding-block: var(--space-3xl);
+    background: var(--color-surface-raised);
+    position: relative;
+  }
+
+  [data-theme="dark"] .value-proposition {
+    background: var(--color-neutral-900);
+  }
+
+  /* Section Header */
+  .value-proposition__header {
+    text-align: center;
+    max-width: 48rem;
+    margin-inline: auto;
+    margin-block-end: var(--space-2xl);
+  }
+
+  .value-proposition__title {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+    margin-block-end: var(--space-md);
+  }
+
+  .value-proposition__subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Grid Layout */
+  .value-proposition__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xl);
+    max-width: var(--container-lg);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* Value Card */
+  .value-card {
+    background: var(--color-surface-base);
+    padding: var(--space-xl);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    transition:
+      transform var(--duration-base) var(--easing-out),
+      box-shadow var(--duration-base) var(--easing-out);
+    position: relative;
+  }
+
+  [data-theme="dark"] .value-card {
+    background: var(--color-neutral-800);
+    border: 1px solid var(--color-neutral-700);
+  }
+
+  .value-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Icon Container */
+  .value-card__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-lg);
+    display: grid;
+    place-items: center;
+    font-size: var(--font-size-2xl);
+    margin-block-end: var(--space-lg);
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--color-brand-primary), transparent 85%) 0%,
+      color-mix(in oklch, var(--color-brand-secondary), transparent 85%) 100%
+    );
+  }
+
+  /* Individual icon colors */
+  .value-card:nth-child(1) .value-card__icon {
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--color-brand-primary), transparent 85%) 0%,
+      color-mix(in oklch, var(--color-brand-primary), transparent 90%) 100%
+    );
+  }
+
+  .value-card:nth-child(2) .value-card__icon {
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--color-brand-secondary), transparent 85%) 0%,
+      color-mix(in oklch, var(--color-brand-secondary), transparent 90%) 100%
+    );
+  }
+
+  .value-card:nth-child(3) .value-card__icon {
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--color-brand-accent), transparent 85%) 0%,
+      color-mix(in oklch, var(--color-brand-accent), transparent 90%) 100%
+    );
+  }
+
+  .value-card:nth-child(4) .value-card__icon {
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--color-brand-primary), transparent 85%) 0%,
+      color-mix(in oklch, var(--color-brand-accent), transparent 85%) 100%
+    );
+  }
+
+  /* Card Title */
+  .value-card__title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-block-end: var(--space-sm);
+  }
+
+  /* Card Description */
+  .value-card__description {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Scroll animation */
+  .value-card {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity var(--duration-slow) var(--easing-out),
+      transform var(--duration-slow) var(--easing-out);
+  }
+
+  .value-card.animate-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Stagger animation */
+  .value-card:nth-child(1).animate-in { transition-delay: 0ms; }
+  .value-card:nth-child(2).animate-in { transition-delay: 100ms; }
+  .value-card:nth-child(3).animate-in { transition-delay: 200ms; }
+  .value-card:nth-child(4).animate-in { transition-delay: 300ms; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .value-proposition {
+      padding-block: var(--space-2xl);
+    }
+
+    .value-proposition__header {
+      margin-block-end: var(--space-xl);
+    }
+
+    .value-proposition__title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .value-proposition__grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+    }
+
+    .value-card {
+      padding: var(--space-lg);
+    }
+
+    .value-card__icon {
+      width: 48px;
+      height: 48px;
+    }
+  }
+}

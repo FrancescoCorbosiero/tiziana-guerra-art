@@ -1,0 +1,71 @@
+@layer components {
+  /* ============================================
+     PARALLAX SECTION COMPONENT
+     Generic parallax wrapper for any content
+     ============================================ */
+
+  .parallax-section {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Parallax Background */
+  .parallax-section__background {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 120%; /* Extra height for parallax movement */
+    overflow: hidden;
+  }
+
+  .parallax-section__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* Background Overlay */
+  .parallax-section__overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--color-neutral-1000);
+    z-index: 1;
+  }
+
+  /* Multiple Parallax Layers */
+  .parallax-section__layers {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .parallax-section__layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 120%; /* Extra height for parallax movement */
+  }
+
+  .parallax-section__layer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* Content */
+  .parallax-section__content {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Accessibility: Reduce motion */
+  @media (prefers-reduced-motion: reduce) {
+    .parallax-section__background,
+    .parallax-section__layer {
+      transform: none !important;
+    }
+  }
+}

@@ -1,0 +1,245 @@
+@layer animations {
+  /* Keyframe Animations */
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-down {
+    from {
+      opacity: 0;
+      transform: translateY(-24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-left {
+    from {
+      opacity: 0;
+      transform: translateX(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-right {
+    from {
+      opacity: 0;
+      transform: translateX(-24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(-25%);
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+    50% {
+      transform: translateY(0);
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+  }
+
+  /* Animation Classes */
+  .animate-in {
+    animation: fade-in var(--duration-base) var(--easing-out);
+  }
+
+  .animate-scale {
+    animation: scale-in var(--duration-slow) var(--easing-out);
+  }
+
+  .animate-slide-up {
+    animation: slide-up var(--duration-base) var(--easing-out);
+  }
+
+  .animate-slide-down {
+    animation: slide-down var(--duration-base) var(--easing-out);
+  }
+
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Transition Utilities */
+  .transition {
+    transition-property: all;
+    transition-timing-function: var(--easing-out);
+    transition-duration: var(--duration-base);
+  }
+
+  .transition-colors {
+    transition-property: color, background-color, border-color;
+    transition-timing-function: var(--easing-out);
+    transition-duration: var(--duration-base);
+  }
+
+  .transition-transform {
+    transition-property: transform;
+    transition-timing-function: var(--easing-out);
+    transition-duration: var(--duration-base);
+  }
+
+  .transition-opacity {
+    transition-property: opacity;
+    transition-timing-function: var(--easing-out);
+    transition-duration: var(--duration-base);
+  }
+
+  /* Hover Effects */
+  .hover-lift {
+    transition: transform var(--duration-base) var(--easing-out);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+  }
+
+  .hover-glow {
+    transition: box-shadow var(--duration-base) var(--easing-out);
+  }
+
+  .hover-glow:hover {
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--color-brand-primary), transparent 70%),
+      0 0 20px color-mix(in oklch, var(--color-brand-primary), transparent 85%);
+  }
+
+  /* View Transitions API */
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root) {
+    animation: fade-in 200ms var(--easing-out) reverse;
+  }
+
+  ::view-transition-new(root) {
+    animation: fade-in 200ms var(--easing-out);
+  }
+
+  /* Navigation Loading State */
+  html.is-navigating {
+    cursor: wait;
+  }
+
+  html.is-navigating::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      var(--color-brand-primary) 0%,
+      var(--color-brand-secondary) 50%,
+      var(--color-brand-accent) 100%
+    );
+    background-size: 200% 100%;
+    animation: loading-bar 1s ease-in-out infinite;
+    z-index: 9999;
+  }
+
+  @keyframes loading-bar {
+    0% {
+      background-position: 200% 0;
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      background-position: -200% 0;
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* Reduce motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-in,
+    .animate-scale,
+    .animate-slide-up,
+    .animate-slide-down,
+    .animate-spin,
+    .animate-pulse,
+    .transition,
+    .transition-colors,
+    .transition-transform,
+    .transition-opacity,
+    .hover-lift,
+    .hover-glow {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}

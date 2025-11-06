@@ -1,0 +1,194 @@
+# Copyright (C) 2025 Alpacode Studio Theme
+# This file is distributed under the same license as the Alpacode Studio Theme package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Alpacode Studio Theme 1.0.0\n"
+"Report-Msgid-Bugs-To: https://alpacode.studio\n"
+"POT-Creation-Date: 2025-01-15 12:00:00+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2025-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: Manual\n"
+"X-Domain: sage\n"
+
+#: functions.php:17
+msgid "Error locating autoloader. Please run <code>composer install</code>."
+msgstr ""
+
+#: functions.php:57
+#, php-format
+msgid "Error locating <code>%s</code> for inclusion."
+msgstr ""
+
+#: app/filters.php:15
+msgid "Continued"
+msgstr ""
+
+#: app/setup.php:91
+msgid "Primary Navigation"
+msgstr ""
+
+#: app/setup.php:92
+msgid "Footer Navigation"
+msgstr ""
+
+#: app/setup.php:160
+msgid "Primary"
+msgstr ""
+
+#: app/setup.php:165
+msgid "Footer"
+msgstr ""
+
+#: app/setup.php:182 app/setup.php:216
+msgid "Invalid locale"
+msgstr ""
+
+#: app/setup.php:191 app/setup.php:225
+msgid "Locale not available"
+msgstr ""
+
+#: app/setup.php:200 app/setup.php:234
+msgid "Language changed successfully"
+msgstr ""
+
+#: app/View/Composers/Comments.php:26
+msgctxt "comments title"
+msgid "One"
+msgstr ""
+
+#: app/View/Composers/Comments.php:57
+msgid "&larr; Older comments"
+msgstr ""
+
+#: app/View/Composers/Comments.php:71
+msgid "Newer comments &rarr;"
+msgstr ""
+
+#: app/View/Composers/Post.php:34
+msgid "Latest Posts"
+msgstr ""
+
+#: app/View/Composers/Post.php:44
+#, php-format
+msgid "Search Results for %s"
+msgstr ""
+
+#: app/View/Composers/Post.php:50
+msgid "Not Found"
+msgstr ""
+
+#: app/View/Composers/Post.php:63
+msgid "Pages:"
+msgstr ""
+
+#: app/ViewComposers/GlobalComposer.php:112
+#, php-format
+msgid "Search Results for: %s"
+msgstr ""
+
+#: app/ViewComposers/GlobalComposer.php:117
+msgid "Page Not Found"
+msgstr ""
+
+#: resources/views/404.blade.php:11
+msgid "Sorry, the page you are looking for could not be found."
+msgstr ""
+
+#: resources/views/404.blade.php:19
+msgid "Go Home"
+msgstr ""
+
+#: resources/views/404.blade.php:22
+msgid "View Blog"
+msgstr ""
+
+#: resources/views/components/language-selector.blade.php:42
+msgid "Select language"
+msgstr ""
+
+#: resources/views/components/language-selector.blade.php:51
+msgid "Current language"
+msgstr ""
+
+#: resources/views/components/language-selector.blade.php:74
+msgid "Select Language"
+msgstr ""
+
+#: resources/views/components/modal.blade.php:48
+msgid "Close modal"
+msgstr ""
+
+#: resources/views/forms/search.blade.php:4
+msgctxt "label"
+msgid "Search for:"
+msgstr ""
+
+#: resources/views/forms/search.blade.php:9
+msgctxt "placeholder"
+msgid "Search &hellip;"
+msgstr ""
+
+#: resources/views/forms/search.blade.php:18
+msgctxt "submit button"
+msgid "Search"
+msgstr ""
+
+#: resources/views/index.blade.php:36
+msgid "Read more"
+msgstr ""
+
+#: resources/views/index.blade.php:45
+msgid "Posts navigation"
+msgstr ""
+
+#: resources/views/index.blade.php:52
+msgid "Sorry, no posts were found."
+msgstr ""
+
+#: resources/views/layouts/app.blade.php:28
+msgid "Skip to content"
+msgstr ""
+
+#: resources/views/partials/comments.blade.php:13
+msgid "Comments navigation"
+msgstr ""
+
+#: resources/views/partials/comments.blade.php:34
+msgid "Comments are closed."
+msgstr ""
+
+#: resources/views/partials/comments.blade.php:42
+msgid "Leave a Comment"
+msgstr ""
+
+#: resources/views/partials/content-search.blade.php:25
+msgid "Read more"
+msgstr ""
+
+#: resources/views/partials/entry-meta.blade.php:9
+msgid "By"
+msgstr ""
+
+#: resources/views/search.blade.php:11
+msgid "Sorry, no results were found."
+msgstr ""
+
+#: resources/views/single.blade.php:25
+msgid "Tags:"
+msgstr ""
+
+#: resources/views/single.blade.php:35
+msgid "Post navigation"
+msgstr ""
+
+#: resources/views/single.blade.php:38
+msgid "Previous"
+msgstr ""
+
+#: resources/views/single.blade.php:44
+msgid "Next"
+msgstr ""

@@ -1,0 +1,166 @@
+@layer utilities {
+  /* Display Utilities */
+  .block {
+    display: block;
+  }
+
+  .inline-block {
+    display: inline-block;
+  }
+
+  .inline {
+    display: inline;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  /* Screen Reader Only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .not-sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  /* Focus utilities */
+  .focus\:not-sr-only:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  /* Spacing Utilities - Margin */
+  .m-0 {
+    margin: 0;
+  }
+
+  .mt-0 {
+    margin-block-start: 0;
+  }
+
+  .mb-0 {
+    margin-block-end: 0;
+  }
+
+  .ml-0 {
+    margin-inline-start: 0;
+  }
+
+  .mr-0 {
+    margin-inline-end: 0;
+  }
+
+  .mx-auto {
+    margin-inline: auto;
+  }
+
+  .my-auto {
+    margin-block: auto;
+  }
+
+  /* Spacing Utilities - Padding */
+  .p-0 {
+    padding: 0;
+  }
+
+  /* Width Utilities */
+  .w-full {
+    width: 100%;
+  }
+
+  .w-auto {
+    width: auto;
+  }
+
+  .max-w-full {
+    max-width: 100%;
+  }
+
+  /* Height Utilities */
+  .h-full {
+    height: 100%;
+  }
+
+  .h-auto {
+    height: auto;
+  }
+
+  .min-h-screen {
+    min-height: 100vh;
+  }
+
+  /* Overflow Utilities */
+  .overflow-hidden {
+    overflow: hidden;
+  }
+
+  .overflow-auto {
+    overflow: auto;
+  }
+
+  .overflow-scroll {
+    overflow: scroll;
+  }
+
+  /* Position Utilities */
+  .relative {
+    position: relative;
+  }
+
+  .absolute {
+    position: absolute;
+  }
+
+  .fixed {
+    position: fixed;
+  }
+
+  .sticky {
+    position: sticky;
+  }
+
+  /* Interaction Utilities */
+  .pointer-events-none {
+    pointer-events: none;
+  }
+
+  .pointer-events-auto {
+    pointer-events: auto;
+  }
+
+  /* Cursor Utilities */
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
+  .cursor-default {
+    cursor: default;
+  }
+
+  .cursor-not-allowed {
+    cursor: not-allowed;
+  }
+}

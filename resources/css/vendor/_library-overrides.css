@@ -1,0 +1,135 @@
+/**
+ * Override library styles to match design system
+ * Uses custom properties from foundation/_tokens.css
+ */
+
+/* ═══════════════════════════════════════════════════
+   AOS Custom Timing
+   ═══════════════════════════════════════════════════ */
+
+[data-aos] {
+  transition-duration: var(--duration-base) !important;
+  transition-timing-function: var(--easing-out) !important;
+}
+
+[data-aos][data-aos-delay] {
+  transition-delay: 0s;
+}
+
+[data-aos][data-aos-duration="fast"] {
+  transition-duration: var(--duration-fast) !important;
+}
+
+[data-aos][data-aos-duration="slow"] {
+  transition-duration: var(--duration-slow) !important;
+}
+
+[data-aos][data-aos-easing="bounce"] {
+  transition-timing-function: var(--easing-bounce) !important;
+}
+
+[data-aos][data-aos-easing="spring"] {
+  transition-timing-function: var(--easing-spring) !important;
+}
+
+/* ═══════════════════════════════════════════════════
+   Swiper Custom Styling
+   ═══════════════════════════════════════════════════ */
+
+.swiper {
+  --swiper-theme-color: var(--color-brand-primary);
+  --swiper-navigation-size: var(--space-lg);
+  --swiper-pagination-bullet-size: var(--space-xs);
+
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.swiper-pagination-bullet-active {
+  background: var(--color-brand-primary);
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: var(--color-brand-primary);
+  background: var(--color-surface-overlay);
+  width: calc(var(--space-lg) * 2);
+  height: calc(var(--space-lg) * 2);
+  border-radius: var(--radius-full);
+  transition: all var(--duration-base) var(--easing-out);
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: var(--color-brand-primary);
+  color: var(--color-text-inverse);
+  transform: scale(1.1);
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: var(--font-size-lg);
+}
+
+.swiper-pagination {
+  bottom: var(--space-md);
+}
+
+.swiper-pagination-bullet {
+  transition: all var(--duration-base) var(--easing-out);
+}
+
+.swiper-pagination-bullet:hover {
+  transform: scale(1.2);
+}
+
+/* ═══════════════════════════════════════════════════
+   PhotoSwipe Dark Mode Support
+   ═══════════════════════════════════════════════════ */
+
+.pswp {
+  --pswp-bg: oklch(from var(--color-surface-base) l c h / 0.95);
+  --pswp-icon-color: var(--color-text-primary);
+  --pswp-icon-color-secondary: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .pswp {
+  --pswp-bg: oklch(from var(--color-surface-base) l c h / 0.98);
+}
+
+.pswp__button {
+  background: var(--color-surface-overlay) !important;
+  border-radius: var(--radius-md);
+  transition: all var(--duration-base) var(--easing-out);
+}
+
+.pswp__button:hover {
+  background: var(--color-brand-primary) !important;
+  transform: scale(1.1);
+}
+
+.pswp__counter {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  background: var(--color-surface-overlay);
+  padding: var(--space-2xs) var(--space-sm);
+  border-radius: var(--radius-md);
+}
+
+/* ═══════════════════════════════════════════════════
+   Vanta.js Container Styling
+   ═══════════════════════════════════════════════════ */
+
+.vanta-background,
+#vanta-bg {
+  position: relative;
+  isolation: isolate;
+}
+
+.vanta-background > canvas,
+#vanta-bg > canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}

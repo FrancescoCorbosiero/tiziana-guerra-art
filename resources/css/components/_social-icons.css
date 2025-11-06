@@ -1,0 +1,224 @@
+@layer components {
+  /* ============================================
+     SOCIAL ICONS COMPONENT
+     Social media icon bar with positioning options
+     ============================================ */
+
+  .social-icons {
+    --icon-size: 1.25rem;
+    --icon-spacing: var(--space-sm);
+    --icon-color: var(--color-text-secondary);
+    --icon-hover-color: var(--color-brand-primary);
+  }
+
+  /* Size variations */
+  .social-icons--sm {
+    --icon-size: 1rem;
+    --icon-spacing: var(--space-xs);
+  }
+
+  .social-icons--lg {
+    --icon-size: 1.5rem;
+    --icon-spacing: var(--space-md);
+  }
+
+  /* List */
+  .social-icons__list {
+    display: flex;
+    gap: var(--icon-spacing);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Orientation */
+  .social-icons--vertical .social-icons__list {
+    flex-direction: column;
+  }
+
+  .social-icons--horizontal .social-icons__list {
+    flex-direction: row;
+  }
+
+  /* Item */
+  .social-icons__item {
+    margin: 0;
+  }
+
+  /* Link */
+  .social-icons__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    width: 2.5em;
+    height: 2.5em;
+    color: var(--icon-color);
+    text-decoration: none;
+    transition:
+      color var(--duration-base) var(--easing-out),
+      transform var(--duration-base) var(--easing-out),
+      background-color var(--duration-base) var(--easing-out);
+    border-radius: var(--radius-md);
+  }
+
+  /* Icon */
+  .social-icons__icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .social-icons__icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Label (for labeled variant) */
+  .social-icons__label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+  }
+
+  /* Variant: Default */
+  .social-icons--default .social-icons__link:hover {
+    color: var(--icon-hover-color);
+  }
+
+  /* Variant: Minimal */
+  .social-icons--minimal .social-icons__link {
+    width: auto;
+    height: auto;
+  }
+
+  .social-icons--minimal .social-icons__link:hover {
+    color: var(--icon-hover-color);
+  }
+
+  /* Variant: Filled */
+  .social-icons--filled .social-icons__link {
+    background-color: var(--color-surface-raised);
+    border: 1px solid color-mix(in oklch, var(--color-neutral-500), transparent 70%);
+  }
+
+  .social-icons--filled .social-icons__link:hover {
+    background-color: var(--color-brand-primary);
+    color: var(--color-neutral-0);
+    border-color: var(--color-brand-primary);
+  }
+
+  /* Variant: Outlined */
+  .social-icons--outlined .social-icons__link {
+    border: 2px solid var(--icon-color);
+  }
+
+  .social-icons--outlined .social-icons__link:hover {
+    border-color: var(--icon-hover-color);
+    color: var(--icon-hover-color);
+  }
+
+  /* Animated hover effects */
+  .social-icons--animated .social-icons__link:hover {
+    transform: translateY(-4px);
+  }
+
+  .social-icons--animated .social-icons__link:active {
+    transform: translateY(-2px);
+  }
+
+  /* Position: Inline (default) */
+  .social-icons--inline {
+    display: inline-flex;
+  }
+
+  /* Position: Fixed Left */
+  .social-icons--fixed-left {
+    position: fixed;
+    left: var(--space-md);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: var(--z-fixed);
+  }
+
+  .social-icons--fixed-left .social-icons__list {
+    flex-direction: column;
+  }
+
+  /* Position: Fixed Right */
+  .social-icons--fixed-right {
+    position: fixed;
+    right: var(--space-md);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: var(--z-fixed);
+  }
+
+  .social-icons--fixed-right .social-icons__list {
+    flex-direction: column;
+  }
+
+  /* Position: Fixed Bottom */
+  .social-icons--fixed-bottom {
+    position: fixed;
+    bottom: var(--space-md);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: var(--z-fixed);
+    background-color: var(--color-surface-raised);
+    padding: var(--space-sm);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .social-icons--fixed-bottom .social-icons__list {
+    flex-direction: row;
+  }
+
+  /* Dark mode adjustments */
+  [data-theme="dark"] .social-icons--filled .social-icons__link {
+    background-color: color-mix(in oklch, var(--color-neutral-800), transparent 50%);
+    border-color: var(--color-neutral-700);
+  }
+
+  /* Labeled variant layout */
+  .social-icons--labeled .social-icons__link {
+    width: auto;
+    padding-inline: var(--space-md);
+    padding-block: var(--space-sm);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    /* Hide fixed positions on mobile for better UX */
+    .social-icons--fixed-left,
+    .social-icons--fixed-right {
+      display: none;
+    }
+
+    /* Keep bottom bar visible but smaller */
+    .social-icons--fixed-bottom {
+      bottom: var(--space-xs);
+      padding: var(--space-xs);
+    }
+
+    .social-icons--fixed-bottom .social-icons__list {
+      gap: var(--space-xs);
+    }
+  }
+
+  /* Accessibility: Focus states */
+  .social-icons__link:focus-visible {
+    outline: 2px solid var(--color-brand-primary);
+    outline-offset: 4px;
+  }
+
+  /* Accessibility: Reduce motion */
+  @media (prefers-reduced-motion: reduce) {
+    .social-icons--animated .social-icons__link:hover {
+      transform: none;
+    }
+  }
+}

@@ -1,0 +1,17 @@
+/**
+ * Third-Party CSS Libraries
+ * Import order matters for cascade control
+ */
+
+/* AOS - Animate On Scroll */
+@import 'aos/dist/aos.css';
+
+/* Swiper - Carousel Styles */
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+@import 'swiper/css/effect-fade';
+@import 'swiper/css/effect-coverflow';
+
+/* PhotoSwipe - Lightbox Gallery */
+@import 'photoswipe/style.css';

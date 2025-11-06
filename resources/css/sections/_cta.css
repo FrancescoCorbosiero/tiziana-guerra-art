@@ -1,0 +1,68 @@
+@layer sections {
+  /* CTA Section */
+  .cta {
+    padding-block: var(--space-3xl);
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--color-brand-primary), transparent 90%) 0%,
+      color-mix(in oklch, var(--color-brand-secondary), transparent 95%) 100%
+    );
+    text-align: center;
+  }
+
+  /* CTA Centered Variant */
+  .cta--centered {
+    .cta__content {
+      max-width: var(--container-md);
+      margin-inline: auto;
+      text-align: center;
+    }
+  }
+
+  /* CTA Split Variant */
+  .cta--split {
+    .cta__content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-xl);
+      flex-wrap: wrap;
+    }
+
+    .cta__text {
+      flex: 1;
+      text-align: left;
+      min-width: min(300px, 100%);
+    }
+
+    .cta__actions {
+      flex-shrink: 0;
+    }
+  }
+
+  /* CTA Elements */
+  .cta__title {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-block-end: var(--space-md);
+  }
+
+  .cta__description {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin-block-end: var(--space-lg);
+  }
+
+  .cta__actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .cta--split .cta__actions {
+    justify-content: flex-end;
+  }
+}

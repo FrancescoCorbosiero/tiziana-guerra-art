@@ -1,0 +1,167 @@
+@layer foundation {
+  /* ============================================
+     DIVINE FLUID TYPOGRAPHY SYSTEM
+     Responsive typography with reasonable bounds
+     ============================================ */
+
+  :root {
+    /* Ultra-massive display sizes (ReadyMag style) */
+    --font-size-display-1: clamp(8rem, 12vw + 2rem, 18rem);      /* 128px → 288px */
+    --font-size-display-2: clamp(6rem, 10vw + 1.5rem, 15rem);    /* 96px → 240px */
+    --font-size-display-3: clamp(4.5rem, 8vw + 1rem, 12rem);     /* 72px → 192px */
+
+    /* Massive hero sizes (updated to reasonable bounds) */
+    --font-size-hero-1: clamp(2.25rem, 5vw + 1rem, 5rem);        /* 36px → 80px */
+    --font-size-hero-2: clamp(1.875rem, 4vw + 0.5rem, 4rem);     /* 30px → 64px */
+    --font-size-hero-3: clamp(1.125rem, 2vw + 0.5rem, 2rem);     /* 18px → 32px */
+
+    /* Enhanced existing scale */
+    --font-size-6xl: clamp(3.75rem, 2.5vw + 3rem, 5rem);         /* 60px → 80px */
+    --font-size-5xl: clamp(3rem, 2vw + 2.5rem, 4rem);            /* 48px → 64px */
+    --font-size-4xl: clamp(2.25rem, 1.5vw + 2rem, 3rem);         /* 36px → 48px */
+    --font-size-3xl: clamp(1.875rem, 1.25vw + 1.5rem, 2.5rem);   /* 30px → 40px */
+    --font-size-2xl: clamp(1.5rem, 1vw + 1.25rem, 2rem);         /* 24px → 32px */
+    --font-size-xl: clamp(1.25rem, 0.5vw + 1.125rem, 1.5rem);    /* 20px → 24px */
+    --font-size-lg: clamp(1.125rem, 0.25vw + 1.063rem, 1.25rem); /* 18px → 20px */
+    --font-size-base: clamp(1rem, 0.25vw + 0.938rem, 1.125rem);  /* 16px → 18px */
+    --font-size-sm: clamp(0.875rem, 0.25vw + 0.813rem, 1rem);    /* 14px → 16px */
+    --font-size-xs: clamp(0.75rem, 0.125vw + 0.719rem, 0.875rem);/* 12px → 14px */
+  }
+
+  /* Display typography classes */
+  .display-1 {
+    font-size: var(--font-size-display-1);
+    font-weight: var(--font-weight-bold);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    font-variation-settings: 'opsz' 144;
+  }
+
+  .display-2 {
+    font-size: var(--font-size-display-2);
+    font-weight: var(--font-weight-bold);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    font-variation-settings: 'opsz' 120;
+  }
+
+  .display-3 {
+    font-size: var(--font-size-display-3);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variation-settings: 'opsz' 96;
+  }
+
+  /* Hero typography classes */
+  .hero-1 {
+    font-size: var(--font-size-hero-1);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    letter-spacing: -0.025em;
+    font-variation-settings: 'opsz' 72;
+  }
+
+  .hero-2 {
+    font-size: var(--font-size-hero-2);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-variation-settings: 'opsz' 64;
+  }
+
+  .hero-3 {
+    font-size: var(--font-size-hero-3);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    font-variation-settings: 'opsz' 48;
+  }
+
+  /* Text effects for massive typography */
+  .text-gradient {
+    /* Ensure proper display for gradient clipping */
+    display: inline-block;
+    background: linear-gradient(
+      135deg,
+      var(--color-brand-primary) 0%,
+      var(--color-brand-secondary) 50%,
+      var(--color-brand-accent) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    /* Fallback for browsers that don't support background-clip */
+    color: var(--color-brand-primary);
+  }
+
+  /* Only apply transparent color if background-clip is supported */
+  @supports (-webkit-background-clip: text) or (background-clip: text) {
+    .text-gradient {
+      color: transparent;
+    }
+  }
+
+  /* Enhanced visibility in dark mode */
+  [data-theme="dark"] .text-gradient {
+    /* Add subtle glow to make gradient pop in dark mode */
+    filter: brightness(1.1);
+    text-shadow:
+      0 0 20px color-mix(in oklch, var(--color-brand-primary), transparent 70%),
+      0 0 40px color-mix(in oklch, var(--color-brand-secondary), transparent 85%);
+  }
+
+  .text-outline {
+    -webkit-text-stroke: 2px var(--color-text-primary);
+    -webkit-text-fill-color: transparent;
+    text-stroke: 2px var(--color-text-primary);
+    text-fill-color: transparent;
+  }
+
+  .text-shadow-glow {
+    text-shadow:
+      0 0 40px color-mix(in oklch, var(--color-brand-primary), transparent 50%),
+      0 0 80px color-mix(in oklch, var(--color-brand-primary), transparent 70%),
+      0 0 120px color-mix(in oklch, var(--color-brand-primary), transparent 85%);
+  }
+
+  /* Split text animation */
+  .char {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(100%) rotateX(-90deg);
+    animation: char-reveal 0.8s var(--easing-out) forwards;
+    animation-delay: calc(var(--char-index) * 0.03s);
+  }
+
+  @keyframes char-reveal {
+    to {
+      opacity: 1;
+      transform: translateY(0) rotateX(0);
+    }
+  }
+
+  .char-space {
+    display: inline-block;
+    width: 0.3em;
+  }
+
+  /* Morphing text size on scroll */
+  .text-morph {
+    font-size: clamp(2rem, 10vw, 8rem);
+    transition: font-size 0.3s var(--easing-out);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .display-1,
+    .display-2,
+    .display-3,
+    .hero-1,
+    .hero-2,
+    .hero-3 {
+      line-height: 1.1;
+      letter-spacing: -0.015em;
+    }
+  }
+}
