@@ -39,6 +39,9 @@
           'posts_per_page' => 6,
           'orderby' => 'date',
           'order' => 'DESC',
+          'suppress_filters' => true,  // Prevent pre_get_posts from running
+          'no_found_rows' => true,     // Performance improvement
+          'ignore_sticky_posts' => true,
         ]);
       @endphp
 

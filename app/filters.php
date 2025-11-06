@@ -50,23 +50,35 @@ add_filter('query_vars', function ($vars) {
 
 /**
  * Modify main query for opere archive filtering.
- * TEMPORARILY DISABLED FOR DEBUGGING
  *
  * @param \WP_Query $query
  * @return void
  */
-/*
 add_action('pre_get_posts', function ($query) {
-    // Only run on frontend, main query, and only once
-    if (is_admin() || !$query->is_main_query() || $query->get('suppress_filters')) {
+    // Exit early for admin, non-main queries, or queries with suppress_filters
+    if (is_admin()) {
         return;
     }
 
-    // Only run on post archives (not pages, not custom post types)
+    if (!$query->is_main_query()) {
+        return;
+    }
+
+    if ($query->get('suppress_filters')) {
+        return;
+    }
+
+    // Only run on post archives, categories, and tags
     if (!is_home() && !is_post_type_archive('post') && !is_category() && !is_tag()) {
         return;
     }
 
+    // Don't run on singular pages
+    if (is_singular()) {
+        return;
+    }
+
+    // Build tax query for filtering
     $tax_query = [];
 
     // Filter by category (categoria)
@@ -98,8 +110,5 @@ add_action('pre_get_posts', function ($query) {
     }
 
     // Set posts per page for opere archive
-    if (is_home() || is_post_type_archive('post') || is_archive()) {
-        $query->set('posts_per_page', 12);
-    }
-}, 10, 1);
-*/
+    $query->set('posts_per_page', 12);
+}, 20, 1); // Higher priority to run later
