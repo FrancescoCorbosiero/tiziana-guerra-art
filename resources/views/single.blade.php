@@ -38,16 +38,18 @@
         <div class="container--md">
           {{-- Title and Metadata --}}
           <header class="opera-header">
-            <h1 class="opera-title">{!! $title !!}</h1>
+            <h1 class="opera-title">{!! get_the_title() !!}</h1>
 
             @php
-              $meta_items = [];
-              if ($anno) $meta_items[] = $anno;
-              if ($dimensioni) $meta_items[] = $dimensioni;
-              if ($tecnica) $meta_items[] = ucfirst($tecnica);
+              // Build meta items safely without relying on count() on null
+              $meta_items = array_filter([
+                $anno ?: null,
+                $dimensioni ?: null,
+                $tecnica ? ucfirst($tecnica) : null,
+              ]);
             @endphp
 
-            @if (count($meta_items) > 0)
+            @if (!empty($meta_items))
               <div class="opera-meta">
                 {{ implode(' • ', $meta_items) }}
               </div>
@@ -105,13 +107,16 @@
             @endif
           </div>
 
-          {{-- Timeline Mostre --}}
-          @if ($timeline_mostre)
+          {{-- Timeline Mostre (safe, bounded) --}}
+          @if ($timeline_mostre && is_string($timeline_mostre) && mb_strlen($timeline_mostre) < 20000)
             <div class="opera-timeline">
               <h2 class="opera-section-title">Mostre ed Esposizioni</h2>
               <div class="timeline-content">
                 @php
-                  $mostre = array_filter(explode("\n", $timeline_mostre));
+                  // Split on new lines, trim entries, filter empties, and hard-limit the number of items
+                  $lines = preg_split("/\r?\n/", (string) $timeline_mostre);
+                  $lines = is_array($lines) ? $lines : [];
+                  $mostre = array_slice(array_filter(array_map('trim', $lines)), 0, 200);
                 @endphp
                 <ul class="timeline-list">
                   @foreach ($mostre as $mostra)
@@ -156,7 +161,16 @@
                 </a>
               @endif
 
-              <a href="{{ get_post_type_archive_link('post') }}" class="opera-nav-item opera-nav-item--all">
+              @php
+                // Determine archive link dynamically for current post type with graceful fallback
+                $current_post_type = get_post_type();
+                $archive_link = get_post_type_archive_link($current_post_type);
+                if (!$archive_link) {
+                  $posts_page = get_option('page_for_posts');
+                  $archive_link = $posts_page ? get_permalink($posts_page) : home_url('/');
+                }
+              @endphp
+              <a href="{{ $archive_link }}" class="opera-nav-item opera-nav-item--all">
                 <span class="opera-nav-label">Tutte le Opere</span>
               </a>
 

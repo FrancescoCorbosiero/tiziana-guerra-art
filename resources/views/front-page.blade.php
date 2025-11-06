@@ -34,21 +34,25 @@
       </header>
 
       @php
-        $featured_opere = new WP_Query([
+        // Lightweight query to prevent memory spikes
+        $featured_opere = get_posts([
           'post_type' => 'post',
           'posts_per_page' => 6,
           'orderby' => 'date',
           'order' => 'DESC',
+          'post_status' => 'publish',
           'suppress_filters' => true,  // Prevent pre_get_posts from running
           'no_found_rows' => true,     // Performance improvement
           'ignore_sticky_posts' => true,
+          'update_post_term_cache' => false,
+          'cache_results' => false,
         ]);
       @endphp
 
-      @if ($featured_opere->have_posts())
+      @if (!empty($featured_opere))
         <div class="opere-grid opere-grid--featured">
-          @while ($featured_opere->have_posts())
-            @php($featured_opere->the_post())
+          @foreach ($featured_opere as $post)
+            @php(setup_postdata($post))
             @php
               $stato = function_exists('get_field') ? get_field('stato') : 'disponibile';
               $stato = $stato ?: 'disponibile';
@@ -59,7 +63,7 @@
               <a href="{{ get_permalink() }}" class="opera-card__link">
                 @if (has_post_thumbnail())
                   <div class="opera-card__image">
-                    {!! get_the_post_thumbnail(null, 'large', ['loading' => 'lazy']) !!}
+                    {!! get_the_post_thumbnail(null, 'medium_large', ['loading' => 'lazy']) !!}
 
                     @if ($is_venduto)
                       <div class="opera-card__venduto-overlay">
@@ -93,7 +97,7 @@
                 </div>
               </a>
             </article>
-          @endwhile
+          @endforeach
         </div>
 
         <div class="text-center" style="margin-top: var(--space-xl);">
