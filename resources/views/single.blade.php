@@ -150,11 +150,17 @@
       </section>
 
       {{-- Navigation to Previous/Next Opera --}}
-      @if (get_previous_post() || get_next_post())
+      @php
+        // Get previous/next posts only once to avoid expensive duplicate queries
+        $previous = get_previous_post();
+        $next = get_next_post();
+      @endphp
+
+      @if ($previous || $next)
         <nav class="opera-navigation section--sm" aria-label="Navigazione opere">
           <div class="container--md">
             <div class="opera-nav-grid">
-              @if ($previous = get_previous_post())
+              @if ($previous)
                 <a href="{{ get_permalink($previous) }}" class="opera-nav-item opera-nav-item--prev">
                   <span class="opera-nav-label">← Opera Precedente</span>
                   <span class="opera-nav-title">{{ get_the_title($previous) }}</span>
@@ -174,7 +180,7 @@
                 <span class="opera-nav-label">Tutte le Opere</span>
               </a>
 
-              @if ($next = get_next_post())
+              @if ($next)
                 <a href="{{ get_permalink($next) }}" class="opera-nav-item opera-nav-item--next">
                   <span class="opera-nav-label">Opera Successiva →</span>
                   <span class="opera-nav-title">{{ get_the_title($next) }}</span>
