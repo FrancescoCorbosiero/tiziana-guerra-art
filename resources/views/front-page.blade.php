@@ -34,7 +34,7 @@
       </header>
 
       @php
-        // Lightweight query to prevent memory spikes
+        // Lightweight query with caching enabled for optimal performance
         $featured_opere = get_posts([
           'post_type' => 'post',
           'posts_per_page' => 6,
@@ -45,7 +45,7 @@
           'no_found_rows' => true,     // Performance improvement
           'ignore_sticky_posts' => true,
           'update_post_term_cache' => false,
-          'cache_results' => false,
+          // CRITICAL: cache_results MUST be true (default) to enable WordPress object caching
         ]);
       @endphp
 

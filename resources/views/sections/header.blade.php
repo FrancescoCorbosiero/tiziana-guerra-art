@@ -219,7 +219,12 @@
           <p class="search-suggestions__title">Popular searches:</p>
           <div class="search-suggestions__tags">
             @php
-              $popular_tags = get_tags(['number' => 5, 'orderby' => 'count', 'order' => 'DESC']);
+              // Cache popular tags for 12 hours to avoid DB query on every page load
+              $popular_tags = wp_cache_get('popular_tags_header', 'theme');
+              if (false === $popular_tags) {
+                $popular_tags = get_tags(['number' => 5, 'orderby' => 'count', 'order' => 'DESC']);
+                wp_cache_set('popular_tags_header', $popular_tags, 'theme', 12 * HOUR_IN_SECONDS);
+              }
             @endphp
             @foreach($popular_tags as $tag)
               <a href="{{ get_tag_link($tag->term_id) }}" class="search-suggestion-tag">
