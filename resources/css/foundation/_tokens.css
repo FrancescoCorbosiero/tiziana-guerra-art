@@ -18,10 +18,15 @@
     --color-neutral-900: oklch(15% 0 0);
     --color-neutral-1000: oklch(10% 0 0);      /* Near black */
 
-    /* Brand colors (Alpacode Studio - #F65100 primary) */
-    --color-brand-primary: oklch(65% 0.23 40);    /* Vibrant orange #F65100 */
-    --color-brand-secondary: oklch(70% 0.12 180); /* Teal accent */
-    --color-brand-accent: oklch(75% 0.18 120);    /* Fresh green */
+    /* Brand colors (Tiziana Guerra Art Portfolio) */
+    --color-brand-primary: #D84315;    /* Vibrant orange - creative flair */
+    --color-brand-secondary: #212121; /* Deep gray - sophistication */
+    --color-brand-accent: #FFFFFF;    /* Pure white - pureness */
+
+    /* Artist Portfolio semantic colors */
+    --color-artwork-bg: #FFFFFF;      /* White background for paintings */
+    --color-text-main: #212121;       /* Deep gray for text */
+    --color-accent-cta: #D84315;      /* Orange for CTAs and highlights */
 
     /* Semantic colors */
     --color-success: oklch(65% 0.15 145);
@@ -44,8 +49,9 @@
        TYPOGRAPHY - Fluid Scale
        ═══════════════════════════════════════════════════ */
 
-    /* Font families */
-    --font-family-base: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    /* Font families - Artist Portfolio */
+    --font-family-heading: 'Lora', Georgia, serif;        /* Elegant serif for headings */
+    --font-family-base: 'Lato', system-ui, -apple-system, sans-serif;  /* Modern sans for body */
     --font-family-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
     /* Fluid type scale (min 375px → max 1920px) */

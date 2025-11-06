@@ -1,9 +1,10 @@
 @layer typography {
   /* Typography System */
 
-  /* Heading Styles */
+  /* Heading Styles - Lora Font */
   .heading-1,
   h1 {
+    font-family: var(--font-family-heading);
     font-size: var(--font-size-5xl);
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-tight);
@@ -13,6 +14,7 @@
 
   .heading-2,
   h2 {
+    font-family: var(--font-family-heading);
     font-size: var(--font-size-4xl);
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-tight);
@@ -22,6 +24,7 @@
 
   .heading-3,
   h3 {
+    font-family: var(--font-family-heading);
     font-size: var(--font-size-3xl);
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-snug);
@@ -31,6 +34,7 @@
 
   .heading-4,
   h4 {
+    font-family: var(--font-family-heading);
     font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-snug);
@@ -39,6 +43,7 @@
 
   .heading-5,
   h5 {
+    font-family: var(--font-family-heading);
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-normal);
@@ -47,6 +52,7 @@
 
   .heading-6,
   h6 {
+    font-family: var(--font-family-heading);
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-normal);
