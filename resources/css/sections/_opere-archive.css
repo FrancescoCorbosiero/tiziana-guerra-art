@@ -5,12 +5,12 @@
 
   /* Archive Header */
   .opere-archive-header {
-    background: var(--color-artwork-bg);
+    background: var(--color-surface-base);
     padding-block: var(--space-xl);
   }
 
   .opere-archive-header .heading-1 {
-    color: var(--color-text-main);
+    color: var(--color-text-primary);
     margin-bottom: var(--space-sm);
   }
 
@@ -22,9 +22,9 @@
 
   /* Filters Section */
   .opere-filters {
-    background: var(--color-neutral-50);
+    background: var(--color-surface-raised);
     padding-block: var(--space-lg);
-    border-bottom: 1px solid var(--color-neutral-200);
+    border-bottom: 1px solid var(--color-neutral-300);
   }
 
   .filters-form {
@@ -49,7 +49,7 @@
   .filter-label {
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    color: var(--color-text-main);
+    color: var(--color-text-primary);
     text-transform: uppercase;
     letter-spacing: var(--letter-spacing-wide);
   }
@@ -58,9 +58,9 @@
     padding: var(--space-sm) var(--space-md);
     font-family: var(--font-family-base);
     font-size: var(--font-size-base);
-    color: var(--color-text-main);
-    background: var(--color-artwork-bg);
-    border: 2px solid var(--color-neutral-300);
+    color: var(--color-text-primary);
+    background: var(--color-surface-base);
+    border: 2px solid var(--color-neutral-400);
     border-radius: var(--radius-md);
     cursor: pointer;
     transition: all var(--duration-fast) var(--easing-out);
@@ -109,7 +109,7 @@
 
   /* Opera Card */
   .opera-card {
-    background: var(--color-artwork-bg);
+    background: var(--color-surface-base);
     border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow-md);
@@ -167,7 +167,7 @@
     display: inline-block;
     padding: var(--space-xs) var(--space-md);
     background: var(--color-accent-cta);
-    color: var(--color-artwork-bg);
+    color: var(--color-surface-base);
     font-family: var(--font-family-base);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-bold);
@@ -199,7 +199,7 @@
   }
 
   .opera-card__info {
-    color: var(--color-artwork-bg);
+    color: var(--color-surface-base);
     transform: translateY(10px);
     transition: transform var(--duration-base) var(--easing-out);
   }
@@ -212,7 +212,7 @@
     font-family: var(--font-family-heading);
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
-    color: var(--color-artwork-bg);
+    color: var(--color-surface-base);
     margin-bottom: var(--space-xs);
     line-height: var(--line-height-tight);
   }
@@ -232,7 +232,7 @@
     font-family: var(--font-family-heading);
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-text-main);
+    color: var(--color-text-primary);
     margin-bottom: var(--space-xs);
     line-height: var(--line-height-snug);
   }
@@ -260,8 +260,8 @@
   .pagination a,
   .pagination .current {
     padding: var(--space-sm) var(--space-md);
-    background: var(--color-artwork-bg);
-    color: var(--color-text-main);
+    background: var(--color-surface-base);
+    color: var(--color-text-primary);
     border: 2px solid var(--color-neutral-300);
     border-radius: var(--radius-md);
     text-decoration: none;
@@ -271,13 +271,13 @@
 
   .pagination a:hover {
     background: var(--color-accent-cta);
-    color: var(--color-artwork-bg);
+    color: var(--color-surface-base);
     border-color: var(--color-accent-cta);
   }
 
   .pagination .current {
     background: var(--color-accent-cta);
-    color: var(--color-artwork-bg);
+    color: var(--color-surface-base);
     border-color: var(--color-accent-cta);
   }
 
