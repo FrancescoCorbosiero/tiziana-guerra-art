@@ -3,6 +3,9 @@
  * CSS4-First Architecture | No Framework Dependencies
  */
 
+/* Google Fonts - Artist Portfolio Typography */
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Lato:wght@400;700&display=swap');
+
 /* Foundation - Design System */
 @import "./foundation/_tokens.css";
 @import "./foundation/_reset.css";
@@ -39,3 +42,6 @@
 @import "./sections/_final-cta.css";
 @import "./sections/_cta.css";
 @import "./sections/_orbiting-hero.css";
+@import "./sections/_opere-archive.css";
+@import "./sections/_opera-single.css";
+@import "./sections/_homepage.css";

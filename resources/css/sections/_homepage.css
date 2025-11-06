@@ -1,0 +1,223 @@
+@layer sections {
+  /* ═══════════════════════════════════════════════════
+     HOMEPAGE - Artist Portfolio
+     ═══════════════════════════════════════════════════ */
+
+  /* Artist Hero Section */
+  .artist-hero {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-artwork-bg) 0%, var(--color-neutral-50) 100%);
+    padding-block: var(--space-3xl);
+    text-align: center;
+  }
+
+  .artist-hero__content {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .artist-hero__title {
+    font-family: var(--font-family-heading);
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-main);
+    margin-bottom: var(--space-md);
+    letter-spacing: var(--letter-spacing-tight);
+  }
+
+  .artist-hero__tagline {
+    font-family: var(--font-family-heading);
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: var(--font-weight-normal);
+    font-style: italic;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-xl);
+    letter-spacing: var(--letter-spacing-normal);
+  }
+
+  .artist-hero__actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: var(--space-xl);
+  }
+
+  /* Section Headers */
+  .section-header {
+    margin-bottom: var(--space-xl);
+  }
+
+  .section-header .heading-2 {
+    margin-bottom: var(--space-md);
+  }
+
+  .section-subtitle {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-xl);
+    color: var(--color-text-secondary);
+    font-style: italic;
+  }
+
+  /* Featured Opere Section */
+  .featured-opere {
+    background: var(--color-artwork-bg);
+    padding-block: var(--space-3xl);
+  }
+
+  .opere-grid--featured {
+    margin-top: var(--space-xl);
+  }
+
+  /* Chi Sono Section */
+  .chi-sono-section {
+    background: var(--color-neutral-50);
+    padding-block: var(--space-3xl);
+  }
+
+  .chi-sono-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2xl);
+    align-items: center;
+  }
+
+  .chi-sono__image {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-xl);
+  }
+
+  .chi-sono__image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    aspect-ratio: 3 / 4;
+  }
+
+  .chi-sono__content {
+    padding: var(--space-lg);
+  }
+
+  .chi-sono__content .heading-2 {
+    margin-bottom: var(--space-lg);
+    color: var(--color-text-main);
+  }
+
+  .chi-sono__text {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-lg);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-main);
+    margin-bottom: var(--space-xl);
+  }
+
+  .chi-sono__text p {
+    margin-bottom: var(--space-md);
+  }
+
+  .chi-sono__text p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Homepage CTA Section */
+  .homepage-cta {
+    background: linear-gradient(
+      135deg,
+      var(--color-accent-cta) 0%,
+      color-mix(in srgb, var(--color-accent-cta) 85%, black) 100%
+    );
+    color: var(--color-artwork-bg);
+    padding-block: var(--space-3xl);
+  }
+
+  .homepage-cta .heading-2 {
+    color: var(--color-artwork-bg);
+  }
+
+  .homepage-cta .body-large {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .homepage-cta .button--primary {
+    background: var(--color-artwork-bg);
+    color: var(--color-accent-cta);
+    border-color: var(--color-artwork-bg);
+  }
+
+  .homepage-cta .button--primary:hover {
+    background: var(--color-neutral-50);
+    color: var(--color-accent-cta);
+    border-color: var(--color-neutral-50);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 767px) {
+    .artist-hero {
+      min-height: 70vh;
+      padding-block: var(--space-xl);
+    }
+
+    .artist-hero__title {
+      font-size: clamp(2.5rem, 10vw, 3.5rem);
+    }
+
+    .artist-hero__tagline {
+      font-size: clamp(1.25rem, 5vw, 1.75rem);
+    }
+
+    .artist-hero__actions {
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .artist-hero__actions .button {
+      width: 100%;
+    }
+
+    .chi-sono-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+
+    .chi-sono__image {
+      order: 1;
+    }
+
+    .chi-sono__content {
+      order: 2;
+      padding: 0;
+    }
+
+    .section-subtitle {
+      font-size: var(--font-size-base);
+    }
+
+    .featured-opere {
+      padding-block: var(--space-xl);
+    }
+
+    .chi-sono-section {
+      padding-block: var(--space-xl);
+    }
+
+    .homepage-cta {
+      padding-block: var(--space-xl);
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .chi-sono-grid {
+      gap: var(--space-xl);
+    }
+
+    .chi-sono__content {
+      padding: var(--space-md);
+    }
+  }
+}
