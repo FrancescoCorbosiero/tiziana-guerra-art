@@ -9,7 +9,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--color-artwork-bg) 0%, var(--color-neutral-50) 100%);
+    background: linear-gradient(135deg, var(--color-surface-base) 0%, var(--color-surface-raised) 100%);
     padding-block: var(--space-3xl);
     text-align: center;
   }
@@ -24,7 +24,7 @@
     font-size: clamp(3rem, 8vw, 6rem);
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-tight);
-    color: var(--color-text-main);
+    color: var(--color-text-primary);
     margin-bottom: var(--space-md);
     letter-spacing: var(--letter-spacing-tight);
   }
@@ -65,7 +65,7 @@
 
   /* Featured Opere Section */
   .featured-opere {
-    background: var(--color-artwork-bg);
+    background: var(--color-surface-base);
     padding-block: var(--space-3xl);
   }
 
@@ -75,7 +75,7 @@
 
   /* Chi Sono Section */
   .chi-sono-section {
-    background: var(--color-neutral-50);
+    background: var(--color-surface-raised);
     padding-block: var(--space-3xl);
   }
 
@@ -101,19 +101,19 @@
   }
 
   .chi-sono__content {
-    padding: var(--space-lg);
+    /* No extra padding - let container handle spacing */
   }
 
   .chi-sono__content .heading-2 {
     margin-bottom: var(--space-lg);
-    color: var(--color-text-main);
+    color: var(--color-text-primary);
   }
 
   .chi-sono__text {
     font-family: var(--font-family-base);
     font-size: var(--font-size-lg);
     line-height: var(--line-height-relaxed);
-    color: var(--color-text-main);
+    color: var(--color-text-primary);
     margin-bottom: var(--space-xl);
   }
 
@@ -132,28 +132,28 @@
       var(--color-accent-cta) 0%,
       color-mix(in srgb, var(--color-accent-cta) 85%, black) 100%
     );
-    color: var(--color-artwork-bg);
+    color: var(--color-text-inverse);
     padding-block: var(--space-3xl);
   }
 
   .homepage-cta .heading-2 {
-    color: var(--color-artwork-bg);
+    color: var(--color-text-inverse);
   }
 
   .homepage-cta .body-large {
-    color: rgba(255, 255, 255, 0.9) !important;
+    color: color-mix(in srgb, var(--color-text-inverse) 90%, transparent) !important;
   }
 
   .homepage-cta .button--primary {
-    background: var(--color-artwork-bg);
+    background: var(--color-surface-base);
     color: var(--color-accent-cta);
-    border-color: var(--color-artwork-bg);
+    border-color: var(--color-surface-base);
   }
 
   .homepage-cta .button--primary:hover {
-    background: var(--color-neutral-50);
+    background: var(--color-surface-raised);
     color: var(--color-accent-cta);
-    border-color: var(--color-neutral-50);
+    border-color: var(--color-surface-raised);
   }
 
   /* Responsive Design */

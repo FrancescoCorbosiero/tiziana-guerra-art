@@ -20,13 +20,11 @@
 
     /* Brand colors (Tiziana Guerra Art Portfolio) */
     --color-brand-primary: #D84315;    /* Vibrant orange - creative flair */
-    --color-brand-secondary: #212121; /* Deep gray - sophistication */
-    --color-brand-accent: #FFFFFF;    /* Pure white - pureness */
+    --color-brand-secondary: #212121;  /* Deep gray - sophistication */
+    --color-brand-accent: #FFFFFF;     /* Pure white - pureness */
 
-    /* Artist Portfolio semantic colors */
-    --color-artwork-bg: #FFFFFF;      /* White background for paintings */
-    --color-text-main: #212121;       /* Deep gray for text */
-    --color-accent-cta: #D84315;      /* Orange for CTAs and highlights */
+    /* Artist Portfolio accent color (consistent across themes) */
+    --color-accent-cta: #D84315;       /* Orange for CTAs and highlights */
 
     /* Semantic colors */
     --color-success: oklch(65% 0.15 145);
