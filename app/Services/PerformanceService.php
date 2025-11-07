@@ -93,16 +93,11 @@ class PerformanceService
      */
     public function setupLazyLoading(): void
     {
-        // Add loading="lazy" to images
+        // Add loading="lazy" and decoding="async" to images in one filter
         add_filter('wp_get_attachment_image_attributes', function ($attr) {
             if (!isset($attr['loading'])) {
                 $attr['loading'] = 'lazy';
             }
-            return $attr;
-        });
-
-        // Add decoding="async" to images
-        add_filter('wp_get_attachment_image_attributes', function ($attr) {
             if (!isset($attr['decoding'])) {
                 $attr['decoding'] = 'async';
             }
