@@ -75,26 +75,30 @@
           // Get category filter
           $categoria = isset($_GET['categoria']) ? sanitize_text_field($_GET['categoria']) : '';
 
-          // WP_Query for posts (opere)
+          // Lightweight query with caching enabled for optimal performance
           $args = [
             'post_type' => 'post',
             'posts_per_page' => -1,
             'orderby' => 'date',
             'order' => 'DESC',
-            'post_status' => 'publish'
+            'post_status' => 'publish',
+            'suppress_filters' => true,  // Prevent pre_get_posts from running
+            'no_found_rows' => true,     // Performance improvement
+            'ignore_sticky_posts' => true,
+            'update_post_term_cache' => false,
           ];
 
           if ($categoria) {
             $args['category_name'] = $categoria;
           }
 
-          $opere_query = new WP_Query($args);
+          $opere = get_posts($args);
         @endphp
 
-        @if($opere_query->have_posts())
+        @if(!empty($opere))
           <div class="{{ $grid_class }}">
-            @while($opere_query->have_posts())
-              @php($opere_query->the_post())
+            @foreach($opere as $post)
+              @php(setup_postdata($post))
 
               @php
                 $anno = function_exists('get_field') ? get_field('anno') : '';
@@ -143,13 +147,13 @@
                   </div>
                 </a>
               </article>
-            @endwhile
+            @endforeach
           </div>
 
           {{-- Results count --}}
           <div class="archive-results">
             <p class="results-count">
-              Visualizzate {{ $opere_query->found_posts }} {{ $opere_query->found_posts === 1 ? 'opera' : 'opere' }}
+              Visualizzate {{ count($opere) }} {{ count($opere) === 1 ? 'opera' : 'opere' }}
             </p>
           </div>
         @else
