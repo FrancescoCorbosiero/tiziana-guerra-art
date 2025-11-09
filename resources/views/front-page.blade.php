@@ -14,7 +14,7 @@
         <h1 class="artist-hero__title">Tiziana Guerra</h1>
         <p class="artist-hero__tagline">Where art comes to life</p>
         <div class="artist-hero__actions">
-          <a href="{{ get_post_type_archive_link('post') }}" class="button button--primary button--large">
+          <a href="{{ get_permalink(get_option('page_for_posts')) ?: home_url('/') }}" class="button button--primary button--large">
             Esplora le Opere
           </a>
           <a href="#chi-sono" class="button button--secondary button--large">
@@ -101,7 +101,7 @@
         </div>
 
         <div class="text-center" style="margin-top: var(--space-xl);">
-          <a href="{{ get_post_type_archive_link('post') }}" class="button button--primary">
+          <a href="{{ get_permalink(get_option('page_for_posts')) ?: home_url('/') }}" class="button button--primary">
             Vedi Tutte le Opere →
           </a>
         </div>
