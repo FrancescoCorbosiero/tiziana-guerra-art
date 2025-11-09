@@ -20,7 +20,7 @@
               <header>
                 <h2 class="heading-3">
                   <a href="{{ get_permalink() }}" class="transition-colors">
-                    {!! $title !!}
+                    {!! get_the_title() !!}
                   </a>
                 </h2>
 

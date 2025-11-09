@@ -18,7 +18,7 @@
   {{-- Filters --}}
   <div class="opere-filters section--sm">
     <div class="container">
-      <form method="get" action="{{ get_post_type_archive_link('post') }}" class="filters-form">
+      <form method="get" action="{{ get_permalink(get_option('page_for_posts')) ?: home_url('/') }}" class="filters-form">
         <div class="filters-grid">
           {{-- Category Filter --}}
           <div class="filter-group">
@@ -57,7 +57,7 @@
           {{-- Reset Button --}}
           @if (get_query_var('categoria') || get_query_var('tecnica') || is_category() || is_tag())
             <div class="filter-group">
-              <a href="{{ get_post_type_archive_link('post') }}" class="button button--secondary filter-reset">
+              <a href="{{ get_permalink(get_option('page_for_posts')) ?: home_url('/') }}" class="button button--secondary filter-reset">
                 Reset Filtri
               </a>
             </div>
@@ -144,7 +144,7 @@
       <div class="text-center">
         <div class="card" style="padding: var(--space-xl); max-width: 48rem; margin-inline: auto;">
           <p class="body-large">{{ __('Nessuna opera trovata con i filtri selezionati.', 'sage') }}</p>
-          <a href="{{ get_post_type_archive_link('post') }}" class="button button--primary" style="margin-top: var(--space-md);">
+          <a href="{{ get_permalink(get_option('page_for_posts')) ?: home_url('/') }}" class="button button--primary" style="margin-top: var(--space-md);">
             Vedi tutte le opere
           </a>
         </div>
