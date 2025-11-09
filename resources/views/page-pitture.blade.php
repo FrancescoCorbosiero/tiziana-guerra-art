@@ -101,9 +101,10 @@
               @php(setup_postdata($post))
 
               @php
-                $anno = function_exists('get_field') ? get_field('anno') : '';
-                $tecnica = function_exists('get_field') ? get_field('tecnica') : '';
-                $stato = function_exists('get_field') ? get_field('stato') : 'disponibile';
+                // Get ACF fields for each painting
+                $anno = get_field('anno', $post->ID) ?: '';
+                $tecnica = get_field('tecnica', $post->ID) ?: '';
+                $stato = get_field('stato', $post->ID) ?: 'disponibile';
                 $is_venduto = $stato === 'venduto';
               @endphp
 

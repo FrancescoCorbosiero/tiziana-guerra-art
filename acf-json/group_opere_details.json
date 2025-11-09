@@ -1,0 +1,179 @@
+{
+    "key": "group_opere_details",
+    "title": "Dettagli Opera",
+    "fields": [
+        {
+            "key": "field_dimensioni",
+            "label": "Dimensioni",
+            "name": "dimensioni",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Es: 80x100 cm",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "80x100 cm",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_anno",
+            "label": "Anno",
+            "name": "anno",
+            "aria-label": "",
+            "type": "number",
+            "instructions": "Anno di realizzazione",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "min": 1900,
+            "max": 2099,
+            "placeholder": "",
+            "step": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_tecnica",
+            "label": "Tecnica",
+            "name": "tecnica",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "Tecnica utilizzata",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "olio": "Olio su tela",
+                "acrilico": "Acrilico",
+                "mista": "Tecnica mista",
+                "acquarello": "Acquarello",
+                "altro": "Altro"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 1,
+            "ui": 0,
+            "ajax": 0,
+            "placeholder": "Seleziona tecnica"
+        },
+        {
+            "key": "field_prezzo",
+            "label": "Prezzo",
+            "name": "prezzo",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Opzionale - lasciare vuoto se non in vendita",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "Es: €1.500",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_stato",
+            "label": "Stato",
+            "name": "stato",
+            "aria-label": "",
+            "type": "radio",
+            "instructions": "Disponibilit\u00e0 dell'opera",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "disponibile": "Disponibile",
+                "venduto": "Venduto",
+                "non_in_vendita": "Non in Vendita"
+            },
+            "default_value": "disponibile",
+            "return_format": "value",
+            "allow_null": 0,
+            "other_choice": 0,
+            "layout": "horizontal",
+            "save_other_choice": 0
+        },
+        {
+            "key": "field_timeline_mostre",
+            "label": "Timeline Mostre",
+            "name": "timeline_mostre",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "Una mostra per riga. Es: 2023 - Galleria XYZ, Milano",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "rows": 5,
+            "placeholder": "2024 - Galleria d'Arte Moderna, Roma\n2023 - Biennale di Venezia",
+            "new_lines": ""
+        },
+        {
+            "key": "field_link_processo_creativo",
+            "label": "Link Processo Creativo",
+            "name": "link_processo_creativo",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "Link YouTube\/Vimeo del dietro le quinte",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "https:\/\/www.youtube.com\/watch?v=..."
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "post"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Campi personalizzati per le opere d'arte",
+    "show_in_rest": 1,
+    "modified": 1699999999
+}

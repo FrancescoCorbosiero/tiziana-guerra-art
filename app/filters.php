@@ -112,3 +112,10 @@ add_action('pre_get_posts', function ($query) {
     // Set posts per page for opere archive
     $query->set('posts_per_page', 12);
 }, 20, 1); // Higher priority to run later
+
+/**
+ * Enable ACF REST API support for headless/API access.
+ *
+ * @return bool
+ */
+add_filter('acf/settings/rest_api_enabled', '__return_true');
