@@ -2,21 +2,6 @@
 
 @section('content')
   @while(have_posts()) @php(the_post())
-    @php
-      // Get ACF fields
-      $anno = get_field('anno') ?: '';
-      $tecnica = get_field('tecnica') ?: '';
-      $dimensioni = get_field('dimensioni') ?: '';
-      $prezzo = get_field('prezzo') ?: '';
-      $stato = get_field('stato') ?: 'disponibile';
-      $timeline_mostre = get_field('timeline_mostre') ?: '';
-      $link_processo = get_field('link_processo_creativo') ?: '';
-
-      // Determine availability status
-      $disponibile = $stato === 'disponibile' || $stato === 'non_in_vendita';
-      $is_venduto = $stato === 'venduto';
-    @endphp
-
     <article @php(post_class('single-opera'))>
       {{-- Large featured image section --}}
       <section class="opera-hero">
@@ -24,7 +9,7 @@
           {!! get_the_post_thumbnail(null, 'full', ['class' => 'opera-image', 'loading' => 'eager']) !!}
         @endif
 
-        @if($is_venduto)
+        @if(get_field('stato') === 'venduto')
           <div class="opera-venduto-badge">
             <span>VENDUTO</span>
           </div>
@@ -37,31 +22,31 @@
           <h1 class="opera-title">{!! get_the_title() !!}</h1>
 
           <dl class="opera-meta">
-            @if($anno)
+            @if(get_field('anno'))
               <div class="opera-meta-item">
                 <dt>Anno</dt>
-                <dd>{{ $anno }}</dd>
+                <dd>{{ get_field('anno') }}</dd>
               </div>
             @endif
 
-            @if($tecnica)
+            @if(get_field('tecnica'))
               <div class="opera-meta-item">
                 <dt>Tecnica</dt>
-                <dd>{{ ucfirst($tecnica) }}</dd>
+                <dd>{{ ucfirst(get_field('tecnica')) }}</dd>
               </div>
             @endif
 
-            @if($dimensioni)
+            @if(get_field('dimensioni'))
               <div class="opera-meta-item">
                 <dt>Dimensioni</dt>
-                <dd>{{ $dimensioni }}</dd>
+                <dd>{{ get_field('dimensioni') }}</dd>
               </div>
             @endif
 
-            @if($prezzo && !$is_venduto)
+            @if(get_field('prezzo') && get_field('stato') !== 'venduto')
               <div class="opera-meta-item">
                 <dt>Prezzo</dt>
-                <dd>{{ $prezzo }}</dd>
+                <dd>{{ get_field('prezzo') }}</dd>
               </div>
             @endif
           </dl>
@@ -109,17 +94,12 @@
           @endif
 
           {{-- Timeline Mostre --}}
-          @if($timeline_mostre && is_string($timeline_mostre))
+          @if(get_field('timeline_mostre'))
             <div class="opera-timeline">
               <h2 class="opera-section-title">Mostre ed Esposizioni</h2>
-              @php
-                $lines = preg_split("/\r?\n/", (string) $timeline_mostre);
-                $lines = is_array($lines) ? $lines : [];
-                $mostre = array_slice(array_filter(array_map('trim', $lines)), 0, 100);
-              @endphp
               <ul class="timeline-list">
-                @foreach($mostre as $mostra)
-                  <li class="timeline-item">{{ trim($mostra) }}</li>
+                @foreach(array_filter(array_map('trim', explode("\n", get_field('timeline_mostre')))) as $mostra)
+                  <li class="timeline-item">{{ $mostra }}</li>
                 @endforeach
               </ul>
             </div>
@@ -127,13 +107,13 @@
 
           {{-- Action Buttons --}}
           <div class="opera-actions">
-            @if($link_processo)
-              <a href="{{ $link_processo }}" target="_blank" rel="noopener noreferrer" class="button button--primary">
+            @if(get_field('link_processo_creativo'))
+              <a href="{{ get_field('link_processo_creativo') }}" target="_blank" rel="noopener noreferrer" class="button button--primary">
                 Guarda il Processo Creativo
               </a>
             @endif
 
-            @if($disponibile)
+            @if(get_field('stato') !== 'venduto')
               <a href="{{ home_url('/contatti') }}" class="button button--secondary">
                 Richiedi Informazioni o Acquista
               </a>
