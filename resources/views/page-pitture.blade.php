@@ -100,14 +100,6 @@
             @foreach($opere as $post)
               @php(setup_postdata($post))
 
-              @php
-                // Get ACF fields for each painting
-                $anno = get_field('anno', $post->ID) ?: '';
-                $tecnica = get_field('tecnica', $post->ID) ?: '';
-                $stato = get_field('stato', $post->ID) ?: 'disponibile';
-                $is_venduto = $stato === 'venduto';
-              @endphp
-
               <article class="opera-card">
                 <a href="{{ get_permalink() }}" class="opera-card__link">
                   @if(has_post_thumbnail())
@@ -115,7 +107,7 @@
                       {!! get_the_post_thumbnail(null, 'medium_large', ['class' => 'opera-card__image', 'loading' => 'lazy']) !!}
 
                       {{-- Venduto Badge --}}
-                      @if($is_venduto)
+                      @if(get_field('stato', $post->ID) === 'venduto')
                         <div class="opera-card__badge opera-card__badge--venduto">
                           VENDUTO
                         </div>
@@ -134,15 +126,12 @@
 
                   <div class="opera-card__content">
                     <h2 class="opera-card__title">{!! get_the_title() !!}</h2>
-                    @php
-                      $meta_items = array_filter([
-                        $anno ?: null,
-                        $tecnica ? ucfirst($tecnica) : null
-                      ]);
-                    @endphp
-                    @if(!empty($meta_items))
+
+                    @if(get_field('anno', $post->ID) || get_field('tecnica', $post->ID))
                       <p class="opera-card__meta">
-                        {{ implode(' • ', $meta_items) }}
+                        @if(get_field('anno', $post->ID)){{ get_field('anno', $post->ID) }}@endif
+                        @if(get_field('anno', $post->ID) && get_field('tecnica', $post->ID)) • @endif
+                        @if(get_field('tecnica', $post->ID)){{ ucfirst(get_field('tecnica', $post->ID)) }}@endif
                       </p>
                     @endif
                   </div>
