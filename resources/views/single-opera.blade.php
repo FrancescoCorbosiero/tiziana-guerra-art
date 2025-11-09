@@ -3,15 +3,16 @@
 @section('content')
   @while(have_posts()) @php(the_post())
     @php
-      // Get ACF fields or custom meta
-      $foto = function_exists('get_field') ? get_field('foto') : null;
-      $anno = function_exists('get_field') ? get_field('anno') : '';
-      $tecnica = function_exists('get_field') ? get_field('tecnica') : '';
-      $dimensioni = function_exists('get_field') ? get_field('dimensioni') : '';
-      $prezzo = function_exists('get_field') ? get_field('prezzo') : '';
-      $stato = function_exists('get_field') ? (get_field('stato') ?: 'disponibile') : 'disponibile';
-      $timeline_mostre = function_exists('get_field') ? get_field('timeline_mostre') : '';
-      $link_processo = function_exists('get_field') ? get_field('link_processo_creativo') : '';
+      // Get ACF fields
+      $anno = get_field('anno') ?: '';
+      $tecnica = get_field('tecnica') ?: '';
+      $dimensioni = get_field('dimensioni') ?: '';
+      $prezzo = get_field('prezzo') ?: '';
+      $stato = get_field('stato') ?: 'disponibile';
+      $timeline_mostre = get_field('timeline_mostre') ?: '';
+      $link_processo = get_field('link_processo_creativo') ?: '';
+
+      // Determine availability status
       $disponibile = $stato === 'disponibile' || $stato === 'non_in_vendita';
       $is_venduto = $stato === 'venduto';
     @endphp
@@ -19,9 +20,7 @@
     <article @php(post_class('single-opera'))>
       {{-- Large featured image section --}}
       <section class="opera-hero">
-        @if($foto && is_array($foto) && isset($foto['url']))
-          <img src="{{ $foto['url'] }}" alt="{{ $foto['alt'] ?? get_the_title() }}" class="opera-image" loading="eager">
-        @elseif(has_post_thumbnail())
+        @if(has_post_thumbnail())
           {!! get_the_post_thumbnail(null, 'full', ['class' => 'opera-image', 'loading' => 'eager']) !!}
         @endif
 
