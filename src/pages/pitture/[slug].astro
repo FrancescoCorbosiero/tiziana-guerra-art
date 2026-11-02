@@ -112,7 +112,7 @@ const jsonLd = [
       height: { '@type': 'Distance', name: dimensioni.altezza },
     }),
     ...(descrizioneBreve && { description: descrizioneBreve }),
-    creator: { '@type': 'Person', name: site.author, url: site.url },
+    creator: { '@type': 'Person', '@id': `${site.url}/#artista`, name: site.author, url: site.url },
   },
   {
     '@context': 'https://schema.org',
@@ -242,7 +242,13 @@ const jsonLd = [
     <nav class="artwork__pager" aria-label="Opere precedente e successiva">
       {
         precedente ? (
-          <a class="btn-text" href={urlOpera(precedente)} aria-label={`Opera precedente: ${precedente.data.titolo}`}>
+          <a
+            class="btn-text"
+            href={urlOpera(precedente)}
+            aria-label={`Opera precedente: ${precedente.data.titolo}`}
+            aria-keyshortcuts="ArrowLeft"
+            data-pager="precedente"
+          >
             <span class="brush brush--on">Precedente</span>
           </a>
         ) : (
@@ -251,7 +257,13 @@ const jsonLd = [
       }
       {
         successiva && (
-          <a class="btn-text" href={urlOpera(successiva)} aria-label={`Opera successiva: ${successiva.data.titolo}`}>
+          <a
+            class="btn-text"
+            href={urlOpera(successiva)}
+            aria-label={`Opera successiva: ${successiva.data.titolo}`}
+            aria-keyshortcuts="ArrowRight"
+            data-pager="successiva"
+          >
             <span class="brush brush--on">Successivo</span>
           </a>
         )
@@ -292,6 +304,25 @@ const jsonLd = [
     }
   </Fragment>
 </BaseLayout>
+
+<script>
+  // Frecce ← → della tastiera: opera precedente / successiva, come sfogliare un catalogo.
+  // Non interferiscono con i campi di testo, le scorciatoie del browser e gli overlay aperti.
+  const versi: Partial<Record<string, string>> = { ArrowLeft: 'precedente', ArrowRight: 'successiva' };
+  document.addEventListener('keydown', (event) => {
+    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    const verso = versi[event.key];
+    if (!verso || event.isComposing) return;
+    const origine = event.target instanceof Element ? event.target : null;
+    if (origine?.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])')) return;
+    if (document.querySelector('.overlay:popover-open')) return;
+    const link = document.querySelector<HTMLAnchorElement>(`[data-pager="${verso}"]`);
+    if (link) {
+      event.preventDefault();
+      link.click();
+    }
+  });
+</script>
 
 <style>
   .artwork {
