@@ -1,0 +1,131 @@
+---
+import { getEntry } from 'astro:content';
+import { site } from '~/config/site';
+import { ancoraAnno, dividiVoce } from '~/lib/eventi';
+import { inlineMarkdown } from '~/lib/inline-md';
+
+/*
+ * Banner in cima alle pagine, nello stile del tema: barra scura sottile, etichetta in corsivo,
+ * link con la pennellata gialla. Il contenuto viene dal sito: se in site.ts non c'è un testo,
+ * mostra l'ultimo evento dell'anno più recente di Chi sono e porta agli eventi di quell'anno.
+ * Scorre via con la pagina: non copre nulla, quindi non serve chiuderlo.
+ */
+const conf = site.annuncio;
+let { etichetta, testo } = conf;
+let href = conf.link.href;
+
+if (conf.attivo && !testo) {
+  const pagina = await getEntry('pagine', 'chi-sono');
+  const anni = pagina?.data.eventi?.anni ?? [];
+  const recente = anni.reduce<(typeof anni)[number] | undefined>((a, b) => (!a || b.anno > a.anno ? b : a), undefined);
+  const voce = recente?.voci.at(-1);
+  if (recente && voce) {
+    testo = dividiVoce(voce).titolo;
+    etichetta ||= `Novità ${recente.anno}`;
+    href ||= `/chi-sono/#${ancoraAnno(recente.anno)}`;
+  }
+}
+etichetta ||= 'Novità';
+
+const scaduto = Boolean(conf.fino) && new Date(`${conf.fino}T23:59:59`) < new Date();
+const mostra = conf.attivo && Boolean(testo) && !scaduto;
+---
+
+{
+  mostra && (
+    <aside class="annuncio reveal" aria-label={etichetta}>
+      <p class="annuncio__testo">
+        <span class="annuncio__etichetta">{etichetta}</span>
+        <span class="annuncio__messaggio" set:html={inlineMarkdown(testo)} />
+        {href && (
+          <a class="annuncio__link" href={href}>
+            <span class="brush brush--on">{conf.link.testo || 'Scopri'}</span>
+          </a>
+        )}
+      </p>
+    </aside>
+  )
+}
+
+<style>
+  .annuncio {
+    --delay: 0.05s;
+    position: relative;
+    z-index: 51;
+    background: var(--c-main);
+    color: var(--c-cream);
+  }
+
+  /* telefono: una frase sola che va a capo (etichetta, testo, link), al massimo su due righe */
+  .annuncio__testo {
+    margin: 0;
+    padding: 8px var(--gutter) 9px;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .annuncio__testo > * + * {
+    margin-left: 0.6em;
+  }
+
+  @media (min-width: 769px) {
+    .annuncio__testo {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: center;
+      gap: 2px 14px;
+      padding: 9px var(--gutter) 10px;
+      font-size: 0.875rem;
+      line-height: 1.35;
+    }
+
+    .annuncio__testo > * + * {
+      margin-left: 0;
+    }
+  }
+
+  .annuncio__etichetta {
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-size: 1.0625rem;
+    color: var(--c-accent);
+  }
+
+  .annuncio__messaggio :global(em) {
+    font-style: italic;
+  }
+
+  .annuncio__link {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-cream);
+    white-space: nowrap;
+  }
+
+  /* la pennellata sotto il link, un po' più sottile sulla barra scura */
+  .annuncio__link :global(.brush::after) {
+    height: 8px;
+    bottom: -6px;
+  }
+
+  /* desktop: una sola riga, alta quanto l'header "switch" della home si aspetta (--annuncio-h) */
+  @media (min-width: 1025px) {
+    .annuncio__testo {
+      flex-wrap: nowrap;
+      height: var(--annuncio-h);
+      padding-block: 0;
+      align-items: center;
+    }
+
+    .annuncio__messaggio {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+</style>

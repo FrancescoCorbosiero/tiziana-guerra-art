@@ -1,0 +1,25 @@
+---
+/**
+ * Testo diviso in parole al momento della build, per l'intro dei titoli (classe .intro-words
+ * sul titolo): ogni parola sale dalla sua maschera, una dopo l'altra, al primo paint, in CSS.
+ * Il testo resta identico per i lettori di schermo e i motori di ricerca (solo span e spazi).
+ */
+interface Props {
+  testo: string;
+  /** Ritardo della prima parola, in passi da 70ms (per mettere in fila più titoli). */
+  da?: number;
+}
+const { testo, da = 0 } = Astro.props;
+const parole = testo.split(/\s+/).filter(Boolean);
+---
+
+{
+  parole.map((p, i) => (
+    <>
+      {i > 0 && ' '}
+      <span class="iw">
+        <span style={`--i:${i + da}`}>{p}</span>
+      </span>
+    </>
+  ))
+}

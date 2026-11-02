@@ -1,0 +1,28 @@
+/* ============================================================
+   lens. The circle drawn over the image; shown by the script only
+   (a mouse, desktop), never under reduced motion.
+   Source: C src/styles/motion.css:140, in the theme's colours.
+   ============================================================ */
+.lens {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  width: clamp(150px, 14vw, 220px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid var(--c-accent, #ffc600);
+  background-color: var(--c-mat, #f5f4ed);
+  background-repeat: no-repeat;
+  box-shadow:
+    0 22px 50px -18px rgb(34 29 20 / 0.55),
+    inset 0 0 0 1px rgb(255 255 255 / 0.5);
+  pointer-events: none;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lens {
+    display: none;
+  }
+}

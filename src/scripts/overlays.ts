@@ -5,7 +5,11 @@
  *   (niente focus né lettura da screen reader dietro l'overlay);
  * - il focus entra nell'overlay all'apertura e torna al pulsante d'origine alla chiusura.
  */
+import { lockScroll } from '~/motion/core/scroll-lock';
+
 const resiInerti = new Set<Element>();
+// Blocco dello scroll condiviso con il motore delle animazioni: ferma anche Lenis (lo scroll fluido).
+let sbloccaScroll: (() => void) | null = null;
 
 function sblocca() {
   for (const el of resiInerti) el.removeAttribute('inert');
@@ -26,9 +30,12 @@ for (const overlay of document.querySelectorAll<HTMLElement>('.overlay[popover]'
         }
       }
       overlay.setAttribute('aria-modal', 'true');
+      sbloccaScroll ??= lockScroll();
     } else {
       sblocca();
       overlay.removeAttribute('aria-modal');
+      sbloccaScroll?.();
+      sbloccaScroll = null;
     }
   });
 

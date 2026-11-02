@@ -23,11 +23,11 @@ const recapiti = candidati.filter((r): r is Recapito => Boolean(r));
 
   <section class="contacts grid-12 container">
     <div class="contacts__main">
-      <h2 class="h3 contacts__title">Per informazioni e richieste, inviami un messaggio</h2>
+      <h2 class="h3 contacts__title reveal" style="--delay:.3s">Per informazioni e richieste, inviami un messaggio</h2>
       {site.contactFormEndpoint && <ContactForm action={site.contactFormEndpoint} />}
     </div>
 
-    <aside class="contacts__aside" aria-label="Recapiti">
+    <aside class="contacts__aside reveal" style="--delay:.5s" aria-label="Recapiti">
       <dl class="contacts__list">
         {
           recapiti.map((r) => (
@@ -46,7 +46,7 @@ const recapiti = candidati.filter((r): r is Recapito => Boolean(r));
           ))
         }
       </dl>
-      <figure class="contacts__figure">
+      <figure class="contacts__figure" data-clip>
         <Picture
           src={torreGuida}
           alt="La torre guida — dipinto di Tiziana Guerra"

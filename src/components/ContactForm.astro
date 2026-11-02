@@ -11,7 +11,7 @@ const { action } = Astro.props;
   Modulo di contatto. Senza JavaScript viene inviato normalmente (il servizio risponde con la
   pagina di conferma); con JavaScript l'invio avviene senza lasciare la pagina.
 -->
-<form class="contact-form" id="modulo" action={action} method="POST" novalidate data-contact-form>
+<form class="contact-form reveal" style="--delay:.4s" id="modulo" action={action} method="POST" novalidate data-contact-form>
   <div class="contact-form__row">
     <label class="field">
       <span class="h6">Nome</span>

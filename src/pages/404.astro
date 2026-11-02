@@ -1,11 +1,12 @@
 ---
+import Parole from '~/components/Parole.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="Pagina non trovata" noindex>
   <section class="not-found container">
     <p class="num reveal">/404</p>
-    <h1 class="h1 not-found__title reveal" style="--delay:.08s">Pagina non trovata</h1>
+    <h1 class="h1 not-found__title intro-words"><Parole testo="Pagina non trovata" da={1} /></h1>
     <p class="text not-found__text reveal" style="--delay:.16s">
       L'indirizzo potrebbe essere cambiato con il nuovo sito. Tutte le opere sono nella Galleria.
     </p>

@@ -2,6 +2,7 @@
 import { Picture, getImage } from 'astro:assets';
 import { getEntry, render } from 'astro:content';
 import { site } from '~/config/site';
+import Parole from '~/components/Parole.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { ancoraAnno, dividiVoce } from '~/lib/eventi';
 import { inlineMarkdown } from '~/lib/inline-md';
@@ -50,7 +51,7 @@ const jsonLd = {
   header="minimal"
 >
   <section class="cs-hero container">
-    <h1 class="h1 cs-hero__title reveal">{titolo}</h1>
+    <h1 class="h1 cs-hero__title intro-words"><Parole testo={titolo} /></h1>
   </section>
 
   {
@@ -58,8 +59,8 @@ const jsonLd = {
       <section class="cs-intro grid-12 container" aria-labelledby="cs-intro-title">
         {intro.immagine && (
           <figure
-            class="cs-intro__figure cover appear-zoom"
-            style={intro.immaginePosizione ? `--pos:${intro.immaginePosizione}` : undefined}
+            class="cs-intro__figure cover appear-zoom intro-clip"
+            style={`--delay:.35s;${intro.immaginePosizione ? `--pos:${intro.immaginePosizione}` : ''}`}
           >
             <Picture
               src={intro.immagine}
@@ -72,12 +73,17 @@ const jsonLd = {
             />
           </figure>
         )}
-        <div class="cs-intro__text">
+        <div class="cs-intro__text reveal" style="--delay:.5s">
           {intro.sopratitolo && <p class="tagline">{intro.sopratitolo}</p>}
           <h2 class="h2 cs-intro__title" id="cs-intro-title">
             {intro.titolo}
           </h2>
-          {intro.testo && <p class="cs-intro__lead">{intro.testo}</p>}
+          {/* la frase dell'artista: le parole si accendono mentre la si legge (dove è sotto la piega) */}
+          {intro.testo && (
+            <p class="cs-intro__lead" data-scrub>
+              {intro.testo}
+            </p>
+          )}
           {intro.testo2 && <p class="text cs-intro__p">{intro.testo2}</p>}
         </div>
       </section>
@@ -93,14 +99,18 @@ const jsonLd = {
     {
       biografia && (
         <header class="cs-bio__header">
-          {biografia.sopratitolo && <p class="tagline">{biografia.sopratitolo}</p>}
-          <h2 class="h2 cs-bio__title" id="cs-bio-title">
+          {biografia.sopratitolo && (
+            <p class="tagline" data-reveal>
+              {biografia.sopratitolo}
+            </p>
+          )}
+          <h2 class="h2 cs-bio__title" id="cs-bio-title" data-split="lines">
             {biografia.titolo}
           </h2>
         </header>
       )
     }
-    <div class="prose text cs-bio__text">
+    <div class="prose text cs-bio__text" data-reveal>
       <Content />
     </div>
   </section>
@@ -112,6 +122,7 @@ const jsonLd = {
           {operaEvidenza && (
             <a
               class="cs-award__image appear-zoom"
+              data-clip
               href={urlOpera(operaEvidenza)}
               style={`--vt:${vtName(operaEvidenza)}`}
               tabindex="-1"
@@ -130,14 +141,22 @@ const jsonLd = {
             </a>
           )}
           <div class="cs-award__text">
-            {evidenza.sopratitolo && <p class="tagline">{evidenza.sopratitolo}</p>}
-            <h2 class="h2 cs-award__title" id="cs-award-title">
+            {evidenza.sopratitolo && (
+              <p class="tagline" data-reveal>
+                {evidenza.sopratitolo}
+              </p>
+            )}
+            <h2 class="h2 cs-award__title" id="cs-award-title" data-split="wipe">
               {evidenza.titolo ?? operaEvidenza?.data.titolo ?? 'In evidenza'}
             </h2>
-            <p class="text cs-award__p" set:html={inlineMarkdown(evidenza.testo)} />
-            {metaEvidenza && <p class="cs-award__meta">{metaEvidenza}</p>}
+            <p class="text cs-award__p" data-reveal set:html={inlineMarkdown(evidenza.testo)} />
+            {metaEvidenza && (
+              <p class="cs-award__meta" data-reveal>
+                {metaEvidenza}
+              </p>
+            )}
             {operaEvidenza && (
-              <a class="btn-text cs-award__link" href={urlOpera(operaEvidenza)}>
+              <a class="btn-text cs-award__link" href={urlOpera(operaEvidenza)} data-reveal>
                 <span class="brush brush--on">Scopri l'opera</span>
                 <span class="sr-only">: {operaEvidenza.data.titolo}</span>
               </a>
@@ -152,12 +171,16 @@ const jsonLd = {
     eventi && (
       <section class="cs-events grid-12 container" id="eventi" aria-labelledby="cs-events-title">
         <header class="cs-events__header">
-          {eventi.sopratitolo && <p class="tagline">{eventi.sopratitolo}</p>}
-          <h2 class="h2 cs-events__title" id="cs-events-title">
+          {eventi.sopratitolo && (
+            <p class="tagline" data-reveal>
+              {eventi.sopratitolo}
+            </p>
+          )}
+          <h2 class="h2 cs-events__title" id="cs-events-title" data-split="lines">
             {eventi.titolo}
           </h2>
           {anni.length > 1 && (
-            <nav class="cs-events__nav" aria-label="Eventi per anno">
+            <nav class="cs-events__nav" aria-label="Eventi per anno" data-reveal>
               <ul role="list">
                 {anni.map((a) => (
                   <li>
@@ -171,10 +194,14 @@ const jsonLd = {
           )}
         </header>
 
-        <ol class="cs-timeline" role="list">
+        <ol class="cs-timeline" role="list" data-years>
           {anni.map((a) => (
-            <li class="cs-year" id={ancoraAnno(a.anno)}>
-              <h3 class="cs-year__anno">{a.anno}</h3>
+            <li class="cs-year" id={ancoraAnno(a.anno)} data-year>
+              <h3 class="cs-year__anno">
+                <span class="brush" data-year-mark>
+                  {a.anno}
+                </span>
+              </h3>
               <ul class="cs-year__voci" role="list">
                 {a.voci.map((v) => (
                   <li class="cs-voce">
@@ -193,7 +220,7 @@ const jsonLd = {
         </ol>
 
         {eventi.immagine && (
-          <figure class="cs-events__poster">
+          <figure class="cs-events__poster" data-clip="flat">
             <Picture
               src={eventi.immagine}
               alt={eventi.immagineAlt}
@@ -460,6 +487,22 @@ const jsonLd = {
     font-size: var(--fs-h3);
     line-height: 1;
     color: var(--c-text);
+  }
+
+  /* con il motore (effetto years) gli anni restano tenui finché non si leggono i loro eventi: allora
+     diventano scuri e sotto si disegna la pennellata gialla. Tenui ma leggibili (contrasto 3,2:1). */
+  .cs-timeline:global(.is-tracking) .cs-year__anno {
+    color: #949088;
+    transition: color var(--t-med) var(--ease-out);
+  }
+
+  .cs-timeline:global(.is-tracking) .cs-year__anno :global(.brush.is-active) {
+    color: var(--c-text);
+  }
+
+  .cs-year__anno :global(.brush::after) {
+    bottom: -4px;
+    height: 10px;
   }
 
   .cs-year__voci {

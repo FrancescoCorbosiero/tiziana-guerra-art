@@ -4,6 +4,7 @@ import { Picture } from 'astro:assets';
 import { getEntry } from 'astro:content';
 import Carousel from '~/components/Carousel.astro';
 import Marquee from '~/components/Marquee.astro';
+import Parole from '~/components/Parole.astro';
 import { site } from '~/config/site';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { altOpera, getOpera, getOpereInEvidenza, urlOpera } from '~/lib/opere';
@@ -52,7 +53,9 @@ const jsonLd = [
 >
   <!-- HERO: "Vita e rinascita" + due opere con didascalia verticale -->
   <section class="hero container" aria-labelledby="hero-title">
-    <h1 id="hero-title" class="hero__title reveal">{titolo}</h1>
+    <h1 id="hero-title" class="hero__title intro-words" data-hero-away="22" data-hero-fade="0.15">
+      <Parole testo={titolo} />
+    </h1>
 
     <div class="hero__works grid-12">
       {
@@ -60,8 +63,10 @@ const jsonLd = [
           const Tag = item.href ? 'a' : 'div';
           return (
             <figure class:list={['hero__work', `hero__work--${i === 0 ? 'small' : 'big'}`]}>
-              <figcaption class="h6 hero__label">{item.titolo}</figcaption>
-              <Tag class="hero__media cover appear-zoom" href={item.href}>
+              <figcaption class="h6 hero__label reveal" style={`--delay:${0.75 + i * 0.15}s`}>
+                {item.titolo}
+              </figcaption>
+              <Tag class="hero__media cover appear-zoom intro-clip" href={item.href} style={`--delay:${0.3 + i * 0.15}s`}>
                 {item.immagine && (
                   <Picture
                     src={item.immagine}
@@ -89,16 +94,16 @@ const jsonLd = [
   <!-- /01 Introduzione -->
   <section class="intro grid-12 container" aria-labelledby="intro-title">
     <div class="intro__text">
-      <p class="num">/01</p>
-      <h2 id="intro-title" class="h1 intro__title">{intro.titolo}</h2>
-      <p class="text intro__p">{intro.testo}</p>
-      <a class="btn-text intro__link" href={intro.link.href}>
+      <p class="num" data-reveal>/01</p>
+      <h2 id="intro-title" class="h1 intro__title" data-split="lines">{intro.titolo}</h2>
+      <p class="text intro__p" data-reveal>{intro.testo}</p>
+      <a class="btn-text intro__link" href={intro.link.href} data-reveal>
         <span class="brush brush--on">{intro.link.testo}</span>
       </a>
     </div>
     {
       intro.immagine && (
-        <figure class="intro__figure" style={`--w:${intro.immagine.width}px`}>
+        <figure class="intro__figure" style={`--w:${intro.immagine.width}px`} data-clip>
           <Picture
             src={intro.immagine}
             alt={intro.immagineAlt}
@@ -129,6 +134,7 @@ const jsonLd = [
             <figure
               class:list={['about__image cover appear-zoom', `about__image--${i}`]}
               style={img.posizione ? `--pos:${img.posizione}` : undefined}
+              data-clip
             >
               <Picture
                 src={img.immagine}
@@ -149,10 +155,17 @@ const jsonLd = [
         {
           chiSono.blocchi.map((b, i) => (
             <div class="about__block">
-              <p class="num">/{String(i + 1).padStart(2, '0')}</p>
-              <h2 class="h2 about__title">{b.titolo}</h2>
+              <p class="num" data-reveal>
+                /{String(i + 1).padStart(2, '0')}
+              </p>
+              {/* titoli vicini, mosse diverse: righe che salgono, poi righe che si scoprono */}
+              <h2 class="h2 about__title" data-split={i % 2 === 0 ? 'lines' : 'wipe'}>
+                {b.titolo}
+              </h2>
               {paragrafi(b.testo).map((p) => (
-                <p class="text">{p}</p>
+                <p class="text" data-reveal>
+                  {p}
+                </p>
               ))}
             </div>
           ))
@@ -162,12 +175,12 @@ const jsonLd = [
 
     <!-- Eventi: un anno per riga, voci su più colonne (l'elenco completo è in Chi sono) -->
     <div class="about__events">
-      <p class="num">/{String(chiSono.blocchi.length + 1).padStart(2, '0')}</p>
-      <h2 class="h2 about__title">{chiSono.eventi.titolo}</h2>
+      <p class="num" data-reveal>/{String(chiSono.blocchi.length + 1).padStart(2, '0')}</p>
+      <h2 class="h2 about__title" data-split="lines">{chiSono.eventi.titolo}</h2>
       <div class="events">
         {
           chiSono.eventi.anni.map((a) => (
-            <div class="events__year">
+            <div class="events__year" data-reveal>
               <h3 class="events__anno">{a.anno}</h3>
               <ul role="list" class="events__voci">
                 {a.voci.map((v) => (
@@ -178,7 +191,7 @@ const jsonLd = [
           ))
         }
       </div>
-      <p class="about__links">
+      <p class="about__links" data-reveal>
         <a class="btn-text" href="/chi-sono/">
           <span class="brush brush--on">Biografia completa</span>
         </a>
@@ -302,6 +315,7 @@ const jsonLd = [
   .intro__figure {
     width: min(100%, var(--w, 650px));
     margin: 0;
+    overflow: hidden;
   }
 
   .intro__figure :global(img) {

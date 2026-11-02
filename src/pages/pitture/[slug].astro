@@ -4,6 +4,7 @@ import { Picture, getImage } from 'astro:assets';
 import { getEntries, render } from 'astro:content';
 import MasonryGrid from '~/components/MasonryGrid.astro';
 import OverlayClose from '~/components/OverlayClose.astro';
+import Parole from '~/components/Parole.astro';
 import { site } from '~/config/site';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import {
@@ -139,7 +140,14 @@ const jsonLd = [
 >
   <article class="artwork grid-12 container" style={`--r:${rapportoRiquadro}`}>
     <div class="artwork__media">
-      <button class="artwork__stage" type="button" popovertarget="zoom-0" aria-label="Ingrandisci l'immagine">
+      <button
+        class="artwork__stage intro-clip"
+        style="--delay:.15s"
+        type="button"
+        popovertarget="zoom-0"
+        aria-label="Ingrandisci l'immagine"
+        data-lens
+      >
         <Picture
           src={data.immagine}
           alt={altOpera(opera)}
@@ -184,17 +192,17 @@ const jsonLd = [
     </div>
 
     <div class="artwork__info">
-      <h1 class="h1 artwork__title">{data.titolo}</h1>
+      <h1 class="h1 artwork__title intro-words"><Parole testo={data.titolo} da={3} /></h1>
       {
         haTesto && (
-          <div class="prose text artwork__text">
+          <div class="prose text artwork__text reveal" style="--delay:.55s">
             <Content />
           </div>
         )
       }
       {
         dettagli.length > 0 && (
-          <dl class="artwork__facts">
+          <dl class="artwork__facts reveal" style="--delay:.65s">
             {dettagli.map((d) => (
               <div>
                 <dt class="h6">{d.label}:</dt>
@@ -213,7 +221,7 @@ const jsonLd = [
           </dl>
         )
       }
-      <div class="artwork__actions">
+      <div class="artwork__actions reveal" style="--delay:.75s">
         {
           disponibile && (
             <a class="btn" href={linkRichiesta('acquisto')}>
@@ -227,7 +235,7 @@ const jsonLd = [
       </div>
       {
         site.contatti.email && (
-          <p class="artwork__contact">
+          <p class="artwork__contact reveal" style="--delay:.8s">
             Oppure scrivi a <a href={mailtoOpera(opera, 'info', pageUrl)}>{site.contatti.email}</a>
             {whatsapp && (
               <>
@@ -242,7 +250,7 @@ const jsonLd = [
       }
     </div>
 
-    <nav class="artwork__pager" aria-label="Opere precedente e successiva">
+    <nav class="artwork__pager" aria-label="Opere precedente e successiva" data-reveal>
       {
         precedente ? (
           <a
