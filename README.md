@@ -21,7 +21,7 @@ Altri documenti:
 | | |
 |---|---|
 | **Generatore** | [Astro](https://astro.build) 7, output 100% statico |
-| **JavaScript** | Pochi KB (ricerca, carosello, barra fissa, "torna su"). Menu e zoom funzionano anche senza JS |
+| **JavaScript** | Pochi KB per le funzioni (ricerca, carosello, barra fissa, "torna su"), più circa 57 KB gzip di animazioni (GSAP e Lenis, motore di alpacode-motion, vedi `src/motion/README.md`). Tutto funziona anche senza JS |
 | **Immagini** | Generate in fase di build in AVIF e WebP, in più formati (mai ingrandite oltre l'originale), con caricamento progressivo (lazy) |
 | **Font** | Inclusi nel sito, nessuna richiesta a Google. Nessun cookie, nessun tracciamento: non serve il banner dei cookie |
 | **Server** | nginx non privilegiato in Docker, con header di sicurezza, cache ottimizzata e redirect dai vecchi indirizzi |
@@ -108,6 +108,18 @@ Una barra rovesciata a fine riga manda a capo senza aprire un nuovo paragrafo.
 | `bozza` | no | `true` = visibile solo in sviluppo |
 
 Se un campo è sbagliato, ad esempio una categoria inesistente o un'immagine mancante, la build si ferma con un messaggio che indica il file da correggere.
+
+### Banner in cima alle pagine
+
+È configurato in `src/config/site.ts`, alla voce `annuncio`. Se `testo` è vuoto, il banner mostra da solo l'ultimo evento dell'anno più recente in `chi-sono.md` e porta agli eventi di quell'anno. Così resta aggiornato senza toccare nulla.
+
+| Campo | Uso |
+|---|---|
+| `attivo` | `false` per toglierlo |
+| `etichetta` | Testo a sinistra. Vuoto = "Novità" seguito dall'anno |
+| `testo` | Un avviso personalizzato, ad esempio una mostra in arrivo. Ammessi `*corsivo*` e `**grassetto**` |
+| `link` | Testo e indirizzo del link. Indirizzo vuoto = gli eventi in Chi sono |
+| `fino` | Data `AAAA-MM-GG` dopo la quale il banner sparisce, alla build successiva |
 
 ### Pagina "Chi sono"
 
@@ -232,6 +244,23 @@ Correzioni già fatte rispetto al vecchio sito:
   - tutto il sito usa la stessa griglia: home, schede, contatti e piè di pagina partono dallo stesso bordo. Con Elementor ogni sezione aveva i suoi margini. I dettagli sono in [docs/porting-wordpress.md](docs/porting-wordpress.md#7-il-resto-del-sito-prima-e-dopo);
   - nella scheda l'opera sta su un passe-partout crema con le sue proporzioni. Su desktop titolo, dati e "Richiedi informazioni" stanno a destra, già visibili nella prima schermata;
   - nelle griglie le opere molto verticali (oltre 1,6:1) restano intere su un passe-partout, invece di diventare alte come uno schermo e mezzo;
-  - in stampa escono solo i contenuti, senza header, menu e pulsanti.
+  - in stampa escono solo i contenuti, senza header, menu e pulsanti;
+  - **animazioni**:
+    - i titoli salgono parola per parola;
+    - le immagini si aprono come un sipario;
+    - il carosello della home diventa una galleria orizzontale guidata dallo scroll;
+    - una lente fa vedere da vicino le pennellate nella scheda;
+    - gli anni degli eventi si accendono mentre si leggono.
+
+    I dettagli sono in `src/motion/README.md`;
+  - un **loader** leggero (il nome dell'artista e la pennellata) al posto dello spinner del tema, che mostrava ancora la scritta della demo "Meet Ginevra" e tre foto da 1920px. Compare solo alla prima pagina della visita;
+  - un **banner** in cima alle pagine con l'ultimo evento;
+  - il **footer** è più ricco:
+    - frase dell'artista;
+    - invito a scrivere;
+    - ultime opere;
+    - categorie;
+    - nome a tutta larghezza;
+    - nota sul diritto d'autore delle immagini.
 - Tutti i valori (colori, font, dimensioni) sono variabili CSS in `src/styles/global.css`.
 - **Griglia**: contenitore da 1300px (quello del tema) e 12 colonne (`.grid-12`, da 769px). Nuove sezioni vanno messe lì dentro, così restano allineate al resto.

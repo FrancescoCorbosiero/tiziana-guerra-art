@@ -22,6 +22,7 @@ Dati rilevati dall'HTML pubblico di tizianaguerra.art (novembre 2026):
 | Cookie | Complianz GDPR (banner "Gestisci consenso") |
 | SEO | Rank Math (`sitemap_index.xml`, dati strutturati) |
 | Altro | Smash Balloon Instagram Feed |
+| Loader | Spinner "ginevra" del tema: la scritta segnaposto della demo, "Meet Ginevra", divisa in lettere, e tre foto da 1920px. Mai personalizzato |
 
 Widget Elementor usati dalle pagine principali:
 
@@ -101,6 +102,19 @@ PR [#2](https://github.com/FrancescoCorbosiero/tiziana-guerra-art/pull/2), unita
   - anteprime delle opere molto verticali contenute;
   - contatti e piè di pagina sulla stessa griglia.
 
+Ancora nella stessa sessione, animazioni, footer, banner e loader:
+
+- **Motore di animazioni**: copiato da alpacode-motion (commit `7b1a203`), con una mossa per sezione (`src/motion/README.md`).
+- **Footer riscritto**:
+  - frase dell'artista con le parole che si accendono;
+  - invito a scrivere;
+  - ultime opere;
+  - colonne con le categorie;
+  - nome a tutta larghezza;
+  - nota sul diritto d'autore.
+- **Banner in cima alle pagine**: mostra l'ultimo evento di Chi sono.
+- **Loader leggero**: solo alla prima pagina della visita.
+
 ## 4. Da WordPress ad Astro
 
 | WordPress | Nuovo sito |
@@ -117,6 +131,8 @@ PR [#2](https://github.com/FrancescoCorbosiero/tiziana-guerra-art/pull/2), unita
 | Rank Math | `Seo.astro` (meta, Open Graph, JSON-LD), `@astrojs/sitemap`, redirect della vecchia sitemap |
 | Ricerca di WordPress | `cerca.json` generato in build e overlay "Cerca" |
 | Instagram Feed | Link al profilo. Un widget caricherebbe contenuti di terzi e richiederebbe il consenso |
+| Spinner del tema ("Meet Ginevra" e 3 foto da 1920px) | `Loader.astro`: il nome dell'artista e la pennellata, solo CSS, circa 1 KB |
+| Animazioni del tema e di Elementor | Intro in CSS sopra la piega e motore alpacode-motion sotto (`src/motion/`) |
 
 ## 5. Registro delle decisioni
 
@@ -137,6 +153,11 @@ PR [#2](https://github.com/FrancescoCorbosiero/tiziana-guerra-art/pull/2), unita
 | D13 | **Una sola griglia per tutto il sito**: contenitore da 1300px e 12 colonne (`.grid-12`), piè di pagina compreso. L'header resta a tutta larghezza come nel tema | Con Elementor ogni sezione aveva i suoi margini: 20px, 40px, 6,6% della larghezza, contenitore. A 1920px i bordi sinistri andavano da 20 a 310px |
 | D14 | **Scheda dell'opera con passe-partout** (da tablet) e informazioni a lato (desktop) | Con la foto in alto alle dimensioni naturali, le opere verticali lasciavano metà schermo vuoto e titolo e "Richiedi informazioni" finivano sotto la piega. Ora tutto sta nella prima schermata, qualunque sia il formato |
 | D15 | **Opere mai ritagliate**. Nelle griglie, per le opere oltre 1,6:1 si usa un passe-partout | Un'opera 80 × 40 cm occupava da sola uno schermo e mezzo. Tagliarla avrebbe tradito l'opera |
+| D16 | **Animazioni con il motore di alpacode-motion** (GSAP 3.15, Lenis 1.3), copiato e adattato, non importato. Circa 57 KB gzip in più | Richiesta di Francesco. Restano le regole del catalogo: intro in CSS, niente nascosto dal CSS, riduzione del movimento rispettata. Il JavaScript resta un modulo che non blocca il primo paint |
+| D17 | **Carosello della home come galleria orizzontale guidata dallo scroll** (desktop), con le opere intere alla stessa altezza | Come camminare lungo una parete di quadri. Stage sticky in CSS invece del pin di GSAP (decisione D6 del catalogo). Su telefono resta lo scorrimento nativo |
+| D18 | **Loader solo alla prima pagina della visita**, in CSS, deciso prima del primo paint da un piccolo script esterno in `<head>` | Mostrarlo a ogni pagina avrebbe rallentato la navigazione. Lo script è esterno perché la CSP non ammette script inline. Senza JavaScript o con "riduci movimento" non compare |
+| D19 | **Banner alimentato dai contenuti**: senza testo in `site.ts` mostra l'ultimo evento dell'anno più recente di Chi sono | Resta coerente con il sito senza manutenzione. Non copre nulla, quindi non serve chiuderlo |
+| D20 | **`scrub` più leggibile**: le parole partono da opacità 0,5 (il catalogo usa 0,16) | Anche prima di essere "lette" mantengono il contrasto 3:1 richiesto da WCAG |
 
 ## 6. Chi sono: prima e dopo
 
@@ -232,6 +253,12 @@ Da verificare con l'artista, quindi **non modificati**:
   - axe con 0 violazioni su tutte le pagine (home, Chi sono, Pitture, categorie, schede verticali e orizzontali, Galleria, Contatti, privacy, 404), a 1440, 1024 e 390px;
   - screenshot a 390, 800, 1024, 1440 e 1920 px;
   - frecce, zoom e stampa della scheda provati.
+- **Sessione 2, animazioni**:
+  - axe con 0 violazioni con le animazioni attive, a 1440 e 390px;
+  - pagina completa con "riduci movimento" e senza JavaScript;
+  - stampa completa anche senza aver scorso la pagina;
+  - fotogrammi del loader;
+  - galleria orizzontale, lente, anni della timeline, ancore e overlay provati nel browser.
 - **Ogni volta**:
   - `astro check` con 0 errori;
   - build completa;
