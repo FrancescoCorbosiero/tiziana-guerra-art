@@ -23,6 +23,7 @@ chiSono:
   immagini:
     - immagine: ../../assets/pagine/ritratto.webp
       alt: "Ritratto di Tiziana Guerra"
+      posizione: "50% 30%"
     - immagine: ../../assets/pagine/biancoscuro.jpg
       alt: "Dipinto di Tiziana Guerra: due profili di volti affacciati su un tramonto"
   blocchi:

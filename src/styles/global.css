@@ -430,6 +430,8 @@ a:focus-visible .brush-inline,
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* punto da tenere al centro del ritaglio: style="--pos: 50% 30%" sul contenitore */
+  object-position: var(--pos, 50% 50%);
 }
 
 /* Zoom al passaggio del mouse */
@@ -573,4 +575,76 @@ a:focus-visible .brush-inline,
 
 .skip-link:focus {
   transform: none;
+}
+
+/* ---------- Stampa: solo i contenuti (biografia ed eventi, schede delle opere…) ---------- */
+
+@media print {
+  @page {
+    margin: 14mm 12mm;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  main {
+    padding-bottom: 0;
+  }
+
+  /* niente navigazione, overlay, pulsanti e animazioni */
+  .skip-link,
+  .site-header,
+  .sticky-header,
+  .to-top,
+  .overlay,
+  .site-footer__top,
+  .carousel__controls,
+  .cs-events__nav,
+  .cs-award__link,
+  .artwork__zoom-hint,
+  .artwork__actions,
+  .artwork__pager,
+  .related {
+    display: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .appear-zoom img {
+    transform: none !important;
+  }
+
+  /* elementi "appesi" (sticky) di nuovo nel flusso, fondi crema tolti */
+  .cs-year__anno,
+  .cs-events__poster {
+    position: static !important;
+    box-shadow: none !important;
+  }
+
+  .bg-cream,
+  .site-footer {
+    background: none !important;
+  }
+
+  /* niente interruzioni di pagina a metà di un'immagine o di una voce */
+  img,
+  figure,
+  .card,
+  .cs-voce {
+    break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  h3,
+  .cs-events__header {
+    break-after: avoid;
+  }
 }

@@ -57,6 +57,15 @@ const categorie = defineCollection({
 
 const voceEventi = z.object({ anno: z.number().int(), voci: z.array(z.string()) });
 
+/**
+ * Punto dell'immagine da tenere al centro quando viene ritagliata (CSS object-position),
+ * es. "50% 30%" = centrata in orizzontale, un po' verso l'alto: utile per i ritratti.
+ */
+const posizioneRitaglio = z
+  .string()
+  .regex(/^(\d{1,3}%|left|center|right)\s+(\d{1,3}%|top|center|bottom)$/, 'Formato: "50% 30%" oppure "center top"')
+  .optional();
+
 /** HOME — testi e immagini della homepage (src/content/home/home.md). */
 const home = defineCollection({
   loader: glob({ pattern: 'home.md', base: './src/content/home' }),
@@ -84,7 +93,9 @@ const home = defineCollection({
       /** Frasi che scorrono in grande. */
       frasi: z.array(z.string()).default([]),
       chiSono: z.object({
-        immagini: z.array(z.object({ immagine: image(), alt: z.string().default('') })).max(2),
+        immagini: z
+          .array(z.object({ immagine: image(), alt: z.string().default(''), posizione: posizioneRitaglio }))
+          .max(2),
         blocchi: z.array(z.object({ titolo: z.string(), testo: z.string() })),
         eventi: z.object({ titolo: z.string(), anni: z.array(voceEventi) }),
       }),
@@ -106,16 +117,30 @@ const pagine = defineCollection({
           testo2: z.string().optional(),
           immagine: image().optional(),
           immagineAlt: z.string().default(''),
+          immaginePosizione: posizioneRitaglio,
         })
         .optional(),
       biografia: z.object({ sopratitolo: z.string().optional(), titolo: z.string() }).optional(),
-      evidenza: z.object({ testo: z.string(), opera: reference('opere').optional() }).optional(),
+      /** Riquadro "in evidenza" (premio) con un'opera della collezione. */
+      evidenza: z
+        .object({
+          sopratitolo: z.string().optional(),
+          /** Se assente si usa il titolo dell'opera. */
+          titolo: z.string().optional(),
+          /** Testo breve: ammessi *corsivo* e **grassetto**. */
+          testo: z.string(),
+          opera: reference('opere').optional(),
+        })
+        .optional(),
       eventi: z
         .object({
           sopratitolo: z.string().optional(),
           titolo: z.string(),
           immagine: image().optional(),
           immagineAlt: z.string().default(''),
+          /** Breve didascalia sotto l'immagine (facoltativa). */
+          didascalia: z.string().optional(),
+          /** Voci: "Evento / luogo — dettagli" (vedi src/lib/eventi.ts). */
           anni: z.array(voceEventi),
         })
         .optional(),

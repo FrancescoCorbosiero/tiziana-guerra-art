@@ -1,10 +1,11 @@
 ---
-import { Picture } from 'astro:assets';
+import { Picture, getImage } from 'astro:assets';
 import { getEntry, render } from 'astro:content';
-import { inlineMarkdown } from '~/lib/inline-md';
 import { site } from '~/config/site';
 import BaseLayout from '~/layouts/BaseLayout.astro';
-import { altOpera, getOpera, urlOpera } from '~/lib/opere';
+import { ancoraAnno, dividiVoce } from '~/lib/eventi';
+import { inlineMarkdown } from '~/lib/inline-md';
+import { altOpera, getOpera, metaOpera, urlOpera, vtName } from '~/lib/opere';
 
 const pagina = await getEntry('pagine', 'chi-sono');
 if (!pagina) throw new Error('Manca src/content/pagine/chi-sono.md');
@@ -12,54 +13,88 @@ if (!pagina) throw new Error('Manca src/content/pagine/chi-sono.md');
 const { Content } = await render(pagina);
 const { titolo, descrizioneSeo, intro, biografia, evidenza, eventi } = pagina.data;
 const operaEvidenza = evidenza?.opera ? await getOpera(evidenza.opera.id) : undefined;
+const metaEvidenza = operaEvidenza ? metaOpera(operaEvidenza) : '';
+// "Evento / luogo — dettagli" → titolo + dettagli (vedi src/lib/eventi.ts)
+const anni = (eventi?.anni ?? []).map((a) => ({ anno: a.anno, voci: a.voci.map(dividiVoce) }));
+
+const description = descrizioneSeo ?? `Biografia e percorso artistico di ${site.author}.`;
+
+// Dati strutturati: pagina profilo dell'artista (schema.org ProfilePage → Person).
+const ritratto = intro?.immagine ? await getImage({ src: intro.immagine, width: 625, format: 'jpg' }) : undefined;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  url: new URL(Astro.url.pathname, Astro.site).href,
+  inLanguage: 'it-IT',
+  mainEntity: {
+    '@type': 'Person',
+    '@id': `${site.url}/#artista`,
+    name: site.author,
+    alternateName: site.pseudonimo,
+    jobTitle: 'Artista',
+    description,
+    url: site.url,
+    ...(ritratto && { image: new URL(ritratto.src, Astro.site).href }),
+    sameAs: site.social.map((s) => s.url),
+  },
+};
 ---
 
 <BaseLayout
   title="Chi sono"
-  description={descrizioneSeo ?? `Biografia e percorso artistico di ${site.author}.`}
+  description={description}
   image={intro?.immagine}
   imageAlt={intro?.immagineAlt}
   type="article"
+  jsonLd={jsonLd}
   header="minimal"
 >
-  <section class="cs-hero container-wide">
+  <section class="cs-hero container">
     <h1 class="h1 cs-hero__title reveal">{titolo}</h1>
   </section>
 
   {
     intro && (
-      <section class="cs-intro container" aria-labelledby="cs-intro-title">
-        <div class="cs-intro__text">
-          {intro.sopratitolo && <p class="tagline">{intro.sopratitolo}</p>}
-          <h2 class="h2" id="cs-intro-title">
-            {intro.titolo}
-          </h2>
-          {intro.testo && <p class="text cs-intro__p">{intro.testo}</p>}
-          {intro.testo2 && <p class="text cs-intro__p cs-intro__p--soft">{intro.testo2}</p>}
-        </div>
+      <section class="cs-intro cs-grid container" aria-labelledby="cs-intro-title">
         {intro.immagine && (
-          <figure class="cs-intro__figure cover appear-zoom">
+          <figure
+            class="cs-intro__figure cover appear-zoom"
+            style={intro.immaginePosizione ? `--pos:${intro.immaginePosizione}` : undefined}
+          >
             <Picture
               src={intro.immagine}
               alt={intro.immagineAlt}
-              widths={[400, 625, 940, 1250]}
-              sizes="(min-width: 1025px) 625px, calc(100vw - 40px)"
+              widths={[400, 525, 625]}
+              sizes="(min-width: 1440px) 525px, (min-width: 1025px) 37vw, (min-width: 769px) 46vw, (min-width: 600px) 520px, calc(100vw - 40px)"
               formats={['avif', 'webp']}
               fallbackFormat="jpg"
               priority
             />
           </figure>
         )}
+        <div class="cs-intro__text">
+          {intro.sopratitolo && <p class="tagline">{intro.sopratitolo}</p>}
+          <h2 class="h2 cs-intro__title" id="cs-intro-title">
+            {intro.titolo}
+          </h2>
+          {intro.testo && <p class="cs-intro__lead">{intro.testo}</p>}
+          {intro.testo2 && <p class="text cs-intro__p">{intro.testo2}</p>}
+        </div>
       </section>
     )
   }
 
-  <section class="cs-bio container" aria-labelledby="cs-bio-title">
+  <section
+    class="cs-bio cs-grid container"
+    id="biografia"
+    aria-labelledby={biografia ? 'cs-bio-title' : undefined}
+    aria-label={biografia ? undefined : 'Biografia'}
+  >
     {
       biografia && (
-        <header class="cs-center">
-          {biografia.sopratitolo && <p class="tagline cs-upper">{biografia.sopratitolo}</p>}
-          <h2 class="h2" id="cs-bio-title">
+        <header class="cs-bio__header">
+          {biografia.sopratitolo && <p class="tagline">{biografia.sopratitolo}</p>}
+          <h2 class="h2 cs-bio__title" id="cs-bio-title">
             {biografia.titolo}
           </h2>
         </header>
@@ -72,59 +107,104 @@ const operaEvidenza = evidenza?.opera ? await getOpera(evidenza.opera.id) : unde
 
   {
     evidenza && (
-      <section class="cs-highlight container" aria-label="In evidenza">
-        <p class="text cs-highlight__text">{evidenza.testo}</p>
-        {operaEvidenza && (
-          <a class="cs-highlight__image appear-zoom" href={urlOpera(operaEvidenza)}>
-            <Picture
-              src={operaEvidenza.data.immagine}
-              alt={altOpera(operaEvidenza)}
-              widths={[480, 760, 1000, 1400]}
-              sizes="(min-width: 1100px) 1000px, calc(100vw - 40px)"
-              formats={['avif', 'webp']}
-              fallbackFormat="jpg"
-              loading="lazy"
-              decoding="async"
-            />
-          </a>
-        )}
+      <section class="cs-award bg-cream" aria-labelledby="cs-award-title">
+        <div class="cs-award__inner cs-grid container">
+          {operaEvidenza && (
+            <a
+              class="cs-award__image appear-zoom"
+              href={urlOpera(operaEvidenza)}
+              style={`--vt:${vtName(operaEvidenza)}`}
+              tabindex="-1"
+              aria-hidden="true"
+            >
+              <Picture
+                src={operaEvidenza.data.immagine}
+                alt={altOpera(operaEvidenza)}
+                widths={[480, 640, 820, 1000]}
+                sizes="(min-width: 1440px) 625px, (min-width: 769px) 45vw, calc(100vw - 40px)"
+                formats={['avif', 'webp']}
+                fallbackFormat="jpg"
+                loading="lazy"
+                decoding="async"
+              />
+            </a>
+          )}
+          <div class="cs-award__text">
+            {evidenza.sopratitolo && <p class="tagline">{evidenza.sopratitolo}</p>}
+            <h2 class="h2 cs-award__title" id="cs-award-title">
+              {evidenza.titolo ?? operaEvidenza?.data.titolo ?? 'In evidenza'}
+            </h2>
+            <p class="text cs-award__p" set:html={inlineMarkdown(evidenza.testo)} />
+            {metaEvidenza && <p class="cs-award__meta">{metaEvidenza}</p>}
+            {operaEvidenza && (
+              <a class="btn-text cs-award__link" href={urlOpera(operaEvidenza)}>
+                <span class="brush brush--on">Scopri l'opera</span>
+                <span class="sr-only">: {operaEvidenza.data.titolo}</span>
+              </a>
+            )}
+          </div>
+        </div>
       </section>
     )
   }
 
   {
     eventi && (
-      <section class="cs-events container" aria-labelledby="cs-events-title">
-        <header class="cs-center">
+      <section class="cs-events cs-grid container" id="eventi" aria-labelledby="cs-events-title">
+        <header class="cs-events__header">
           {eventi.sopratitolo && <p class="tagline">{eventi.sopratitolo}</p>}
-          <h2 class="h2" id="cs-events-title">
+          <h2 class="h2 cs-events__title" id="cs-events-title">
             {eventi.titolo}
           </h2>
-        </header>
-        <div class="cs-events__list">
-          {eventi.anni.map((a) => (
-            <div class="cs-events__year">
-              <h3 class="cs-events__anno">{a.anno}</h3>
+          {anni.length > 1 && (
+            <nav class="cs-events__nav" aria-label="Eventi per anno">
               <ul role="list">
-                {a.voci.map((v) => (
-                  <li set:html={inlineMarkdown(v)} />
+                {anni.map((a) => (
+                  <li>
+                    <a href={`#${ancoraAnno(a.anno)}`}>
+                      <span class="brush">{a.anno}</span>
+                    </a>
+                  </li>
                 ))}
               </ul>
-            </div>
+            </nav>
+          )}
+        </header>
+
+        <ol class="cs-timeline" role="list">
+          {anni.map((a) => (
+            <li class="cs-year" id={ancoraAnno(a.anno)}>
+              <h3 class="cs-year__anno">{a.anno}</h3>
+              <ul class="cs-year__voci" role="list">
+                {a.voci.map((v) => (
+                  <li class="cs-voce">
+                    <span class="cs-voce__titolo" set:html={inlineMarkdown(v.titolo)} />
+                    {v.dettaglio && (
+                      <>
+                        <span class="sr-only"> — </span>
+                        <span class="cs-voce__dettaglio" set:html={inlineMarkdown(v.dettaglio)} />
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </li>
           ))}
-        </div>
+        </ol>
+
         {eventi.immagine && (
-          <figure class="cs-events__image">
+          <figure class="cs-events__poster">
             <Picture
               src={eventi.immagine}
               alt={eventi.immagineAlt}
-              widths={[400, 570, 860, 1080]}
-              sizes="(min-width: 640px) 570px, calc(100vw - 40px)"
+              widths={[320, 480, 640, 900]}
+              sizes="(min-width: 1440px) 300px, (min-width: 1025px) 22vw, (min-width: 520px) 480px, calc(100vw - 40px)"
               formats={['avif', 'webp']}
               fallbackFormat="jpg"
               loading="lazy"
               decoding="async"
             />
+            {eventi.didascalia && <figcaption class="cs-events__caption">{eventi.didascalia}</figcaption>}
           </figure>
         )}
       </section>
@@ -133,6 +213,24 @@ const operaEvidenza = evidenza?.opera ? await getOpera(evidenza.opera.id) : unde
 </BaseLayout>
 
 <style>
+  /*
+   * Impaginazione su una griglia di 12 colonne (da 769px) allineata al contenitore da 1300px
+   * del tema: titoli, testi e immagini partono tutti dallo stesso bordo sinistro.
+   * Su telefono i blocchi si impilano.
+   */
+  .cs-grid {
+    --cs-gap: clamp(20px, 2.4vw, 32px);
+  }
+
+  @media (min-width: 769px) {
+    .cs-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--cs-gap);
+    }
+  }
+
+  /* ---------- Titolo ---------- */
   .cs-hero {
     padding-top: clamp(16px, 2vw, 30px);
   }
@@ -142,126 +240,372 @@ const operaEvidenza = evidenza?.opera ? await getOpera(evidenza.opera.id) : unde
     font-size: clamp(2.25rem, 1.2rem + 3.2vw, 4.375rem); /* 70px */
   }
 
+  /* ---------- Angelart: ritratto + presentazione ---------- */
   .cs-intro {
     display: grid;
     gap: 40px;
-    align-items: start;
-    margin-top: clamp(56px, 7vw, 140px);
+    margin-top: clamp(40px, 5vw, 80px);
   }
 
-  .cs-intro__text {
-    max-width: 460px;
-  }
-
-  .cs-intro__text .h2 {
-    margin-top: 11px;
-  }
-
-  .cs-intro__p {
-    margin: 30px 0 0;
-  }
-
-  .cs-intro__p--soft {
-    color: var(--c-muted);
-  }
-
+  /* Ritratto verticale 4:5 (l'originale è 625 × 1024): si vede tutto il viso, capelli compresi.
+     Il punto di fuoco del ritaglio è nel contenuto (intro.immaginePosizione). */
   .cs-intro__figure {
+    width: min(100%, 520px);
     margin: 0;
-    aspect-ratio: 625 / 650;
+    aspect-ratio: 4 / 5;
   }
 
-  @media (min-width: 1025px) {
-    .cs-intro {
-      grid-template-columns: 1fr 1fr;
-      gap: 0;
-      padding-inline: 10px;
-    }
-
-    .cs-intro__figure {
-      justify-self: end;
-      width: min(100%, 625px);
-    }
-  }
-
-  .cs-center {
-    text-align: center;
-  }
-
-  .cs-center .h2 {
+  .cs-intro__title {
     margin-top: 11px;
   }
 
-  .cs-upper {
-    text-transform: uppercase;
-  }
-
-  .cs-bio {
-    margin-top: clamp(80px, 9vw, 150px);
-  }
-
-  .cs-bio__text {
-    max-width: 1140px;
-    margin: 32px auto 0;
-  }
-
-  .cs-bio__text :global(p) {
-    margin: 0 0 10px;
-  }
-
-  .cs-highlight {
-    margin-top: clamp(48px, 5vw, 70px);
-    text-align: center;
-  }
-
-  .cs-highlight__text {
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-
-  .cs-highlight__image {
-    display: block;
-    width: min(100%, 1000px);
-    margin: 20px auto 0;
-  }
-
-  .cs-highlight__image :global(img) {
-    width: 100%;
-  }
-
-  .cs-events {
-    margin-top: clamp(80px, 9vw, 150px);
-  }
-
-  .cs-events__list {
-    display: grid;
-    gap: 26px;
-    max-width: 1140px;
-    margin: 32px auto 0;
-    text-align: center;
-  }
-
-  .cs-events__anno {
-    margin: 0 0 4px;
-    font-family: var(--f-body);
-    font-weight: 500;
-    font-size: inherit;
+  /* La frase in prima persona diventa la "voce" della pagina, nel serif del tema */
+  .cs-intro__lead {
+    margin: clamp(22px, 2.4vw, 34px) 0 0;
+    max-width: 30ch;
+    font-family: var(--f-serif);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 1.1rem + 1.25vw, 2.375rem); /* 38px */
+    line-height: 1.16;
     color: var(--c-text);
   }
 
-  .cs-events__list li {
-    color: var(--c-body);
+  .cs-intro__p {
+    max-width: 44ch;
+    margin: clamp(20px, 2vw, 30px) 0 0;
+    color: var(--c-muted);
   }
 
-  .cs-events__list li :global(em) {
+  @media (min-width: 769px) {
+    .cs-intro {
+      gap: 0 var(--cs-gap);
+      align-items: center;
+    }
+
+    .cs-intro__figure {
+      grid-column: 7 / span 6;
+      grid-row: 1;
+      width: 100%;
+    }
+
+    .cs-intro__text {
+      grid-column: 1 / span 6;
+      grid-row: 1;
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .cs-intro__figure {
+      grid-column: 8 / span 5;
+    }
+  }
+
+  /* ---------- Biografia: titolo a sinistra, testo a misura di lettura a destra ---------- */
+  .cs-bio {
+    margin-top: clamp(88px, 10vw, 170px);
+  }
+
+  .cs-bio__title {
+    margin-top: 11px;
+  }
+
+  .cs-bio__text {
+    max-width: 64ch;
+    margin-top: 32px;
+  }
+
+  .cs-bio__text :global(p) {
+    margin: 0 0 0.9em;
+  }
+
+  .cs-bio__text :global(a) {
+    text-decoration-color: var(--c-accent);
+    text-decoration-thickness: 2px;
+  }
+
+  /* Capolettera nel serif del tema, dove il browser lo supporta (altrimenti testo normale) */
+  @supports (initial-letter: 3) or (-webkit-initial-letter: 3) {
+    .cs-bio__text > :global(p:first-child::first-letter) {
+      -webkit-initial-letter: 3;
+      initial-letter: 3;
+      margin-right: 0.14em;
+      font-family: var(--f-serif);
+      font-weight: 400;
+      color: var(--c-text);
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .cs-bio__header {
+      grid-column: 1 / span 5;
+    }
+
+    .cs-bio__text {
+      grid-column: 7 / span 6;
+      margin-top: 0;
+      padding-top: 6px;
+    }
+  }
+
+  /* tablet: titolo sopra, testo su una colonna di lettura */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .cs-bio__header,
+    .cs-bio__text {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* ---------- Premio in evidenza: fascia crema, opera e testo affiancati ---------- */
+  .cs-award {
+    margin-top: clamp(88px, 10vw, 170px);
+    padding-block: clamp(64px, 8vw, 130px);
+  }
+
+  .cs-award__inner {
+    display: grid;
+    gap: 36px;
+  }
+
+  .cs-award__image {
+    display: block;
+  }
+
+  .cs-award__image :global(img) {
+    width: 100%;
+  }
+
+  /* Passando sull'opera (o su "Scopri l'opera") l'immagine "vola" nella scheda (View Transitions) */
+  .cs-award:has(a:is(:hover, :focus-visible)) .cs-award__image :global(img) {
+    view-transition-name: var(--vt);
+  }
+
+  .cs-award__title {
+    margin-top: 11px;
+  }
+
+  .cs-award__p {
+    max-width: 44ch;
+    margin: clamp(20px, 2vw, 28px) 0 0;
+  }
+
+  .cs-award__p :global(em) {
     font-style: italic;
   }
 
-  .cs-events__image {
-    width: min(100%, 570px);
-    margin: 40px auto 0;
+  .cs-award__meta {
+    margin: 14px 0 0;
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: var(--fs-num);
+    line-height: 1.1;
+    color: var(--c-muted);
   }
 
-  .cs-events__image :global(img) {
+  .cs-award__link {
+    margin-top: 30px;
+  }
+
+  @media (min-width: 769px) {
+    .cs-award__inner {
+      gap: 0 var(--cs-gap);
+      align-items: center;
+    }
+
+    .cs-award__image {
+      grid-column: 1 / span 6;
+    }
+
+    .cs-award__text {
+      grid-column: 7 / span 6;
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .cs-award__text {
+      grid-column: 8 / span 5;
+    }
+  }
+
+  /* ---------- Eventi: timeline per anno, locandina a lato ---------- */
+  .cs-events {
+    display: grid;
+    gap: 0;
+    margin-top: clamp(88px, 10vw, 170px);
+  }
+
+  .cs-events__title {
+    margin-top: 11px;
+  }
+
+  .cs-events__nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px clamp(22px, 2.6vw, 36px);
+    margin-top: clamp(24px, 2.6vw, 36px);
+  }
+
+  .cs-events__nav a {
+    display: inline-block;
+    padding-block: 6px;
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: var(--fs-nav);
+    line-height: 0.881;
+    letter-spacing: 0.02em;
+    color: var(--c-main);
+  }
+
+  .cs-timeline {
+    margin: clamp(36px, 4.4vw, 64px) 0 0;
+  }
+
+  .cs-year {
+    border-top: 1px solid var(--c-text);
+    padding-top: 14px;
+  }
+
+  .cs-year + .cs-year {
+    margin-top: clamp(44px, 4.6vw, 72px);
+  }
+
+  .cs-year__anno {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: var(--fs-h3);
+    line-height: 1;
+    color: var(--c-text);
+  }
+
+  .cs-year__voci {
+    margin-top: 12px;
+    font-size: clamp(1rem, 0.94rem + 0.25vw, 1.125rem); /* 18px */
+    line-height: 1.32;
+  }
+
+  .cs-voce {
+    padding-block: 12px;
+    border-top: 1px solid var(--c-line);
+  }
+
+  .cs-voce:first-child {
+    border-top: 0;
+  }
+
+  .cs-voce__titolo {
+    display: block;
+    font-weight: 400;
+    color: var(--c-text);
+  }
+
+  .cs-voce__dettaglio {
+    display: block;
+    margin-top: 3px;
+    font-size: 0.89em;
+    color: var(--c-muted);
+  }
+
+  .cs-voce :global(em) {
+    font-style: italic;
+  }
+
+  .cs-events__poster {
+    width: min(100%, 480px);
+    margin: clamp(56px, 6vw, 80px) auto 0;
+  }
+
+  .cs-events__poster :global(img) {
     width: 100%;
+  }
+
+  .cs-events__caption {
+    margin-top: 14px;
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 1.125rem;
+    line-height: 1.25;
+    color: var(--c-muted);
+  }
+
+  /* Telefono: l'anno resta visibile sotto l'header mentre si scorre la sua lista */
+  @media (max-width: 768px) {
+    .cs-year {
+      padding-top: 4px;
+    }
+
+    .cs-year__anno {
+      position: sticky;
+      top: var(--header-h);
+      z-index: 1;
+      padding-block: 10px 12px;
+      background: var(--c-bg);
+      box-shadow: 0 1px 0 var(--c-line);
+    }
+
+    .cs-year__voci {
+      margin-top: 0;
+    }
+  }
+
+  /* Da tablet: anno a sinistra, che resta in vista accanto alla sua lista */
+  @media (min-width: 769px) {
+    .cs-events {
+      gap: 0 var(--cs-gap);
+      align-items: start;
+    }
+
+    /* selettori espliciti (non "> *"): con lo scoping di Astro avrebbero più specificità
+       delle regole desktop qui sotto */
+    .cs-events__header,
+    .cs-timeline,
+    .cs-events__poster {
+      grid-column: 1 / -1;
+    }
+
+    .cs-year {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 6fr);
+      column-gap: var(--cs-gap);
+      padding-top: 20px;
+    }
+
+    .cs-year__anno {
+      position: sticky;
+      top: calc(var(--sticky-h) + 28px);
+      align-self: start;
+    }
+
+    .cs-year__voci {
+      margin-top: 0;
+    }
+
+    .cs-voce:first-child {
+      padding-top: 4px;
+    }
+  }
+
+  /* Desktop: timeline su 8 colonne, locandina fissa a lato */
+  @media (min-width: 1025px) {
+    .cs-timeline {
+      grid-column: 1 / span 8;
+      grid-row: 2;
+    }
+
+    .cs-events__poster {
+      grid-column: 10 / span 3;
+      grid-row: 2;
+      position: sticky;
+      top: calc(var(--sticky-h) + 28px);
+      width: 100%;
+      margin: clamp(36px, 4.4vw, 64px) 0 0;
+    }
+
+    /* su schermi bassi la locandina si riduce per restare tutta visibile */
+    .cs-events__poster :global(img) {
+      width: auto;
+      max-width: 100%;
+      max-height: calc(100svh - var(--sticky-h) - 160px);
+    }
   }
 </style>
