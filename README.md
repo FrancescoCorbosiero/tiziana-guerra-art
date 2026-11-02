@@ -13,6 +13,11 @@ I contenuti (22 opere, home, biografia, eventi) sono stati importati dal sito Wo
 
 Non ci sono PHP, database, CMS né plugin da aggiornare. Il risultato della build è una cartella di file HTML, CSS e immagini servita da nginx.
 
+Altri documenti:
+
+- [CLAUDE.md](CLAUDE.md): convenzioni del codice, insidie note e come verificare le modifiche. È il contesto per chi sviluppa, persone o assistenti AI.
+- [docs/porting-wordpress.md](docs/porting-wordpress.md): com'era il sito WordPress, la cronologia del porting e le decisioni prese, con le motivazioni.
+
 | | |
 |---|---|
 | **Generatore** | [Astro](https://astro.build) 7, output 100% statico |
@@ -38,7 +43,7 @@ npm run check     # controllo tipi e contenuti
 | Indirizzo | Contenuto | Vecchio indirizzo |
 |---|---|---|
 | `/` | "Vita e rinascita", introduzione, carosello delle opere verticali, frasi scorrevoli, chi sono, premi | `/` |
-| `/chi-sono/` | Angelart, biografia, Chimera, elenco eventi | `/chi-sono/` |
+| `/chi-sono/` | Angelart (ritratto e presentazione), biografia, premio con *Chimera*, eventi anno per anno (`#eventi-2025`…) | `/chi-sono/` |
 | `/pitture/` | Tutte le opere su due colonne, filtro per categoria | `/portfolio-tag/pitture/` |
 | `/pitture/categoria/<categoria>/` | Acrilico, Spatola, Caffè | `/portfolio-category/…` |
 | `/pitture/<opera>/` | Scheda: foto con zoom, titolo, descrizione, dimensioni, anno, tecnica, categoria, "Richiedi informazioni" | `/portfolio-item/<opera>/` |
@@ -55,15 +60,16 @@ Tutti i contenuti sono file di testo in `src/content/`.
 ```
 src/content/
 ├── opere/
-│   └── lago-fatato/            ← una cartella per opera (il nome diventa l'indirizzo)
-│       ├── index.md            ← scheda
-│       └── lago-fatato.webp    ← fotografia
-├── categorie.yaml              ← Acrilico, Spatola, Caffè
-├── home/home.md                ← testi e immagini della homepage
-└── pagine/chi-sono.md          ← biografia ed eventi
-├── pagine/privacy-policy.md     ← informativa privacy
-src/config/site.ts              ← email, Instagram, motto, voci di menu
-server/contatti/                ← micro-servizio del modulo di contatto (AWS SES)
+│   └── lago-fatato/              ← una cartella per opera (il nome diventa l'indirizzo)
+│       ├── index.md              ← scheda
+│       └── lago-fatato.webp      ← fotografia
+├── categorie.yaml                ← Acrilico, Spatola, Caffè
+├── home/home.md                  ← testi e immagini della homepage
+└── pagine/
+    ├── chi-sono.md               ← presentazione, biografia, premio in evidenza, eventi
+    └── privacy-policy.md         ← informativa privacy
+src/config/site.ts                ← email, Instagram, motto, voci di menu
+server/contatti/                  ← micro-servizio del modulo di contatto (AWS SES)
 ```
 
 ### Aggiungere un'opera
@@ -102,6 +108,32 @@ Una barra rovesciata a fine riga manda a capo senza aprire un nuovo paragrafo.
 | `bozza` | no | `true` = visibile solo in sviluppo |
 
 Se un campo è sbagliato, ad esempio una categoria inesistente o un'immagine mancante, la build si ferma con un messaggio che indica il file da correggere.
+
+### Pagina "Chi sono"
+
+Il file è `src/content/pagine/chi-sono.md`. Il testo sotto il frontmatter è la biografia, in Markdown. Nel frontmatter:
+
+| Campo | Contenuto |
+|---|---|
+| `titolo` | Frase grande in cima alla pagina |
+| `intro` | Ritratto e presentazione. Sottocampi: `sopratitolo`, `titolo` (Angelart), `testo` (la frase in evidenza, in grande), `testo2`, `immagine`, `immagineAlt`, `immaginePosizione` |
+| `biografia` | `sopratitolo` e `titolo` della biografia |
+| `evidenza` | Premio in evidenza. Sottocampi: `sopratitolo`, `titolo` (se manca si usa il titolo dell'opera), `testo` (ammessi `*corsivo*` e `**grassetto**`), `opera` (nome della cartella dell'opera) |
+| `eventi` | `sopratitolo`, `titolo`, la locandina (`immagine`, `immagineAlt`, `didascalia`) e l'elenco `anni` |
+
+**Eventi.** Ogni voce occupa una riga, nella forma `Evento / luogo — dettagli`:
+
+```yaml
+    - anno: 2026
+      voci:
+        - "Premio Amare con l’Arte / Castello Orsini, Castel Madama, Roma — premio speciale sensibilità artistica"
+        - "Mostra Personale *“Trame di Colore”* / Palazzo Valentini, Roma — 27 marzo"
+        - "Artisti 26"
+```
+
+Il testo prima della prima lineetta lunga (—) è il titolo della voce. Il resto compare sotto, più piccolo. Se non c'è nessuna lineetta, la voce ha solo il titolo.
+
+**Punto di fuoco dei ritagli.** `immaginePosizione` in Chi sono e `posizione` nelle immagini di `chiSono` in home indicano quale punto della foto tenere al centro quando la foto viene ritagliata. Il formato è "orizzontale verticale": ad esempio `"50% 30%"` centra in orizzontale e sposta il ritaglio un po' verso l'alto, così nei ritratti il viso non viene tagliato.
 
 ## Deploy sul VPS (Docker)
 
@@ -162,6 +194,10 @@ Test del servizio: `cd server/contatti && npm install && npm test`.
 
 - [ ] **Foto a bassa risoluzione.** Alcuni originali caricati su WordPress sono piccoli: *La notte non era sola* (503 px), *Le radici della foresta* (563 px), *Soubrette* (630 px), *Il riflesso della natura* (732 px) e la foto della premiazione in home (331 px). Se esistono foto migliori, basta sostituire il file nella cartella.
 - [ ] **Dati mancanti.** L'anno è indicato solo per 9 opere su 22, la tecnica per 14. Si possono completare nei file `index.md`.
+- [ ] **Nomi da verificare con l'artista** (in `chi-sono.md`, non modificati):
+  - "Josè Von Roy Dalì": di solito si trova scritto "Van Roy";
+  - "Galleria Le Thuiller, Parigi": forse la Galerie Thuillier;
+  - "Palazzo Ivanchic, Venezia": forse Palazzo Ivancich.
 - [ ] **Privacy policy.** La bozza in `src/content/pagine/privacy-policy.md` descrive il funzionamento reale del sito:
   - nessun cookie;
   - log anonimizzati;
@@ -174,7 +210,8 @@ Correzioni già fatte rispetto al vecchio sito:
 - "Soubtrette" → "Soubrette" (l'indirizzo della pagina resta `/pitture/soubtrette/`);
 - "A volta" → "A volte";
 - "Un opera" → "Un’opera";
-- il cognome della curatrice è uniformato in "Vetturini", come sulla locandina del premio.
+- il cognome della curatrice è uniformato in "Vetturini", come sulla locandina del premio;
+- "con L’OPERA : CHIMERA" → "con l’opera *Chimera*" e "Bac edition" → "BAC Edition" (premio in evidenza in Chi sono).
 
 ## Note sullo stile
 
@@ -189,5 +226,8 @@ Correzioni già fatte rispetto al vecchio sito:
 - **Differenze volute**:
   - la Galleria è su 3 colonne invece di 2, come chiedevano le direttive iniziali;
   - la pagina Pitture ha un filtro per categoria;
-  - la scheda ha il pulsante "Richiedi informazioni".
+  - la scheda ha il pulsante "Richiedi informazioni";
+  - nella scheda, le frecce ← → della tastiera passano all'opera precedente o successiva;
+  - la pagina Chi sono è stata reimpaginata su una griglia a 12 colonne con proporzioni corrette. L'impaginazione Elementor originale aveva testi su righe troppo lunghe, il ritratto tagliato ed eventi centrati difficili da leggere. I dettagli sono in [docs/porting-wordpress.md](docs/porting-wordpress.md#6-chi-sono-prima-e-dopo);
+  - in stampa escono solo i contenuti, senza header, menu e pulsanti.
 - Tutti i valori (colori, font, dimensioni) sono variabili CSS in `src/styles/global.css`.
