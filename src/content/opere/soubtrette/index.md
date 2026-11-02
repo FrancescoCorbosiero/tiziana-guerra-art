@@ -1,5 +1,5 @@
 ---
-titolo: "Soubtrette"
+titolo: "Soubrette"
 immagine: ./soubtrette.jpg
 categorie: [acrilico, spatola]
 tecnica: "Acrilico e Spatola"

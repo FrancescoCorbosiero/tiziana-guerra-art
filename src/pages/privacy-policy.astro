@@ -1,0 +1,59 @@
+---
+import { getEntry, render } from 'astro:content';
+import PageTitle from '~/components/PageTitle.astro';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+
+const pagina = await getEntry('pagine', 'privacy-policy');
+if (!pagina) throw new Error('Manca src/content/pagine/privacy-policy.md');
+const { Content } = await render(pagina);
+---
+
+<BaseLayout title={pagina.data.titolo} description={pagina.data.descrizioneSeo}>
+  <PageTitle title={pagina.data.titolo} />
+  <article class="container legal">
+    <div class="prose text legal__text">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .legal {
+    padding-top: clamp(48px, 6vw, 96px);
+  }
+
+  .legal__text {
+    max-width: 820px;
+  }
+
+  .legal__text :global(h2) {
+    margin: 2.2em 0 0.6em;
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: var(--fs-h5);
+    line-height: 1.1;
+    text-transform: uppercase;
+    color: var(--c-text);
+  }
+
+  .legal__text :global(h3) {
+    margin: 1.6em 0 0.5em;
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: var(--fs-h6);
+    text-transform: uppercase;
+    color: var(--c-text);
+  }
+
+  .legal__text :global(ul) {
+    padding-left: 1.2em;
+  }
+
+  .legal__text :global(li) {
+    margin-bottom: 0.5em;
+  }
+
+  .legal__text :global(p) {
+    margin: 0 0 1em;
+  }
+</style>

@@ -10,4 +10,4 @@ ordine: 19
 
 Ogni passo richiede equilibrio.\
 Ogni passo è una scelta.\
-A volta il ponte è sottile ma è l’unica strada
+A volte il ponte è sottile ma è l’unica strada

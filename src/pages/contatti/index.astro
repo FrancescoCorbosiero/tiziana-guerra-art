@@ -1,5 +1,6 @@
 ---
 import { Picture } from 'astro:assets';
+import ContactForm from '~/components/ContactForm.astro';
 import PageTitle from '~/components/PageTitle.astro';
 import { site } from '~/config/site';
 import BaseLayout from '~/layouts/BaseLayout.astro';
@@ -23,7 +24,10 @@ const recapiti = candidati.filter((r): r is Recapito => Boolean(r));
   <section class="contacts container">
     <div class="contacts__main">
       <h2 class="h3 contacts__title">Per informazioni e richieste, inviami un messaggio</h2>
+      {site.contactFormEndpoint && <ContactForm action={site.contactFormEndpoint} />}
+    </div>
 
+    <aside class="contacts__aside" aria-label="Recapiti">
       <dl class="contacts__list">
         {
           recapiti.map((r) => (
@@ -42,50 +46,19 @@ const recapiti = candidati.filter((r): r is Recapito => Boolean(r));
           ))
         }
       </dl>
-
-      {
-        site.contactFormEndpoint && (
-          <form class="contact-form" action={site.contactFormEndpoint} method="POST">
-            <label>
-              <span class="h6">Nome</span>
-              <input name="nome" type="text" autocomplete="name" required />
-            </label>
-            <label>
-              <span class="h6">Email</span>
-              <input name="email" type="email" autocomplete="email" required />
-            </label>
-            <label>
-              <span class="h6">Oggetto</span>
-              <input name="oggetto" type="text" />
-            </label>
-            <label>
-              <span class="h6">Messaggio</span>
-              <textarea name="messaggio" rows="6" required />
-            </label>
-            <label class="contact-form__privacy">
-              <input type="checkbox" name="privacy" required />
-              <span>Acconsento al trattamento dei dati per ricevere una risposta.</span>
-            </label>
-            <button class="btn" type="submit">
-              Invia
-            </button>
-          </form>
-        )
-      }
-    </div>
-
     <figure class="contacts__figure">
       <Picture
         src={torreGuida}
         alt="La torre guida — dipinto di Tiziana Guerra"
         widths={[480, 720, 1024]}
-        sizes="(min-width: 1025px) 520px, 90vw"
+        sizes="(min-width: 1025px) 420px, 90vw"
         formats={['avif', 'webp']}
         fallbackFormat="jpg"
         loading="lazy"
         decoding="async"
       />
     </figure>
+    </aside>
   </section>
 </BaseLayout>
 
@@ -127,49 +100,23 @@ const recapiti = candidati.filter((r): r is Recapito => Boolean(r));
     width: 100%;
   }
 
-  .contact-form {
+  .contacts__aside {
     display: grid;
-    gap: 22px;
-    margin-top: 56px;
-    max-width: 640px;
+    gap: 40px;
+    align-content: start;
   }
 
-  .contact-form label {
-    display: grid;
-    gap: 8px;
+  .contacts__aside .contacts__list {
+    margin-top: 0;
   }
 
-  .contact-form input:not([type='checkbox']),
-  .contact-form textarea {
-    width: 100%;
-    padding: 10px 0;
-    border: 0;
-    border-bottom: 1px solid var(--c-text);
-    border-radius: 0;
-    background: transparent;
-    font: inherit;
-    color: var(--c-text);
-  }
-
-  .contact-form input:focus,
-  .contact-form textarea:focus {
-    outline: none;
-    border-bottom: 2px solid var(--c-accent);
-  }
-
-  .contact-form__privacy {
-    grid-template-columns: auto 1fr;
-    align-items: start;
-    font-size: 1rem;
-  }
-
-  .contact-form .btn {
-    justify-self: start;
+  .contacts__aside .contacts__value {
+    font-size: var(--fs-h5);
   }
 
   @media (min-width: 1025px) {
     .contacts {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
       gap: 80px;
       align-items: start;
     }

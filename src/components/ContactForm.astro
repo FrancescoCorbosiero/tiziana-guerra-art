@@ -1,0 +1,234 @@
+---
+import { site } from '~/config/site';
+
+interface Props {
+  action: string;
+}
+const { action } = Astro.props;
+---
+
+<!--
+  Modulo di contatto. Senza JavaScript viene inviato normalmente (il servizio risponde con la
+  pagina di conferma); con JavaScript l'invio avviene senza lasciare la pagina.
+-->
+<form class="contact-form" id="modulo" action={action} method="POST" novalidate data-contact-form>
+  <div class="contact-form__row">
+    <label class="field">
+      <span class="h6">Nome</span>
+      <input name="nome" type="text" autocomplete="name" maxlength="100" required />
+      <span class="field__error" data-error="nome"></span>
+    </label>
+    <label class="field">
+      <span class="h6">Email</span>
+      <input name="email" type="email" autocomplete="email" maxlength="254" required />
+      <span class="field__error" data-error="email"></span>
+    </label>
+  </div>
+  <label class="field">
+    <span class="h6">Oggetto</span>
+    <input name="oggetto" type="text" maxlength="150" data-oggetto />
+    <span class="field__error" data-error="oggetto"></span>
+  </label>
+  <label class="field">
+    <span class="h6">Messaggio</span>
+    <textarea name="messaggio" rows="6" minlength="10" maxlength="5000" required></textarea>
+    <span class="field__error" data-error="messaggio"></span>
+  </label>
+
+  <!-- Campo trappola per i bot: nascosto alle persone e agli screen reader -->
+  <div class="contact-form__trap" aria-hidden="true">
+    <label>Sito web <input name="sito_web" type="text" tabindex="-1" autocomplete="off" /></label>
+  </div>
+
+  <label class="contact-form__privacy">
+    <input type="checkbox" name="privacy" value="on" required />
+    <span>
+      Ho letto l'<a href={site.privacyUrl} target="_blank">informativa sulla privacy</a> e acconsento al trattamento
+      dei miei dati per ricevere una risposta.
+    </span>
+  </label>
+  <span class="field__error" data-error="privacy"></span>
+
+  <div class="contact-form__actions">
+    <button class="btn-text contact-form__submit" type="submit">
+      <span class="brush brush--on">Invia</span>
+    </button>
+    <p class="contact-form__status" role="status" aria-live="polite" data-status></p>
+  </div>
+</form>
+
+<style>
+  .contact-form {
+    display: grid;
+    gap: 28px;
+    margin-top: clamp(32px, 4vw, 48px);
+  }
+
+  .contact-form__row {
+    display: grid;
+    gap: 28px;
+  }
+
+  @media (min-width: 700px) {
+    .contact-form__row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .field {
+    display: grid;
+    gap: 6px;
+  }
+
+  /* Campi del tema: solo una linea sotto */
+  .field input,
+  .field textarea {
+    width: 100%;
+    padding: 10px 0;
+    border: 0;
+    border-bottom: 1px solid var(--c-text);
+    border-radius: 0;
+    background: transparent;
+    font: inherit;
+    color: var(--c-text);
+  }
+
+  .field textarea {
+    min-height: 150px;
+    padding: 12px;
+    border: 1px solid var(--c-text);
+    resize: vertical;
+  }
+
+  .field input:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--c-accent);
+    box-shadow: 0 1px 0 0 var(--c-accent);
+  }
+
+  .field [aria-invalid='true'] {
+    border-color: #b3261e;
+  }
+
+  .field__error {
+    min-height: 0;
+    font-size: 0.9375rem;
+    color: #b3261e;
+  }
+
+  .field__error:empty {
+    display: none;
+  }
+
+  .contact-form__trap {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .contact-form__privacy {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: start;
+    font-size: 1rem;
+  }
+
+  .contact-form__privacy input {
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+    accent-color: var(--c-text);
+  }
+
+  .contact-form__privacy a {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .contact-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 32px;
+  }
+
+  .contact-form__submit[disabled] {
+    opacity: 0.5;
+    cursor: wait;
+  }
+
+  .contact-form__status {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .contact-form__status.is-ok {
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-size: var(--fs-num);
+    color: var(--c-text);
+  }
+
+  .contact-form__status.is-error {
+    color: #b3261e;
+  }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  if (form) {
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+
+    // Oggetto precompilato dal link "Richiedi informazioni" di una scheda: /contatti/?oggetto=…
+    const oggetto = new URLSearchParams(location.search).get('oggetto');
+    const campoOggetto = form.querySelector<HTMLInputElement>('[data-oggetto]');
+    if (oggetto && campoOggetto && !campoOggetto.value) campoOggetto.value = oggetto.slice(0, 150);
+
+    const mostraErrori = (errori: Record<string, string>) => {
+      form.querySelectorAll<HTMLElement>('[data-error]').forEach((el) => {
+        const nome = el.dataset.error!;
+        el.textContent = errori[nome] ?? '';
+        form.querySelector(`[name="${nome}"]`)?.setAttribute('aria-invalid', errori[nome] ? 'true' : 'false');
+      });
+      const primo = Object.keys(errori)[0];
+      if (primo) form.querySelector<HTMLElement>(`[name="${primo}"]`)?.focus();
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      status.className = 'contact-form__status';
+      status.textContent = '';
+      submit.disabled = true;
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: { Accept: 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(new FormData(form) as unknown as Record<string, string>),
+        });
+        const dati = await res.json().catch(() => ({}));
+        if (res.ok && dati.ok) {
+          mostraErrori({});
+          form.reset();
+          status.className = 'contact-form__status is-ok';
+          status.textContent = 'Grazie! Il messaggio è stato inviato: riceverai una risposta al più presto.';
+        } else if (res.status === 422 && dati.errori) {
+          mostraErrori(dati.errori);
+          status.className = 'contact-form__status is-error';
+          status.textContent = 'Controlla i campi evidenziati.';
+        } else {
+          throw new Error(String(res.status));
+        }
+      } catch {
+        status.className = 'contact-form__status is-error';
+        status.textContent = 'Non è stato possibile inviare il messaggio. Riprova tra poco o scrivi direttamente via email.';
+      } finally {
+        submit.disabled = false;
+      }
+    });
+  }
+</script>

@@ -8,3 +8,4 @@ dist
 wp-export
 Dockerfile
 docker-compose.yml
+server

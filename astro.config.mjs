@@ -10,7 +10,12 @@ export default defineConfig({
     // CSS piccolo: inline nella pagina = una richiesta in meno sul percorso critico.
     inlineStylesheets: 'auto',
   },
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      // pagine di servizio del modulo di contatto: non vanno indicizzate
+      filter: (page) => !/\/contatti\/(inviato|errore)\/$/.test(page),
+    }),
+  ],
 
   vite: {
     build: {

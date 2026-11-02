@@ -1,0 +1,19 @@
+{
+  "name": "tiziana-guerra-art-contatti",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Micro-servizio per il modulo di contatto: riceve il messaggio e lo inoltra via AWS SES.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sesv2": "^3.1161.0",
+    "nodemailer": "^10.3.1"
+  }
+}

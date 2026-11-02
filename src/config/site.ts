@@ -51,14 +51,13 @@ export const site: SiteConfig = {
 
   operaMenu: 'la-ragazza-doro-e-caffe',
 
-  privacyUrl: '',
+  privacyUrl: '/privacy-policy/',
 
   /**
-   * Modulo di contatto (facoltativo). Il sito è statico: per ricevere i messaggi serve un
-   * servizio esterno (Formspree, Web3Forms, Getform…) o un piccolo endpoint sul VPS.
-   * Se vuoto, la pagina Contatti mostra email e Instagram.
+   * Indirizzo a cui il modulo di contatto invia i messaggi: il micro-servizio in
+   * server/contatti (inoltro via AWS SES), raggiunto tramite nginx. Vuoto = niente modulo.
    */
-  contactFormEndpoint: '',
+  contactFormEndpoint: '/api/contatti',
 
   /** Mostra il prezzo nelle schede quando è indicato nell'opera. */
   mostraPrezzi: true,

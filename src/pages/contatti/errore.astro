@@ -1,0 +1,37 @@
+---
+import { site } from '~/config/site';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+---
+
+<!-- Mostrata quando il modulo inviato senza JavaScript non va a buon fine -->
+<BaseLayout title="Messaggio non inviato" noindex>
+  <section class="esito container">
+    <p class="num">/ops</p>
+    <h1 class="h1">Messaggio non inviato</h1>
+    <p class="text">
+      Controlla di aver compilato nome, email e messaggio e di aver accettato l'informativa, poi riprova. Se il
+      problema continua, scrivi direttamente a <a href={`mailto:${site.contatti.email}`}>{site.contatti.email}</a>.
+    </p>
+    <a class="btn-text" href="/contatti/#modulo"><span class="brush brush--on">Torna al modulo</span></a>
+  </section>
+</BaseLayout>
+
+<style>
+  .esito {
+    padding-top: clamp(72px, 10vw, 180px);
+  }
+
+  .esito .h1 {
+    margin-top: 12px;
+  }
+
+  .esito .text {
+    max-width: 52ch;
+    margin: 20px 0 36px;
+  }
+
+  .esito .text a {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>

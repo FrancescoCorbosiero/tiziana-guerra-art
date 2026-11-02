@@ -1,5 +1,6 @@
-# Esempio per il VPS. Il container serve il sito su http://127.0.0.1:8080:
-# collegarlo al reverse proxy già in uso (che gestisce dominio e HTTPS).
+# Sul VPS: copiare .env.example in .env, compilarlo, poi `docker compose up -d --build`.
+# Il sito risponde su http://127.0.0.1:8080: collegarlo al reverse proxy già in uso
+# (che gestisce dominio e HTTPS), al posto del container WordPress.
 services:
   sito:
     build: .
@@ -8,6 +9,8 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:8080:8080"
+    depends_on:
+      - contatti
     read_only: true
     tmpfs:
       - /tmp
@@ -15,3 +18,24 @@ services:
       - ALL
     security_opt:
       - no-new-privileges:true
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Modulo di contatto → AWS SES. Raggiungibile solo da nginx (nessuna porta esposta).
+  contatti:
+    build: ./server/contatti
+    image: tiziana-guerra-art-contatti:latest
+    container_name: tiziana-guerra-art-contatti
+    restart: unless-stopped
+    env_file: .env
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: "5m"
+        max-file: "3"

@@ -43,7 +43,8 @@ npm run check     # controllo tipi e contenuti
 | `/pitture/categoria/<categoria>/` | Acrilico, Spatola, Caffè | `/portfolio-category/…` |
 | `/pitture/<opera>/` | Scheda: foto con zoom, titolo, descrizione, dimensioni, anno, tecnica, categoria, "Richiedi informazioni" | `/portfolio-item/<opera>/` |
 | `/galleria/` | Tutte le opere su 3 colonne, zoom al passaggio del mouse | `/portfolio/` |
-| `/contatti/` | Email e Instagram (modulo facoltativo, vedi sotto) | `/contatti-2/` |
+| `/contatti/` | Modulo di contatto (inoltro via AWS SES), email e Instagram | `/contatti-2/` |
+| `/privacy-policy/` | Informativa privacy | `/privacy-policy-3/` |
 
 I vecchi indirizzi rimandano automaticamente ai nuovi con un redirect 301, configurato in `deploy/snippets/redirects.conf`. Così Google e i link esistenti non finiscono su una pagina 404.
 
@@ -60,7 +61,9 @@ src/content/
 ├── categorie.yaml              ← Acrilico, Spatola, Caffè
 ├── home/home.md                ← testi e immagini della homepage
 └── pagine/chi-sono.md          ← biografia ed eventi
+├── pagine/privacy-policy.md     ← informativa privacy
 src/config/site.ts              ← email, Instagram, motto, voci di menu
+server/contatti/                ← micro-servizio del modulo di contatto (AWS SES)
 ```
 
 ### Aggiungere un'opera
@@ -103,33 +106,75 @@ Se un campo è sbagliato, ad esempio una categoria inesistente o un'immagine man
 ## Deploy sul VPS (Docker)
 
 ```bash
+cp .env.example .env    # poi compilarlo (vedi "Modulo di contatto" qui sotto)
 docker compose up -d --build
 ```
 
-Il container serve il sito su `127.0.0.1:8080`. Va collegato al reverse proxy già in uso sul VPS (Traefik, Caddy, nginx-proxy…), che gestisce il dominio e HTTPS, al posto del container WordPress. Per aggiornare il sito dopo una modifica:
+`docker compose` avvia due container:
+
+- **sito**: nginx senza root, filesystem in sola lettura, che serve i file statici su `127.0.0.1:8080`. Va collegato al reverse proxy già in uso sul VPS (Traefik, Caddy, nginx-proxy…), che gestisce dominio e HTTPS, al posto del container WordPress.
+- **contatti**: il micro-servizio del modulo di contatto. Non espone porte: lo raggiunge solo nginx su `/api/contatti`.
+
+Per aggiornare il sito dopo una modifica:
 
 ```bash
 git pull && docker compose up -d --build
 ```
 
-L'immagine è in due fasi: la prima genera il sito con Node, la seconda contiene solo nginx e i file statici. Il container gira senza root, con filesystem in sola lettura. La configurazione di nginx è in `deploy/`:
+La configurazione di nginx è in `deploy/`:
 
-- `nginx.conf`: cache di un anno per i file con hash, gzip, redirect agli indirizzi con "/" finale, pagina 404 personalizzata;
-- `snippets/security-headers.conf`: Content-Security-Policy senza `unsafe-inline` per gli script, più gli altri header di sicurezza (HSTS va impostato sul reverse proxy);
+- `nginx.conf`:
+  - cache di un anno per i file con hash;
+  - gzip;
+  - redirect agli indirizzi con "/" finale;
+  - pagina 404;
+  - inoltro di `/api/contatti` con un limite di 6 invii al minuto per IP;
+  - log con IP anonimizzati.
+- `snippets/security-headers.conf`: Content-Security-Policy senza `unsafe-inline` per gli script, più gli altri header di sicurezza (HSTS va impostato sul reverse proxy).
 - `snippets/redirects.conf`: vecchi indirizzi WordPress → nuovi. I percorsi `wp-admin`, `wp-login.php`, `xmlrpc.php` e simili rispondono `410 Gone`.
 
-## Da decidere / completare
+Il reverse proxy davanti deve passare l'IP del visitatore in `X-Forwarded-For`, come fanno Traefik e Caddy di default. Serve al limite anti-abuso del modulo.
 
-- [ ] **Modulo di contatto.** Il vecchio sito aveva un modulo (Contact Form 7). Un sito statico non può inviare email da solo, per cui ora la pagina Contatti mostra email e Instagram e ogni scheda ha "Richiedi informazioni" (email precompilata). Per riavere il modulo basta un servizio esterno (Formspree, Web3Forms…) o un piccolo endpoint sul VPS: si imposta `contactFormEndpoint` in `src/config/site.ts`.
-- [ ] **Privacy policy.** Sul vecchio sito la pagina era vuota. Il nuovo sito non usa cookie né raccoglie dati, ma un'informativa resta consigliata (soprattutto se si attiva il modulo). Quando c'è il testo, si imposta `privacyUrl` e compare nel piè di pagina.
-- [ ] **Foto a bassa risoluzione.** Alcuni originali caricati su WordPress sono piccoli: *La notte non era sola* (503 px), *Le radici della foresta* (563 px), *Soubtrette* (630 px), *Il riflesso della natura* (732 px) e la foto della premiazione in home (331 px). Se esistono foto migliori, basta sostituire il file nella cartella.
+## Modulo di contatto (AWS SES)
+
+Il modulo (`/contatti/`) invia i dati a `server/contatti`, un piccolo servizio Node.js. Il servizio controlla i campi, scarta lo spam (con un campo trappola invisibile) e inoltra il messaggio via **Amazon SES** all'indirizzo `MAIL_TO`. Il "Rispondi" va direttamente al visitatore. Non viene salvato niente sul server.
+
+Funziona anche senza JavaScript: in quel caso si arriva a `/contatti/inviato/` oppure a `/contatti/errore/`. Il pulsante "Richiedi informazioni" di ogni scheda apre il modulo con l'oggetto già compilato.
+
+Configurazione, nel file `.env` (vedi `.env.example`):
+
+1. **Mittente verificato.** `MAIL_FROM` deve appartenere a un'identità verificata su SES, nella stessa regione indicata in `AWS_REGION`. Se WP SMTP inviava già con SES, il dominio è probabilmente già verificato. Non usare l'indirizzo Yahoo come mittente: Yahoo rifiuta le email inviate a suo nome da altri server (DMARC). Va bene come destinatario (`MAIL_TO`).
+2. **Credenziali.** Due possibilità:
+   - **A, consigliata.** Chiavi di un utente IAM (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`) con il solo permesso di inviare:
+     ```json
+     {
+       "Version": "2012-10-17",
+       "Statement": [{ "Effect": "Allow", "Action": ["ses:SendEmail", "ses:SendRawEmail"], "Resource": "*" }]
+     }
+     ```
+   - **B.** Le credenziali **SMTP** di SES, se WP SMTP usava quelle (`SMTP_HOST`, `SMTP_USER`, `SMTP_PASS`).
+3. **Sandbox.** Se l'account SES è ancora in sandbox, si può inviare solo a indirizzi verificati. Per questo modulo basta che sia verificato `MAIL_TO`.
+4. **Prova.** Con `DRY_RUN=1` il servizio non invia nulla e scrive il messaggio nei log (`docker compose logs contatti`).
+
+Test del servizio: `cd server/contatti && npm install && npm test`.
+
+## Ancora aperto
+
+- [ ] **Foto a bassa risoluzione.** Alcuni originali caricati su WordPress sono piccoli: *La notte non era sola* (503 px), *Le radici della foresta* (563 px), *Soubrette* (630 px), *Il riflesso della natura* (732 px) e la foto della premiazione in home (331 px). Se esistono foto migliori, basta sostituire il file nella cartella.
 - [ ] **Dati mancanti.** L'anno è indicato solo per 9 opere su 22, la tecnica per 14. Si possono completare nei file `index.md`.
-- [ ] **Testi riportati così com'erano.** Ecco alcuni possibili refusi da verificare:
-  - "Soubtrette" (forse "Soubrette");
-  - "A volta il ponte" (forse "A volte");
-  - "Un opera evocativa" (forse "Un'opera");
-  - il cognome della curatrice è scritto sia "Venturini" sia "Vetturini".
-- [ ] La didascalia "Descrizione dell'evento qui sopra" in home era un testo segnaposto del tema e non è stata riportata.
+- [ ] **Privacy policy.** La bozza in `src/content/pagine/privacy-policy.md` descrive il funzionamento reale del sito:
+  - nessun cookie;
+  - log anonimizzati;
+  - modulo inoltrato via SES.
+
+  Va completata con il nome del fornitore del VPS, e conviene farla rivedere da un professionista.
+
+Correzioni già fatte rispetto al vecchio sito:
+
+- "Soubtrette" → "Soubrette" (l'indirizzo della pagina resta `/pitture/soubtrette/`);
+- "A volta" → "A volte";
+- "Un opera" → "Un’opera";
+- il cognome della curatrice è uniformato in "Vetturini", come sulla locandina del premio.
 
 ## Note sullo stile
 

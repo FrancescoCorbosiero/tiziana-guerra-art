@@ -56,6 +56,14 @@ const pageUrl = new URL(urlOpera(opera), Astro.site).href;
 const disponibile = data.disponibilita === 'disponibile';
 const mostraPrezzo = Boolean(site.mostraPrezzi && data.prezzo && disponibile);
 const whatsapp = whatsappOpera(opera, pageUrl);
+// "Richiedi informazioni" / "Acquista" portano al modulo con l'oggetto già compilato;
+// se il modulo non è attivo, aprono l'email precompilata.
+const linkRichiesta = (motivo: 'info' | 'acquisto') =>
+  site.contactFormEndpoint
+    ? `/contatti/?${new URLSearchParams({
+        oggetto: `${motivo === 'acquisto' ? 'Acquisto opera' : "Informazioni sull'opera"}: ${data.titolo}`,
+      })}#modulo`
+    : mailtoOpera(opera, motivo, pageUrl);
 const haTesto = Boolean(opera.body?.trim());
 
 type Dettaglio = { label: string; value: string; links?: { label: string; href: string }[] };
@@ -182,19 +190,19 @@ const jsonLd = [
         <div class="artwork__actions">
           {
             disponibile && (
-              <a class="btn" href={mailtoOpera(opera, 'acquisto', pageUrl)}>
+              <a class="btn" href={linkRichiesta('acquisto')}>
                 Acquista
               </a>
             )
           }
-          <a class:list={['btn', { 'btn--ghost': disponibile }]} href={mailtoOpera(opera, 'info', pageUrl)}>
+          <a class:list={['btn', { 'btn--ghost': disponibile }]} href={linkRichiesta('info')}>
             Richiedi informazioni
           </a>
         </div>
         {
           site.contatti.email && (
             <p class="artwork__contact">
-              Oppure scrivi a <a href={`mailto:${site.contatti.email}`}>{site.contatti.email}</a>
+              Oppure scrivi a <a href={mailtoOpera(opera, 'info', pageUrl)}>{site.contatti.email}</a>
               {whatsapp && (
                 <>
                   {' · '}

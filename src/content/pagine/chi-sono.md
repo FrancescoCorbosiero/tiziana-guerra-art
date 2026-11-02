@@ -18,7 +18,7 @@ evidenza:
 eventi:
   sopratitolo: "Partecipazioni, esposizioni, premiazioni ed eventi"
   titolo: "Eventi"
-  immagine: ../../assets/pagine/evento-rosanna-venturini.jpg
+  immagine: ../../assets/pagine/locandina-premio-arte-cultura-sociale.jpg
   immagineAlt: "Locandina del Premio Arte, Cultura e Sociale (II edizione), 13 aprile 2026, Sala della Regina, Camera dei Deputati, Roma"
   anni:
     - anno: 2022
@@ -42,7 +42,7 @@ eventi:
         - "Esposizione permanente Via Margutta, Roma — quattro opere"
         - "Eccellenza Italiana / Palazzo Ivanchic, Venezia — La Bruna, D’Atanasio, Grifoni — firmato Katia Ricciarelli, Silvana Giacobini"
         - "Magica Venezia selezionata per esposizioni internazionali a Dubai e Pechino"
-        - "Premio Contursi Terme — attestato di partecipazione — *a cura di Art Global, Dott.ssa Angiolina Marchese e Art Curator Rosanna Venturini*"
+        - "Premio Contursi Terme — attestato di partecipazione — *a cura di Art Global, Dott.ssa Angiolina Marchese e Art Curator Rosanna Vetturini*"
         - "Trofeo Artista dell’Anno / Palazzo del Turismo, Cesenatico — opere esposte Hotel Miramare"
         - "Artisti per il Giubileo / Chiesa della Misericordia, Spoleto — menzione speciale"
         - "Premio Modigliani, Venezia"
@@ -54,11 +54,11 @@ eventi:
         - "Trofeo Leone d’Oro, Venezia"
         - "Art and Fashion, Palermo — opera presentata in passerella"
         - "Premio Ambrogino d’Oro, Villasanta"
-        - "Premio Come a Casa Mia / Art Global — attestato di partecipazione e ringraziamento, Angiolina Marchese — *a cura di Art Global, Dott.ssa Angiolina Marchese e Art Curator Rosanna Venturini*"
+        - "Premio Come a Casa Mia / Art Global — attestato di partecipazione e ringraziamento, Angiolina Marchese — *a cura di Art Global, Dott.ssa Angiolina Marchese e Art Curator Rosanna Vetturini*"
     - anno: 2026
       voci:
-        - "Premio Roma Regina della Storia / Senato della Repubblica, Roma — premio speciale per l’impegno artistico — *a cura di Art Global, Dott.ssa Angiolina Marchese e Art Curator Rosanna Venturini*"
-        - "Voci d’Europa contro il Bullismo — attestato di partecipazione — *a cura di Art Global, Dott.ssa Angiolina Marchese e Art Curator Rosanna Venturini*"
+        - "Premio Roma Regina della Storia / Senato della Repubblica, Roma — premio speciale per l’impegno artistico — *a cura di Art Global, Dott.ssa Angiolina Marchese e Art Curator Rosanna Vetturini*"
+        - "Voci d’Europa contro il Bullismo — attestato di partecipazione — *a cura di Art Global, Dott.ssa Angiolina Marchese e Art Curator Rosanna Vetturini*"
         - "Menzione speciale Art Global"
         - "Premio Amare con l’Arte / Castello Orsini, Castel Madama, Roma — premio speciale sensibilità artistica, menzione di benemerenza"
         - "Artisti 26"
