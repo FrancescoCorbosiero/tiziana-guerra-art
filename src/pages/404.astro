@@ -1,0 +1,53 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Pagina non trovata" noindex contactBand={false}>
+  <section class="not-found container">
+    <p class="num not-found__num reveal">/404</p>
+    <h1 class="display not-found__title reveal" style="--delay:.08s">
+      Pagina <span class="serif-italic">non</span> trovata
+    </h1>
+    <p class="lead not-found__text reveal" style="--delay:.16s">
+      L'indirizzo potrebbe essere cambiato con il nuovo sito. Le opere sono tutte nella pagina Pitture.
+    </p>
+    <div class="not-found__links reveal" style="--delay:.24s">
+      <a class="btn" href="/pitture/">Vai alle pitture</a>
+      <a class="btn btn--ghost" href="/">Torna alla home</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    padding-block: clamp(72px, 12vw, 200px) 0;
+  }
+
+  .not-found__num {
+    margin: 0 0 16px;
+    font-size: clamp(1.6rem, 1.2rem + 1.2vw, 2.4rem);
+  }
+
+  .not-found__title {
+    font-size: var(--fs-page);
+    line-height: 0.95;
+  }
+
+  .not-found__title .serif-italic {
+    text-transform: lowercase;
+    font-stretch: 100%;
+    color: var(--c-muted);
+  }
+
+  .not-found__text {
+    max-width: 34ch;
+    margin-top: clamp(24px, 3vw, 40px);
+  }
+
+  .not-found__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: clamp(28px, 3vw, 44px);
+  }
+</style>

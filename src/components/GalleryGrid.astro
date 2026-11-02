@@ -1,0 +1,122 @@
+---
+import { Picture } from 'astro:assets';
+import { altOpera, urlOpera, vtName, type Opera } from '~/lib/opere';
+
+interface Props {
+  opere: Opera[];
+  eager?: number;
+  label?: string;
+}
+
+const { opere, eager = 4, label = 'Opere' } = Astro.props;
+---
+
+{/* Griglia a 2 / 3 / 4 colonne: ogni opera intera su passe-partout, zoom al passaggio del mouse. */}
+<ul class="gallery" role="list" aria-label={label}>
+  {
+    opere.map((opera, i) => (
+      <li class="tile">
+        <a class="tile__link" href={urlOpera(opera)} style={`--vt:${vtName(opera)}`}>
+          <div class="tile__mat">
+            <Picture
+              src={opera.data.immagine}
+              alt={altOpera(opera)}
+              widths={[300, 460, 640, 900]}
+              sizes="(min-width: 1440px) 300px, (min-width: 1200px) 21vw, (min-width: 768px) 28vw, 42vw"
+              formats={['avif', 'webp']}
+              loading={i < eager ? 'eager' : 'lazy'}
+              decoding="async"
+            />
+          </div>
+          <p class="tile__title">{opera.data.titolo}</p>
+          {(opera.data.anno || opera.data.tecnica) && (
+            <p class="tile__meta">{[opera.data.anno, opera.data.tecnica].filter(Boolean).join(' · ')}</p>
+          )}
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 36px 14px;
+  }
+
+  @media (min-width: 768px) {
+    .gallery {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 56px 28px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .gallery {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 64px 36px;
+    }
+  }
+
+  .tile__link {
+    display: block;
+  }
+
+  .tile__mat {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 5;
+    padding: 13%;
+    background: var(--c-mat);
+    overflow: hidden;
+    transition: background-color var(--t-med) var(--ease-out);
+  }
+
+  .tile__mat :global(picture) {
+    display: contents;
+  }
+
+  .tile__mat :global(img) {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    box-shadow: 0 14px 28px -14px rgb(33 29 19 / 0.45);
+    transition: transform var(--t-slow) var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .tile__link:hover .tile__mat {
+      background: #ebe8df;
+    }
+
+    .tile__link:hover .tile__mat :global(img) {
+      transform: scale(1.07);
+    }
+  }
+
+  .tile__link:is(:hover, :focus-visible) :global(img) {
+    view-transition-name: var(--vt);
+  }
+
+  .tile__title {
+    margin: 16px 0 0;
+    font-family: var(--f-display);
+    font-stretch: var(--display-stretch);
+    font-weight: var(--display-weight);
+    font-size: clamp(0.8125rem, 0.7rem + 0.35vw, 1rem);
+    line-height: 1.25;
+    text-transform: uppercase;
+    color: var(--c-text);
+  }
+
+  .tile__meta {
+    margin: 4px 0 0;
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-size: 1.05rem;
+    line-height: 1.3;
+    color: var(--c-muted);
+  }
+</style>

@@ -1,0 +1,10 @@
+node_modules
+dist
+.astro
+.git
+.github
+.vscode
+.DS_Store
+wp-export
+Dockerfile
+docker-compose.yml

@@ -1,0 +1,74 @@
+<a class="to-top" href="#top" data-to-top>
+  <span>Torna su</span>
+</a>
+
+<style>
+  .to-top {
+    position: fixed;
+    right: clamp(14px, 1.3vw, 24px);
+    bottom: clamp(14px, 1.3vw, 24px);
+    z-index: 40;
+    display: grid;
+    place-items: center;
+    width: clamp(64px, 4.5vw, 85px);
+    aspect-ratio: 1;
+    border: 1px solid #000;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.92);
+    color: #0d0d0d;
+    font-family: var(--f-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 700;
+    font-size: 0.625rem;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-transform: uppercase;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(12px);
+    transition:
+      opacity var(--t-med) var(--ease-out),
+      transform var(--t-med) var(--ease-out),
+      visibility 0s linear var(--t-med),
+      background-color var(--t-fast) ease;
+  }
+
+  .to-top.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity var(--t-med) var(--ease-out),
+      transform var(--t-med) var(--ease-out),
+      visibility 0s,
+      background-color var(--t-fast) ease;
+  }
+
+  .to-top:hover,
+  .to-top:focus-visible {
+    background: var(--c-accent);
+  }
+</style>
+
+<script>
+  const btn = document.querySelector<HTMLElement>('[data-to-top]');
+  if (btn) {
+    let pending = false;
+    const update = () => {
+      pending = false;
+      btn.classList.toggle('is-visible', window.scrollY > window.innerHeight * 0.75);
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!pending) {
+          pending = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    update();
+  }
+</script>

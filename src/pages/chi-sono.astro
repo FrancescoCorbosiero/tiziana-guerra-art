@@ -1,0 +1,133 @@
+---
+import { Picture } from 'astro:assets';
+import { getEntry, render } from 'astro:content';
+import MasonryGrid from '~/components/MasonryGrid.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import { site } from '~/config/site';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import { getOpereInEvidenza } from '~/lib/opere';
+
+const pagina = await getEntry('pagine', 'chi-sono');
+if (!pagina) throw new Error('Manca src/content/pagine/chi-sono.md');
+
+const { Content } = await render(pagina);
+const opere = await getOpereInEvidenza(4);
+const { titolo, sottotitolo, immagine, immagineAlt, descrizioneSeo } = pagina.data;
+---
+
+<BaseLayout
+  title={titolo}
+  description={descrizioneSeo ?? `${titolo}: biografia e percorso artistico di ${site.author}.`}
+  image={immagine ?? opere[0]?.data.immagine}
+  type="article"
+>
+  <PageHeader eyebrow="Biografia" title={titolo} lead={sottotitolo} />
+
+  <section class:list={['bio container', { 'bio--with-image': immagine }]}>
+    {
+      immagine && (
+        <figure class="bio__figure reveal-img">
+          <Picture
+            src={immagine}
+            alt={immagineAlt ?? site.author}
+            widths={[480, 720, 960, 1200]}
+            sizes="(min-width: 900px) 40vw, 100vw"
+            formats={['avif', 'webp']}
+            priority
+          />
+        </figure>
+      )
+    }
+    <div class="prose bio__text">
+      <Content />
+    </div>
+  </section>
+
+  {
+    opere.length > 0 && (
+      <section class="works container" aria-labelledby="works-title">
+        <header class="works__head">
+          <h2 id="works-title" class="display works__title">
+            Alcune opere
+          </h2>
+          <a class="label" href="/pitture/">
+            <span class="brush">Tutte le pitture</span>
+            <span class="arrow" aria-hidden="true">
+              →
+            </span>
+          </a>
+        </header>
+        <MasonryGrid opere={opere} eager={0} label="Alcune opere" headingLevel="h3" />
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .bio {
+    display: grid;
+    gap: clamp(40px, 6vw, 96px);
+  }
+
+  .bio__figure {
+    margin: 0;
+    background: var(--c-mat);
+  }
+
+  .bio__figure :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  .bio__text {
+    font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.25rem);
+  }
+
+  .bio__text :global(p:first-child) {
+    font-family: var(--f-serif);
+    font-size: clamp(1.4rem, 1.05rem + 1.1vw, 2.1rem);
+    line-height: 1.38;
+    color: var(--c-text);
+  }
+
+  @media (min-width: 900px) {
+    .bio--with-image {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      align-items: start;
+    }
+
+    .bio__figure {
+      position: sticky;
+      top: calc(var(--header-h) + 40px);
+    }
+
+    .bio:not(.bio--with-image) .bio__text {
+      margin-left: 25%;
+    }
+  }
+
+  .works {
+    margin-top: var(--section);
+  }
+
+  .works__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px 40px;
+    margin-bottom: clamp(48px, 6vw, 96px);
+  }
+
+  .works__title {
+    font-size: var(--fs-h2);
+  }
+
+  .works__head .label {
+    display: inline-flex;
+    gap: 10px;
+    font-size: var(--fs-nav);
+    font-weight: var(--display-weight);
+    letter-spacing: 0;
+  }
+</style>

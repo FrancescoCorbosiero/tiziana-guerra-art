@@ -1,0 +1,232 @@
+---
+import { nav, site } from '~/config/site';
+
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <nav class="site-nav" aria-label="Menu principale">
+      <ul role="list">
+        {
+          nav.map((item) => (
+            <li>
+              <a class="site-nav__link brush" href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <a class="site-logo" href="/" aria-label={`${site.name} — Home`}>{site.logo}</a>
+
+    <div class="site-actions">
+      <button class="search-trigger" type="button" popovertarget="search" aria-label="Cerca tra le opere">
+        <span class="search-trigger__text" aria-hidden="true">Cerca</span>
+        <svg class="search-trigger__icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"></circle>
+          <path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+        </svg>
+      </button>
+      <button class="menu-trigger" type="button" popovertarget="menu" aria-label="Apri il menu">
+        <span class="menu-trigger__text" aria-hidden="true">Menu</span>
+        <span class="menu-trigger__icon" aria-hidden="true"><i></i><i></i></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--c-bg);
+    box-shadow: 0 0 12px rgb(0 0 0 / 0.06);
+    view-transition-name: site-header;
+  }
+
+  .site-header__inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: var(--header-h);
+    padding-inline: var(--gutter);
+  }
+
+  /* Menu orizzontale: solo su schermi grandi (sotto i 1200px si usa il menu a tutto schermo) */
+  .site-nav {
+    display: none;
+  }
+
+  .site-nav ul {
+    display: flex;
+    gap: clamp(22px, 1.95vw, 37px);
+  }
+
+  .site-nav__link {
+    font-family: var(--f-display);
+    font-stretch: var(--display-stretch);
+    font-weight: var(--display-weight);
+    font-size: 0.9375rem;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--c-text);
+    padding-block: 10px;
+  }
+
+  .site-nav__link::after {
+    bottom: 1px;
+  }
+
+  .site-logo {
+    font-family: var(--f-display);
+    font-stretch: var(--display-stretch);
+    font-weight: var(--display-weight);
+    font-size: clamp(0.875rem, 0.55rem + 1.6vw, 1.8125rem);
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--c-text);
+    white-space: nowrap;
+  }
+
+  .site-actions {
+    display: flex;
+    align-items: center;
+    gap: clamp(14px, 2vw, 28px);
+  }
+
+  .search-trigger {
+    display: inline-flex;
+    align-items: center;
+    color: #585858;
+    font-size: 1.25rem;
+    line-height: 1;
+    transition: color var(--t-fast) ease;
+  }
+
+  .search-trigger:hover {
+    color: var(--c-text);
+  }
+
+  .search-trigger__text {
+    display: none;
+  }
+
+  .menu-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--f-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 600;
+    font-size: var(--fs-label);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--c-text);
+  }
+
+  .menu-trigger__icon {
+    display: grid;
+    gap: 6px;
+    width: 30px;
+  }
+
+  .menu-trigger__icon i {
+    display: block;
+    height: 2px;
+    background: currentColor;
+    transition: transform var(--t-fast) var(--ease-out);
+  }
+
+  .menu-trigger__icon i:last-child {
+    width: 70%;
+    justify-self: end;
+  }
+
+  .menu-trigger:hover .menu-trigger__icon i:last-child {
+    transform: scaleX(1.43);
+    transform-origin: right;
+  }
+
+  /* Schermi molto stretti: solo icone */
+  @media (max-width: 399px) {
+    .menu-trigger__text {
+      display: none;
+    }
+  }
+
+  /* 1200–1799px: logo a sinistra, menu a destra (menu + logo centrato non ci stanno) */
+  @media (min-width: 1200px) {
+    .site-header__inner {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 0 clamp(24px, 3vw, 48px);
+    }
+
+    .site-logo {
+      grid-column: 1;
+      grid-row: 1;
+      font-size: 1.5rem;
+    }
+
+    .site-nav {
+      display: block;
+      grid-column: 2;
+      grid-row: 1;
+      justify-self: end;
+    }
+
+    .site-nav ul {
+      gap: 28px;
+    }
+
+    .site-actions {
+      grid-column: 3;
+      grid-row: 1;
+    }
+
+    .search-trigger__text {
+      display: inline;
+    }
+
+    .search-trigger__icon {
+      display: none;
+    }
+
+    .menu-trigger__text {
+      display: none;
+    }
+  }
+
+  /* ≥1800px: disposizione del tema originale — menu a sinistra, logo al centro */
+  @media (min-width: 1800px) {
+    .site-header__inner {
+      display: flex;
+    }
+
+    .site-nav {
+      justify-self: auto;
+    }
+
+    .site-nav ul {
+      gap: clamp(30px, 1.95vw, 37px);
+    }
+
+    .site-nav__link {
+      font-size: var(--fs-nav);
+    }
+
+    .site-logo {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.8125rem;
+    }
+  }
+</style>

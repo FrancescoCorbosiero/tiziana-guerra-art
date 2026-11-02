@@ -1,0 +1,54 @@
+---
+interface Props {
+  title: string;
+  /** Etichetta sopra il titolo, es. "Opere". */
+  eyebrow?: string;
+  lead?: string;
+}
+const { title, eyebrow, lead } = Astro.props;
+---
+
+<header class="page-header container">
+  {
+    eyebrow && (
+      <p class="page-header__eyebrow reveal">
+        <span class="num">/</span>
+        <span class="label">{eyebrow}</span>
+      </p>
+    )
+  }
+  <h1 class="display page-header__title reveal" style="--delay:.08s">{title}</h1>
+  {lead && <p class="page-header__lead serif-italic reveal" style="--delay:.16s">{lead}</p>}
+  <slot />
+</header>
+
+<style>
+  .page-header {
+    padding-block: clamp(56px, 9vw, 150px) clamp(48px, 6vw, 96px);
+  }
+
+  .page-header__eyebrow {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0 0 clamp(14px, 2vw, 28px);
+  }
+
+  .page-header__eyebrow .num {
+    font-size: 1.5rem;
+  }
+
+  .page-header__title {
+    font-size: var(--fs-page);
+    line-height: 0.95;
+    overflow-wrap: anywhere;
+  }
+
+  .page-header__lead {
+    max-width: 34ch;
+    margin: clamp(18px, 2.4vw, 36px) 0 0;
+    font-size: clamp(1.35rem, 1rem + 1.2vw, 2.1rem);
+    line-height: 1.35;
+    color: var(--c-muted);
+  }
+</style>

@@ -1,0 +1,106 @@
+---
+import GalleryGrid from '~/components/GalleryGrid.astro';
+import PageHeader from '~/components/PageHeader.astro';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import { getOpere, type Opera } from '~/lib/opere';
+
+const opere = await getOpere();
+
+// Suddivisione per periodo (anno), dal più recente; le opere senza anno in fondo.
+const perAnno = new Map<string, Opera[]>();
+for (const opera of [...opere].sort((a, b) => (b.data.anno ?? 0) - (a.data.anno ?? 0))) {
+  const chiave = opera.data.anno ? String(opera.data.anno) : 'Senza data';
+  perAnno.set(chiave, [...(perAnno.get(chiave) ?? []), opera]);
+}
+const periodi = [...perAnno.entries()];
+---
+
+<BaseLayout
+  title="Galleria"
+  description="Galleria completa delle opere di Tiziana Guerra, suddivise per periodo."
+  image={opere[0]?.data.immagine}
+>
+  <PageHeader eyebrow="Archivio" title="Galleria" lead="Tutte le opere, per periodo.">
+    {
+      periodi.length > 1 && (
+        <nav class="periods reveal" style="--delay:.24s" aria-label="Vai al periodo">
+          <ul role="list">
+            {periodi.map(([anno]) => (
+              <li>
+                <a href={`#periodo-${anno.toLowerCase().replace(/\s+/g, '-')}`}>
+                  <span class="brush">{anno}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+  </PageHeader>
+
+  <div class="container">
+    {
+      periodi.map(([anno, lista], i) => (
+        <section
+          class="period"
+          id={`periodo-${anno.toLowerCase().replace(/\s+/g, '-')}`}
+          aria-labelledby={`periodo-titolo-${i}`}
+        >
+          <h2 class="period__head" id={`periodo-titolo-${i}`}>
+            <span class="display period__year">{anno}</span>
+            <span class="num period__count">
+              {lista.length} {lista.length === 1 ? 'opera' : 'opere'}
+            </span>
+          </h2>
+          <GalleryGrid opere={lista} eager={i === 0 ? 4 : 0} label={`Opere: ${anno}`} />
+        </section>
+      ))
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .periods {
+    margin-top: clamp(32px, 4vw, 64px);
+  }
+
+  .periods ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px clamp(22px, 3vw, 40px);
+  }
+
+  .periods a {
+    display: inline-block;
+    padding-block: 6px;
+    font-family: var(--f-display);
+    font-stretch: var(--display-stretch);
+    font-weight: var(--display-weight);
+    font-size: var(--fs-nav);
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--c-text);
+  }
+
+  .period + .period {
+    margin-top: clamp(80px, 9vw, 140px);
+  }
+
+  .period__head {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    padding-bottom: 18px;
+    margin-bottom: clamp(28px, 3.5vw, 48px);
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  .period__year {
+    font-size: var(--fs-h2);
+    line-height: 1;
+  }
+
+  .period__count {
+    font-size: clamp(1.1rem, 0.9rem + 0.6vw, 1.5rem);
+  }
+</style>

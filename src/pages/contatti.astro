@@ -1,0 +1,164 @@
+---
+import PageHeader from '~/components/PageHeader.astro';
+import { site } from '~/config/site';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+
+const { email, telefono, whatsapp, luogo } = site.contatti;
+const recapiti = [
+  email && { label: 'Email', value: email, href: `mailto:${email}` },
+  telefono && { label: 'Telefono', value: telefono, href: `tel:${telefono.replace(/[^\d+]/g, '')}` },
+  whatsapp && { label: 'WhatsApp', value: 'Scrivimi su WhatsApp', href: `https://wa.me/${whatsapp}`, external: true },
+  ...site.social.map((s) => ({ label: s.label, value: s.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''), href: s.url, external: true })),
+].filter(Boolean) as { label: string; value: string; href: string; external?: boolean }[];
+---
+
+<BaseLayout
+  title="Contatti"
+  description={`Contatta ${site.author} per informazioni sulle opere, acquisti o commissioni.`}
+  contactBand={false}
+>
+  <PageHeader eyebrow="Scrivimi" title="Contatti" lead="Per informazioni sulle opere, acquisti o commissioni." />
+
+  <section class="contacts container">
+    <ul role="list" class="contacts__list">
+      {
+        recapiti.map((r) => (
+          <li class="contacts__item">
+            <span class="label contacts__label">{r.label}</span>
+            <a
+              class="display contacts__value"
+              href={r.href}
+              {...(r.external ? { rel: 'noopener', target: '_blank' } : {})}
+            >
+              <span class="brush brush-lg">{r.value}</span>
+            </a>
+          </li>
+        ))
+      }
+      {
+        luogo && (
+          <li class="contacts__item">
+            <span class="label contacts__label">Dove</span>
+            <span class="display contacts__value">{luogo}</span>
+          </li>
+        )
+      }
+    </ul>
+
+    {
+      site.contactFormEndpoint && (
+        <form class="contact-form" action={site.contactFormEndpoint} method="POST">
+          <h2 class="label contact-form__title">Oppure lascia un messaggio</h2>
+          <div class="contact-form__row">
+            <label>
+              <span class="label">Nome</span>
+              <input name="nome" type="text" autocomplete="name" required />
+            </label>
+            <label>
+              <span class="label">Email</span>
+              <input name="email" type="email" autocomplete="email" required />
+            </label>
+          </div>
+          <label>
+            <span class="label">Messaggio</span>
+            <textarea name="messaggio" rows="6" required />
+          </label>
+          <label class="contact-form__privacy">
+            <input type="checkbox" name="privacy" required />
+            <span>Acconsento al trattamento dei dati per ricevere una risposta.</span>
+          </label>
+          <button class="btn" type="submit">
+            Invia
+          </button>
+        </form>
+      )
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .contacts__list {
+    border-top: 1px solid var(--c-line);
+  }
+
+  .contacts__item {
+    display: grid;
+    gap: 10px;
+    padding-block: clamp(22px, 3vw, 40px);
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  .contacts__label {
+    color: var(--c-muted);
+  }
+
+  .contacts__value {
+    justify-self: start;
+    font-size: clamp(1.25rem, 0.6rem + 3.2vw, 4rem);
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+    text-transform: none;
+  }
+
+  .contacts__value .brush-lg::after {
+    bottom: -0.08em;
+  }
+
+  @media (min-width: 900px) {
+    .contacts__item {
+      grid-template-columns: 1fr 3fr;
+      align-items: baseline;
+    }
+  }
+
+  .contact-form {
+    display: grid;
+    gap: 24px;
+    max-width: 860px;
+    margin-top: var(--section);
+  }
+
+  .contact-form__row {
+    display: grid;
+    gap: 24px;
+  }
+
+  @media (min-width: 700px) {
+    .contact-form__row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .contact-form label {
+    display: grid;
+    gap: 10px;
+  }
+
+  .contact-form input:not([type='checkbox']),
+  .contact-form textarea {
+    width: 100%;
+    padding: 12px 0;
+    border: 0;
+    border-bottom: 1px solid var(--c-text);
+    border-radius: 0;
+    background: transparent;
+    font: inherit;
+    color: var(--c-text);
+  }
+
+  .contact-form input:focus,
+  .contact-form textarea:focus {
+    outline: none;
+    border-bottom: 2px solid var(--c-accent);
+  }
+
+  .contact-form__privacy {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    font-size: var(--fs-small);
+  }
+
+  .contact-form .btn {
+    justify-self: start;
+  }
+</style>

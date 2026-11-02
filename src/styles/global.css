@@ -1,0 +1,637 @@
+/* ==========================================================================
+   Tiziana Guerra Art — design system
+   Ricostruzione dello stile del tema "Ginevra": crema/bianco, tipografia
+   extended in maiuscolo, accenti serif corsivi, pennellata gialla.
+   ========================================================================== */
+
+:root {
+  /* Colori (campionati dal sito WordPress) */
+  --c-bg: #ffffff;
+  --c-cream: #f5f4ed;
+  --c-ink: #211d13; /* testo su crema */
+  --c-text: #222222; /* titoli */
+  --c-body: #4b4840; /* paragrafi */
+  --c-muted: #6e6a60; /* numeri, etichette */
+  --c-line: #e5e2d8;
+  --c-accent: #fec600; /* pennellata */
+  --c-mat: #f1efe8; /* sfondo immagini in caricamento / passe-partout */
+
+  /* Tipografia */
+  --f-display: var(--font-archivo, 'Archivo'), Arial, sans-serif;
+  --f-body: var(--font-archivo, 'Archivo'), Arial, sans-serif;
+  --f-serif: var(--font-cormorant, 'Cormorant Garamond'), Georgia, serif;
+  --display-stretch: 122%;
+  --display-weight: 550;
+
+  --fs-body: 1.0625rem; /* 17px */
+  --fs-small: 0.875rem;
+  --fs-label: 0.8125rem;
+  --fs-nav: 1.09375rem; /* 17.5px come nel tema */
+  --fs-card: clamp(1.125rem, 0.9rem + 0.75vw, 1.8rem); /* titoli opere: 29px su desktop */
+  --fs-h3: clamp(1.4rem, 1rem + 1.4vw, 2.25rem);
+  --fs-h2: clamp(1.9rem, 1.2rem + 2.8vw, 4rem);
+  --fs-page: clamp(2.9rem, 1rem + 8vw, 9.5rem);
+  --fs-hero: clamp(3.4rem, 0.6rem + 11.2vw, 13.5rem);
+
+  /* Spazi */
+  --gutter: clamp(20px, 4.2vw, 60px);
+  --container: 1300px;
+  --container-wide: 1680px;
+  --header-h: 64px;
+  --section: clamp(80px, 11vw, 180px);
+
+  /* Movimento */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --t-fast: 0.25s;
+  --t-med: 0.6s;
+  --t-slow: 1.1s;
+
+  /* Pennellata: maschera SVG (colorata con --c-accent) e versione già gialla per i testi su più righe */
+  --brush: url('../assets/brush.svg');
+  --brush-fill: url('../assets/brush-fill.svg');
+
+  color-scheme: light;
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --header-h: 70px;
+  }
+}
+
+/* ---------- Reset essenziale ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-h) + 24px);
+  scrollbar-gutter: stable;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-bg);
+  color: var(--c-body);
+  font-family: var(--f-body);
+  font-size: var(--fs-body);
+  line-height: 1.7;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+main {
+  flex: 1 0 auto;
+  padding-bottom: var(--section);
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-weight: inherit;
+  font-size: inherit;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0 0 1.25em;
+  text-wrap: pretty;
+}
+
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-text);
+  outline-offset: 4px;
+}
+
+::selection {
+  background: var(--c-accent);
+  color: var(--c-text);
+}
+
+/* Blocca lo scroll della pagina sotto gli overlay a tutto schermo (CSS only). */
+html:has(.overlay:popover-open) {
+  overflow: hidden;
+}
+
+/* ---------- Layout ---------- */
+
+.container {
+  width: min(100% - 2 * var(--gutter), var(--container));
+  margin-inline: auto;
+}
+
+.container-wide {
+  width: min(100% - 2 * var(--gutter), var(--container-wide));
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: var(--section);
+}
+
+/* L'ultima sezione non raddoppia lo spazio prima del footer */
+main > .section:last-child {
+  padding-bottom: 0;
+}
+
+.bg-cream {
+  background: var(--c-cream);
+  color: var(--c-ink);
+}
+
+/* ---------- Tipografia ---------- */
+
+.display {
+  font-family: var(--f-display);
+  font-stretch: var(--display-stretch);
+  font-weight: var(--display-weight);
+  text-transform: uppercase;
+  line-height: 1.04;
+  letter-spacing: 0;
+  color: var(--c-text);
+}
+
+.bg-cream .display {
+  color: var(--c-ink);
+}
+
+.label {
+  font-family: var(--f-display);
+  font-stretch: var(--display-stretch);
+  font-weight: 600;
+  font-size: var(--fs-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  color: var(--c-text);
+}
+
+.serif {
+  font-family: var(--f-serif);
+  font-weight: 400;
+}
+
+.serif-italic {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* Numerazione "/01" del tema */
+.num {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-variant-numeric: lining-nums;
+  color: var(--c-muted);
+  line-height: 1;
+}
+
+.lead {
+  font-family: var(--f-serif);
+  font-size: clamp(1.35rem, 1rem + 1.1vw, 2rem);
+  line-height: 1.4;
+  color: var(--c-text);
+}
+
+.prose {
+  max-width: 68ch;
+}
+
+.prose > :last-child {
+  margin-bottom: 0;
+}
+
+.prose h2,
+.prose h3 {
+  font-family: var(--f-display);
+  font-stretch: var(--display-stretch);
+  font-weight: var(--display-weight);
+  text-transform: uppercase;
+  color: var(--c-text);
+  line-height: 1.15;
+  margin: 2em 0 0.8em;
+}
+
+.prose h2 {
+  font-size: var(--fs-h3);
+}
+
+.prose h3 {
+  font-size: 1.15rem;
+}
+
+.prose a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.prose blockquote {
+  margin: 2em 0;
+  padding-left: 1.2em;
+  border-left: 2px solid var(--c-accent);
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-size: 1.45em;
+  line-height: 1.4;
+  color: var(--c-text);
+}
+
+.prose strong {
+  color: var(--c-text);
+  font-weight: 600;
+}
+
+/* ---------- Pennellata gialla (hover dei link, voce attiva) ---------- */
+
+.brush {
+  position: relative;
+  display: inline-block;
+  isolation: isolate; /* la pennellata resta dietro al testo ma sopra lo sfondo */
+}
+
+.brush::after {
+  content: '';
+  position: absolute;
+  left: -0.45em;
+  right: -0.7em;
+  bottom: -0.62em;
+  height: 0.6em;
+  max-height: 11px;
+  min-height: 7px;
+  background: var(--c-accent);
+  -webkit-mask: var(--brush) no-repeat 0 0 / 100% 100%;
+  mask: var(--brush) no-repeat 0 0 / 100% 100%;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path var(--t-med) var(--ease-out);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.brush:hover::after,
+.brush:focus-visible::after,
+.brush[aria-current='page']::after,
+.brush.is-active::after,
+a:hover .brush::after,
+a:focus-visible .brush::after {
+  clip-path: inset(0 0 0 0);
+}
+
+/* Variante "inline": segue il testo anche quando va a capo (titoli delle opere) */
+.brush-inline {
+  --brush-h: 0.34em;
+  background-image: var(--brush-fill);
+  background-repeat: no-repeat;
+  background-position: -0.15em 100%;
+  background-size: 0% var(--brush-h);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-size var(--t-med) var(--ease-out);
+}
+
+a:hover .brush-inline,
+a:focus-visible .brush-inline,
+.brush-inline.is-active {
+  background-size: calc(100% + 0.3em) var(--brush-h);
+}
+
+/* Variante grande per link testuali importanti (es. "Scrivimi") */
+.brush-lg::after {
+  height: 0.28em;
+  max-height: none;
+  bottom: -0.12em;
+}
+
+/* ---------- Testo che "rotola" da extended a serif (menu, liste temi) ---------- */
+
+.roll {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.08em;
+}
+
+.roll__a,
+.roll__b {
+  display: block;
+  transition: transform var(--t-med) var(--ease-out);
+}
+
+.roll__b {
+  position: absolute;
+  inset: 100% auto auto 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  font-family: var(--f-serif);
+  font-weight: 400;
+  font-stretch: 100%;
+  font-size: 1.095em; /* stessa altezza delle maiuscole della versione extended */
+  letter-spacing: 0;
+}
+
+a:hover .roll .roll__a,
+a:focus-visible .roll .roll__a,
+a:hover .roll .roll__b,
+a:focus-visible .roll .roll__b,
+.roll.is-active .roll__a,
+.roll.is-active .roll__b {
+  transform: translateY(-100%);
+}
+
+/* ---------- Immagini ---------- */
+
+.media {
+  position: relative;
+  overflow: hidden;
+  background: var(--c-mat);
+}
+
+.media img {
+  width: 100%;
+  height: auto;
+}
+
+/* Zoom al passaggio del mouse (richiesto per la galleria) */
+.zoom img {
+  transition:
+    transform var(--t-slow) var(--ease-out),
+    opacity var(--t-med) var(--ease-out);
+  transform-origin: 50% 50%;
+}
+
+@media (hover: hover) {
+  a:hover .zoom img,
+  a:focus-visible .zoom img {
+    transform: scale(1.06);
+  }
+}
+
+/* ---------- Pulsanti ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75em;
+  min-height: 54px;
+  padding: 0.9em 1.9em;
+  border: 1px solid var(--c-text);
+  background: var(--c-text);
+  color: #fff;
+  font-family: var(--f-display);
+  font-stretch: var(--display-stretch);
+  font-weight: 600;
+  font-size: var(--fs-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  text-align: center;
+  transition:
+    background-color var(--t-fast) ease,
+    color var(--t-fast) ease,
+    border-color var(--t-fast) ease;
+}
+
+.btn:hover,
+.btn:focus-visible {
+  background: var(--c-accent);
+  border-color: var(--c-accent);
+  color: var(--c-text);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--c-text);
+}
+
+.btn--ghost:hover,
+.btn--ghost:focus-visible {
+  background: var(--c-text);
+  border-color: var(--c-text);
+  color: #fff;
+}
+
+.arrow {
+  display: inline-block;
+  transition: transform var(--t-fast) var(--ease-out);
+}
+
+a:hover .arrow,
+a:focus-visible .arrow {
+  transform: translateX(4px);
+}
+
+/* ---------- Animazioni d'ingresso (solo se l'utente non ha chiesto meno movimento) ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    animation: reveal-up 1.1s var(--ease-out) both;
+    animation-delay: var(--delay, 0s);
+  }
+
+  .reveal-img {
+    animation: reveal-clip 1.4s var(--ease-out) both;
+    animation-delay: var(--delay, 0s);
+  }
+
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(28px);
+    }
+  }
+
+  @keyframes reveal-clip {
+    from {
+      clip-path: inset(100% 0 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  /* Transizioni tra pagine (View Transitions API, nessun JavaScript) */
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.45s;
+    animation-timing-function: var(--ease-in-out);
+  }
+
+  ::view-transition-group(*) {
+    animation-duration: 0.55s;
+    animation-timing-function: var(--ease-out);
+  }
+}
+
+/* ---------- Utilità ---------- */
+
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  padding: 12px 18px;
+  background: var(--c-text);
+  color: #fff;
+  transform: translateY(-150%);
+  transition: transform var(--t-fast) ease;
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+/* ---------- Overlay a tutto schermo (menu, ricerca, zoom) — Popover API, senza JS ---------- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--c-cream);
+  color: var(--c-ink);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  opacity: 0;
+  transition:
+    opacity 0.45s var(--ease-out),
+    overlay 0.45s allow-discrete,
+    display 0.45s allow-discrete;
+}
+
+.overlay:popover-open {
+  opacity: 1;
+}
+
+@starting-style {
+  .overlay:popover-open {
+    opacity: 0;
+  }
+}
+
+.overlay::backdrop {
+  background: transparent;
+}
+
+.overlay__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: var(--header-h);
+  padding-inline: var(--gutter);
+}
+
+.overlay__logo {
+  font-family: var(--f-display);
+  font-stretch: var(--display-stretch);
+  font-weight: var(--display-weight);
+  font-size: clamp(0.875rem, 0.55rem + 1.6vw, 1.8125rem);
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.overlay__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 32px;
+  padding: 24px var(--gutter) 32px;
+}
+
+.overlay__foot a {
+  color: var(--c-ink);
+}
+
+.overlay__foot a[href^='mailto:'] {
+  text-transform: none;
+  letter-spacing: 0.02em;
+}

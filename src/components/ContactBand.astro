@@ -1,0 +1,50 @@
+---
+interface Props {
+  domanda?: string;
+  invito?: string;
+}
+const { domanda = 'Un’opera ti ha colpito?', invito = 'Scrivimi' } = Astro.props;
+---
+
+<section class="contact-band bg-cream" aria-label="Contatti">
+  <div class="container contact-band__inner">
+    <p class="serif-italic contact-band__question">{domanda}</p>
+    <a class="display contact-band__link" href="/contatti/">
+      <span class="brush brush-lg">{invito}</span>
+      <span class="arrow" aria-hidden="true">→</span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .contact-band {
+    padding-block: clamp(72px, 10vw, 150px);
+  }
+
+  .contact-band__inner {
+    display: grid;
+    justify-items: start;
+    gap: 10px;
+  }
+
+  .contact-band__question {
+    margin: 0;
+    font-size: clamp(1.4rem, 1rem + 1.4vw, 2.4rem);
+    color: var(--c-muted);
+  }
+
+  .contact-band__link {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3em;
+    font-size: clamp(2.6rem, 1rem + 7vw, 8rem);
+    line-height: 1.05;
+    color: var(--c-ink);
+  }
+
+  .contact-band__link .arrow {
+    font-family: var(--f-serif);
+    font-weight: 300;
+    font-stretch: 100%;
+  }
+</style>

@@ -1,0 +1,72 @@
+---
+import { Picture } from 'astro:assets';
+import { altOpera, numero, urlOpera, vtName, type Opera } from '~/lib/opere';
+
+interface Props {
+  opera: Opera;
+  /** Posizione nell'elenco (0 = "/01"). */
+  index: number;
+  /** Le prime immagini visibili si caricano subito. */
+  eager?: boolean;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { opera, index, eager = false, headingLevel: Heading = 'h2' } = Astro.props;
+const { immagine, titolo } = opera.data;
+---
+
+<article class="card">
+  <a class="card__link" href={urlOpera(opera)} style={`--vt:${vtName(opera)}`}>
+    <div class="card__media media zoom" style={`aspect-ratio:${immagine.width}/${immagine.height}`}>
+      <Picture
+        src={immagine}
+        alt={altOpera(opera)}
+        widths={[400, 610, 820, 1220]}
+        sizes="(min-width: 1440px) 610px, (min-width: 768px) 44vw, calc(100vw - 40px)"
+        formats={['avif', 'webp']}
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager && index === 0 ? 'high' : undefined}
+        decoding="async"
+      />
+    </div>
+    <Heading class="card__caption">
+      <span class="num card__num">{numero(index)}</span>
+      <span class="card__title"><span class="brush-inline">{titolo}</span></span>
+    </Heading>
+  </a>
+</article>
+
+<style>
+  .card__link {
+    display: block;
+  }
+
+  /* Transizione "condivisa" verso la scheda: solo l'opera cliccata riceve il nome. */
+  .card__link:is(:hover, :focus-visible) :global(img) {
+    view-transition-name: var(--vt);
+  }
+
+  .card__caption {
+    display: flex;
+    align-items: baseline;
+    gap: clamp(16px, 2vw, 34px);
+    margin-top: clamp(18px, 1.8vw, 30px);
+  }
+
+  .card__num {
+    flex: none;
+    min-width: 1.6em;
+    font-size: clamp(1.15rem, 0.95rem + 0.5vw, 1.5rem);
+  }
+
+  .card__title {
+    font-family: var(--f-display);
+    font-stretch: var(--display-stretch);
+    font-weight: var(--display-weight);
+    font-size: var(--fs-card);
+    line-height: 1.15;
+    text-transform: uppercase;
+    color: var(--c-text);
+  }
+
+</style>

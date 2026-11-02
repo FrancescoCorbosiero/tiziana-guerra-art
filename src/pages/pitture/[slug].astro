@@ -1,0 +1,582 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Picture, getImage } from 'astro:assets';
+import { getEntry, render } from 'astro:content';
+import GalleryGrid from '~/components/GalleryGrid.astro';
+import OverlayClose from '~/components/OverlayClose.astro';
+import { site } from '~/config/site';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import {
+  altOpera,
+  etichettaDisponibilita,
+  getOpere,
+  mailtoOpera,
+  numero,
+  parseDimensioni,
+  urlOpera,
+  urlTema,
+  vtName,
+  whatsappOpera,
+  type Opera,
+} from '~/lib/opere';
+
+export const getStaticPaths = (async () => {
+  const opere = await getOpere();
+  return opere.map((opera, index) => ({
+    params: { slug: opera.id },
+    props: {
+      opera,
+      index,
+      precedente: opere[index - 1],
+      successiva: opere[index + 1],
+      correlate: opere.filter((o) => o.id !== opera.id && o.data.tema.id === opera.data.tema.id).slice(0, 4),
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  opera: Opera;
+  index: number;
+  precedente?: Opera;
+  successiva?: Opera;
+  correlate: Opera[];
+}
+
+const { opera, index, precedente, successiva, correlate } = Astro.props;
+const { data } = opera;
+const tema = await getEntry(data.tema);
+const { Content } = await render(opera);
+
+const pageUrl = new URL(urlOpera(opera), Astro.site).href;
+const disponibile = data.disponibilita === 'disponibile';
+const mostraPrezzo = Boolean(site.mostraPrezzi && data.prezzo && disponibile);
+const whatsapp = whatsappOpera(opera, pageUrl);
+const haTesto = Boolean(opera.body?.trim());
+
+const dettagli: { label: string; value: string }[] = [
+  data.anno ? { label: 'Anno', value: String(data.anno) } : undefined,
+  data.tecnica ? { label: 'Tecnica', value: data.tecnica } : undefined,
+  data.dimensioni ? { label: 'Dimensioni', value: data.dimensioni } : undefined,
+  tema ? { label: 'Tema', value: tema.data.titolo } : undefined,
+  data.disponibilita ? { label: 'Disponibilità', value: etichettaDisponibilita[data.disponibilita] } : undefined,
+  mostraPrezzo ? { label: 'Prezzo', value: data.prezzo! } : undefined,
+].filter((d): d is { label: string; value: string } => Boolean(d));
+
+// Dati strutturati (schema.org) per i motori di ricerca.
+const ogImage = await getImage({ src: data.immagine, width: 1200, format: 'jpg' });
+const dimensioni = parseDimensioni(data.dimensioni);
+const descrizioneBreve =
+  opera.body
+    ?.replace(/[*_>#`]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 155) || undefined;
+const description =
+  descrizioneBreve ??
+  `${data.titolo}${data.anno ? ` (${data.anno})` : ''}${data.tecnica ? `, ${data.tecnica.toLowerCase()}` : ''} — opera di ${site.author}.`;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'VisualArtwork',
+    name: data.titolo,
+    url: pageUrl,
+    image: new URL(ogImage.src, Astro.site).href,
+    artform: 'Pittura',
+    ...(data.tecnica && { artMedium: data.tecnica }),
+    ...(data.anno && { dateCreated: String(data.anno) }),
+    ...(dimensioni && {
+      width: { '@type': 'Distance', name: dimensioni.larghezza },
+      height: { '@type': 'Distance', name: dimensioni.altezza },
+    }),
+    ...(descrizioneBreve && { description: descrizioneBreve }),
+    creator: { '@type': 'Person', name: site.author, url: site.url },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Pitture', item: new URL('/pitture/', Astro.site).href },
+      ...(tema
+        ? [{ '@type': 'ListItem', position: 2, name: tema.data.titolo, item: new URL(urlTema(tema.id), Astro.site).href }]
+        : []),
+      { '@type': 'ListItem', position: tema ? 3 : 2, name: data.titolo, item: pageUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={data.titolo}
+  description={description}
+  image={data.immagine}
+  imageAlt={altOpera(opera)}
+  type="article"
+  jsonLd={jsonLd}
+>
+  <article class="artwork container-wide">
+    <nav class="artwork__crumbs label" aria-label="Percorso">
+      <a href="/pitture/"><span class="brush">Pitture</span></a>
+      {
+        tema && (
+          <>
+            <span aria-hidden="true">/</span>
+            <a href={urlTema(tema.id)}>
+              <span class="brush">{tema.data.titolo}</span>
+            </a>
+          </>
+        )
+      }
+    </nav>
+
+    <div class="artwork__grid">
+      <div class="artwork__visual">
+        <button class="artwork__stage" type="button" popovertarget="zoom-0" aria-label="Ingrandisci l'immagine">
+          <Picture
+            src={data.immagine}
+            alt={altOpera(opera)}
+            widths={[640, 960, 1280, 1600, 2000]}
+            sizes="(min-width: 1024px) 52vw, 100vw"
+            formats={['avif', 'webp']}
+            priority
+            style={`view-transition-name:${vtName(opera)}`}
+          />
+          <span class="artwork__zoom-hint label" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16"
+              ><path d="M10 4H4v6M14 4h6v6M10 20H4v-6M14 20h6v-6" fill="none" stroke="currentColor" stroke-width="1.6"
+              ></path></svg
+            >
+            Ingrandisci
+          </span>
+        </button>
+
+        {
+          data.dettagli.length > 0 && (
+            <ul role="list" class="artwork__details">
+              {data.dettagli.map((d, i) => (
+                <li>
+                  <button class="artwork__detail" type="button" popovertarget={`zoom-${i + 1}`} aria-label="Ingrandisci il dettaglio">
+                    <Picture
+                      src={d.immagine}
+                      alt={d.alt ?? `${data.titolo}, dettaglio ${i + 1}`}
+                      widths={[400, 640, 960]}
+                      sizes="(min-width: 1024px) 25vw, 50vw"
+                      formats={['avif', 'webp']}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+
+      <div class="artwork__info">
+        <p class="num artwork__num">{numero(index)}</p>
+        <h1 class="display artwork__title">{data.titolo}</h1>
+
+        {
+          dettagli.length > 0 && (
+            <dl class="artwork__meta">
+              {dettagli.map((d) => (
+                <div>
+                  <dt class="label">{d.label}</dt>
+                  <dd>{d.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )
+        }
+
+        {
+          haTesto && (
+            <div class="prose artwork__text">
+              <Content />
+            </div>
+          )
+        }
+
+        {
+          data.citazione && (
+            <figure class="artwork__quote">
+              <blockquote>
+                <p>“{data.citazione.testo}”</p>
+              </blockquote>
+              {data.citazione.autore && <figcaption class="label">— {data.citazione.autore}</figcaption>}
+            </figure>
+          )
+        }
+
+        <div class="artwork__actions">
+          {
+            disponibile && (
+              <a class="btn" href={mailtoOpera(opera, 'acquisto', pageUrl)}>
+                Acquista
+              </a>
+            )
+          }
+          <a class:list={['btn', { 'btn--ghost': disponibile }]} href={mailtoOpera(opera, 'info', pageUrl)}>
+            Richiedi informazioni
+          </a>
+        </div>
+        <p class="artwork__contact">
+          {site.contatti.email && (
+            <>
+              Oppure scrivi a <a href={`mailto:${site.contatti.email}`}>{site.contatti.email}</a>
+            </>
+          )}
+          {whatsapp && (
+            <>
+              {site.contatti.email ? ' · ' : ''}
+              <a href={whatsapp} rel="noopener" target="_blank">
+                WhatsApp
+              </a>
+            </>
+          )}
+        </p>
+      </div>
+    </div>
+
+    <nav class="artwork__pager" aria-label="Altre opere">
+      {
+        precedente ? (
+          <a class="pager pager--prev" href={urlOpera(precedente)}>
+            <span class="label pager__dir">
+              <span class="arrow" aria-hidden="true">
+                ←
+              </span>{' '}
+              Precedente
+            </span>
+            <span class="display pager__title">
+              <span class="brush-inline">{precedente.data.titolo}</span>
+            </span>
+          </a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        successiva && (
+          <a class="pager pager--next" href={urlOpera(successiva)}>
+            <span class="label pager__dir">
+              Successiva{' '}
+              <span class="arrow" aria-hidden="true">
+                →
+              </span>
+            </span>
+            <span class="display pager__title">
+              <span class="brush-inline">{successiva.data.titolo}</span>
+            </span>
+          </a>
+        )
+      }
+    </nav>
+  </article>
+
+  {
+    correlate.length > 0 && tema && (
+      <section class="related container-wide" aria-labelledby="related-title">
+        <header class="related__head">
+          <h2 id="related-title" class="display related__title">
+            Altre opere <span class="serif-italic">·</span> {tema.data.titolo}
+          </h2>
+          <a class="label" href={urlTema(tema.id)}>
+            <span class="brush">Vedi tutte</span>
+            <span class="arrow" aria-hidden="true">
+              →
+            </span>
+          </a>
+        </header>
+        <GalleryGrid opere={correlate} eager={0} label={`Altre opere: ${tema.data.titolo}`} />
+      </section>
+    )
+  }
+
+  <!-- Visualizzazione a tutto schermo (Popover API: funziona anche senza JavaScript) -->
+  <Fragment slot="overlays">
+    {
+    [{ immagine: data.immagine, alt: altOpera(opera) }, ...data.dettagli].map((img, i) => (
+      <div id={`zoom-${i}`} popover class="overlay zoom-overlay" role="dialog" aria-label={`${data.titolo}: immagine ingrandita`}>
+        <div class="overlay__bar">
+          <span class="label zoom-overlay__title">{data.titolo}</span>
+          <OverlayClose target={`zoom-${i}`} />
+        </div>
+        <Picture
+          class="zoom-overlay__img"
+          src={img.immagine}
+          alt={img.alt ?? data.titolo}
+          widths={[1200, 1800, 2600]}
+          sizes="100vw"
+          formats={['avif', 'webp']}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    ))
+    }
+  </Fragment>
+</BaseLayout>
+
+<style>
+  .artwork {
+    padding-top: clamp(24px, 4vw, 56px);
+  }
+
+  .artwork__crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: clamp(20px, 3vw, 40px);
+    color: var(--c-muted);
+  }
+
+  .artwork__crumbs a {
+    color: var(--c-text);
+  }
+
+  .artwork__grid {
+    display: grid;
+    gap: clamp(32px, 5vw, 56px);
+  }
+
+  .artwork__stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    padding: clamp(18px, 4.5vw, 72px);
+    background: var(--c-mat);
+    cursor: zoom-in;
+  }
+
+  .artwork__stage :global(picture) {
+    display: contents;
+  }
+
+  .artwork__stage :global(img) {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: calc(100svh - var(--header-h) - 180px);
+    box-shadow: 0 30px 60px -34px rgb(33 29 19 / 0.6);
+  }
+
+  .artwork__zoom-hint {
+    position: absolute;
+    right: 16px;
+    bottom: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--c-muted);
+    opacity: 0;
+    transition: opacity var(--t-fast) ease;
+  }
+
+  .artwork__stage:hover .artwork__zoom-hint,
+  .artwork__stage:focus-visible .artwork__zoom-hint {
+    opacity: 1;
+  }
+
+  .artwork__details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .artwork__detail {
+    display: block;
+    width: 100%;
+    background: var(--c-mat);
+    cursor: zoom-in;
+  }
+
+  .artwork__detail :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  .artwork__num {
+    margin: 0 0 14px;
+    font-size: clamp(1.4rem, 1.1rem + 0.8vw, 2rem);
+  }
+
+  .artwork__title {
+    font-size: clamp(2.1rem, 1.2rem + 3.2vw, 4.25rem);
+    line-height: 1.02;
+    overflow-wrap: anywhere;
+  }
+
+  .artwork__meta {
+    display: grid;
+    margin-top: clamp(28px, 3vw, 44px);
+    border-top: 1px solid var(--c-line);
+  }
+
+  .artwork__meta div {
+    display: grid;
+    grid-template-columns: 9.5em 1fr;
+    gap: 16px;
+    padding-block: 13px;
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  .artwork__meta dt {
+    color: var(--c-muted);
+    padding-top: 0.25em;
+  }
+
+  .artwork__meta dd {
+    color: var(--c-text);
+  }
+
+  .artwork__text {
+    margin-top: clamp(24px, 3vw, 40px);
+  }
+
+  .artwork__quote {
+    margin-top: clamp(24px, 3vw, 40px);
+  }
+
+  .artwork__quote blockquote {
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-size: clamp(1.4rem, 1.1rem + 0.9vw, 2rem);
+    line-height: 1.35;
+    color: var(--c-text);
+  }
+
+  .artwork__quote p {
+    margin: 0 0 10px;
+  }
+
+  .artwork__quote figcaption {
+    color: var(--c-muted);
+  }
+
+  .artwork__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: clamp(28px, 3vw, 44px);
+  }
+
+  .artwork__actions .btn {
+    flex: 1 1 220px;
+  }
+
+  .artwork__contact {
+    margin: 16px 0 0;
+    font-size: var(--fs-small);
+    color: var(--c-muted);
+  }
+
+  .artwork__contact a {
+    color: var(--c-text);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  @media (min-width: 1024px) {
+    .artwork__grid {
+      grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+      align-items: start;
+      gap: clamp(48px, 5.5vw, 110px);
+    }
+
+    .artwork__info {
+      position: sticky;
+      top: calc(var(--header-h) + 40px);
+    }
+  }
+
+  /* Precedente / successiva */
+  .artwork__pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: clamp(72px, 9vw, 140px);
+    padding-top: clamp(28px, 3vw, 44px);
+    border-top: 1px solid var(--c-line);
+  }
+
+  .pager {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+  }
+
+  .pager--next {
+    justify-items: end;
+    text-align: right;
+    grid-column: 2;
+  }
+
+  .pager__dir {
+    color: var(--c-muted);
+  }
+
+  .pager__title {
+    font-size: clamp(1.1rem, 0.7rem + 1.6vw, 2.4rem);
+    line-height: 1.1;
+  }
+
+  .pager--prev:hover .arrow {
+    transform: translateX(-4px);
+  }
+
+  /* Correlate */
+  .related {
+    margin-top: var(--section);
+  }
+
+  .related__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px 40px;
+    margin-bottom: clamp(32px, 4vw, 56px);
+  }
+
+  .related__title {
+    font-size: var(--fs-h3);
+  }
+
+  .related__title .serif-italic {
+    color: var(--c-muted);
+  }
+
+  .related__head .label {
+    display: inline-flex;
+    gap: 10px;
+  }
+
+  /* Zoom a tutto schermo */
+  .zoom-overlay:popover-open {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .zoom-overlay__title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .zoom-overlay :global(picture) {
+    display: contents;
+  }
+
+  .zoom-overlay :global(.zoom-overlay__img) {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 0 var(--gutter) var(--gutter);
+  }
+</style>

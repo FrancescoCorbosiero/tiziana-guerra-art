@@ -1,0 +1,68 @@
+---
+import ArtworkCard from './ArtworkCard.astro';
+import { colonneMasonry, type Opera } from '~/lib/opere';
+
+interface Props {
+  opere: Opera[];
+  /** Numero di immagini caricate subito (quelle visibili senza scorrere). */
+  eager?: number;
+  label?: string;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { opere, eager = 2, label = 'Opere', headingLevel } = Astro.props;
+const voci = opere.map((item, index) => ({ item, index }));
+const colonne = colonneMasonry(voci, 2);
+---
+
+{/* Su mobile una colonna in ordine (01, 02, 03…); da tablet due colonne sfalsate come nel tema. */}
+<div class="masonry" role="list" aria-label={label}>
+  {
+    colonne.map((colonna) => (
+      <div class="masonry__col">
+        {colonna.map(({ item, index }) => (
+          <div role="listitem" class="masonry__item" style={`--order:${index}`}>
+            <ArtworkCard opera={item} index={index} eager={index < eager} headingLevel={headingLevel} />
+          </div>
+        ))}
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .masonry {
+    --row-gap: clamp(56px, 6.5vw, 96px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--row-gap);
+  }
+
+  .masonry__col {
+    display: contents;
+  }
+
+  .masonry__item {
+    order: var(--order);
+  }
+
+  @media (min-width: 768px) {
+    .masonry {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+      column-gap: clamp(32px, 6.15vw, 80px);
+    }
+
+    .masonry__col {
+      display: flex;
+      flex-direction: column;
+      gap: var(--row-gap);
+    }
+
+    /* Colonna destra sfalsata verso il basso */
+    .masonry__col:last-child:not(:first-child) {
+      padding-top: clamp(48px, 9vw, 150px);
+    }
+  }
+</style>

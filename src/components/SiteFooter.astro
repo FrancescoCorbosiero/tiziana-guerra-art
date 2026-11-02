@@ -1,0 +1,139 @@
+---
+import { nav, site } from '~/config/site';
+
+const anno = new Date().getFullYear();
+const { email, telefono, luogo } = site.contatti;
+---
+
+<footer class="site-footer">
+  <div class="container-wide site-footer__grid">
+    <div class="site-footer__brand">
+      <a class="display site-footer__logo" href="/">{site.logo}</a>
+      <p class="serif-italic site-footer__tagline">{site.tagline}</p>
+    </div>
+
+    <nav class="site-footer__nav" aria-label="Menu nel piè di pagina">
+      <ul role="list">
+        {
+          nav.map((item) => (
+            <li>
+              <a class="label" href={item.href}>
+                <span class="brush">{item.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="site-footer__contacts">
+      <p class="label site-footer__heading">Contatti</p>
+      <ul role="list">
+        {
+          email && (
+            <li>
+              <a href={`mailto:${email}`}>{email}</a>
+            </li>
+          )
+        }
+        {
+          telefono && (
+            <li>
+              <a href={`tel:${telefono.replace(/[^\d+]/g, '')}`}>{telefono}</a>
+            </li>
+          )
+        }
+        {luogo && <li>{luogo}</li>}
+        {
+          site.social.map((s) => (
+            <li>
+              <a href={s.url} rel="noopener" target="_blank">
+                {s.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-wide site-footer__bottom">
+    <p>© {anno} {site.author}. Tutti i diritti riservati.</p>
+    <p>Le immagini delle opere sono protette dal diritto d'autore.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-top: clamp(64px, 8vw, 120px);
+    border-top: 1px solid var(--c-line);
+    font-size: var(--fs-small);
+  }
+
+  .site-footer__grid {
+    display: grid;
+    gap: 48px;
+  }
+
+  .site-footer__logo {
+    display: inline-block;
+    font-size: clamp(1.6rem, 1rem + 2.4vw, 3.25rem);
+    line-height: 1;
+    max-width: 12ch;
+  }
+
+  .site-footer__tagline {
+    margin: 14px 0 0;
+    font-size: 1.35rem;
+    color: var(--c-muted);
+  }
+
+  .site-footer__nav ul {
+    display: grid;
+    gap: 14px;
+  }
+
+  .site-footer__heading {
+    margin-bottom: 14px;
+    color: var(--c-muted);
+  }
+
+  .site-footer__contacts ul {
+    display: grid;
+    gap: 8px;
+    font-size: 1rem;
+  }
+
+  .site-footer__contacts a {
+    color: var(--c-text);
+  }
+
+  .site-footer__contacts a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--c-accent);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 0.2em;
+  }
+
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 4px 32px;
+    margin-top: clamp(56px, 7vw, 100px);
+    padding-block: 24px 32px;
+    border-top: 1px solid var(--c-line);
+    color: var(--c-muted);
+  }
+
+  .site-footer__bottom p {
+    margin: 0;
+  }
+
+  @media (min-width: 900px) {
+    .site-footer__grid {
+      grid-template-columns: 1.6fr 1fr 1fr;
+      align-items: start;
+    }
+  }
+</style>

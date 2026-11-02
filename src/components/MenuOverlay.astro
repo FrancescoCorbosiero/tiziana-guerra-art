@@ -1,0 +1,173 @@
+---
+import { Picture } from 'astro:assets';
+import { nav, site } from '~/config/site';
+import { altOpera, getOpereInEvidenza } from '~/lib/opere';
+import OverlayClose from './OverlayClose.astro';
+
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+
+// Un'opera per ogni voce di menu: compare a destra al passaggio del mouse.
+const pool = await getOpereInEvidenza(nav.length);
+const immagini = nav.map((_, i) => (pool.length ? pool[i % pool.length] : undefined));
+const attiva = Math.max(0, nav.findIndex((n) => isCurrent(n.href)));
+
+// Regole CSS generate: hover sulla voce N → mostra l'immagine N (nessun JavaScript).
+// Specificità crescente: nascosta < predefinita < "hover su una voce" < "hover sulla voce N".
+const hover = `.menu-overlay:has(.menu-list a:is(:hover,:focus-visible))`;
+const hoverCss =
+  `.menu-overlay .menu-media__item{opacity:0;transform:scale(.97)}` +
+  `.menu-overlay .menu-media__item.is-default{opacity:1;transform:none}` +
+  `${hover} .menu-media__item{opacity:0;transform:scale(.97)}` +
+  nav
+    .map(
+      (_, i) =>
+        `.menu-overlay:has(.menu-list li:nth-child(${i + 1}) a:is(:hover,:focus-visible)) .menu-media__item:nth-child(${i + 1}){opacity:1;transform:none}`,
+    )
+    .join('');
+---
+
+<div id="menu" popover class="overlay menu-overlay" role="dialog" aria-label="Menu">
+  <div class="overlay__bar">
+    <a class="overlay__logo" href="/">{site.logo}</a>
+    <OverlayClose target="menu" />
+  </div>
+
+  <div class="menu-overlay__body">
+    <nav aria-label="Menu principale">
+      <ul role="list" class="menu-list">
+        {
+          nav.map((item, i) => (
+            <li style={`--i:${i}`}>
+              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                <span class:list={['roll', { 'is-active': isCurrent(item.href) }]}>
+                  <span class="roll__a">{item.label}</span>
+                  <span class="roll__b" aria-hidden="true">
+                    {item.label}
+                  </span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="menu-media" aria-hidden="true">
+      {
+        immagini.map((opera, i) =>
+          opera ? (
+            <div class:list={['menu-media__item', { 'is-default': i === attiva }]}>
+              <Picture
+                src={opera.data.immagine}
+                alt={altOpera(opera)}
+                widths={[480, 720, 960]}
+                sizes="(min-width: 1024px) 30vw, 1px"
+                formats={['avif', 'webp']}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          ) : (
+            <div class="menu-media__item" />
+          ),
+        )
+      }
+    </div>
+  </div>
+
+  <div class="overlay__foot">
+    {site.contatti.email && <a class="label" href={`mailto:${site.contatti.email}`}>{site.contatti.email}</a>}
+    {
+      site.social.map((s) => (
+        <a class="label" href={s.url} rel="noopener" target="_blank">
+          {s.label}
+        </a>
+      ))
+    }
+  </div>
+</div>
+
+<style is:inline set:html={hoverCss}></style>
+
+<style>
+  .menu-overlay__body {
+    display: grid;
+    align-items: center;
+    gap: 40px;
+    padding: clamp(24px, 6vh, 64px) var(--gutter);
+    min-height: calc(100% - 2 * var(--header-h));
+  }
+
+  .menu-list {
+    display: grid;
+    gap: 0.06em;
+    font-family: var(--f-display);
+    font-stretch: var(--display-stretch);
+    font-weight: var(--display-weight);
+    font-size: clamp(2.6rem, 1.2rem + 5.6vw, 7.125rem); /* 114px su desktop, come nel tema */
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: var(--c-ink);
+  }
+
+  .menu-list a {
+    display: inline-block;
+  }
+
+  /* La voce della pagina corrente è in serif, ma torna "extended" mentre se ne sfiora un'altra */
+  .menu-list:has(a:is(:hover, :focus-visible)) a:not(:hover, :focus-visible) .roll.is-active :is(.roll__a, .roll__b) {
+    transform: none;
+  }
+
+  .menu-media {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .menu-overlay__body {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.62fr);
+      padding-inline: clamp(40px, 15.5vw, 296px) clamp(40px, 10vw, 190px);
+      gap: clamp(40px, 6vw, 120px);
+    }
+
+    .menu-media {
+      display: grid;
+      align-self: center;
+      justify-self: end;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .menu-media__item {
+      grid-area: 1 / 1;
+      align-self: center;
+      transition:
+        opacity var(--t-med) var(--ease-out),
+        transform var(--t-slow) var(--ease-out);
+    }
+
+    .menu-media__item :global(img) {
+      width: 100%;
+      height: auto;
+      max-height: 72vh;
+      object-fit: contain;
+      box-shadow: 0 24px 50px -24px rgb(33 29 19 / 0.45);
+    }
+  }
+
+  /* Ingresso delle voci quando il menu si apre */
+  @media (prefers-reduced-motion: no-preference) {
+    .menu-overlay:popover-open .menu-list li {
+      animation: menu-in 0.9s var(--ease-out) both;
+      animation-delay: calc(var(--i) * 60ms + 120ms);
+    }
+
+    @keyframes menu-in {
+      from {
+        opacity: 0;
+        transform: translateY(0.35em);
+      }
+    }
+  }
+</style>
