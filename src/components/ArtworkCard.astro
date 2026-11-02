@@ -1,0 +1,87 @@
+---
+import { Picture } from 'astro:assets';
+import { altOpera, numero, urlOpera, vtName, type Opera } from '~/lib/opere';
+
+interface Props {
+  opera: Opera;
+  /** Posizione nell'elenco (0 = "/01"). */
+  index: number;
+  /** Le prime immagini visibili si caricano subito. */
+  eager?: boolean;
+  headingLevel?: 'h2' | 'h3';
+  /** Dimensioni previste dell'immagine (attributo sizes). */
+  sizes?: string;
+  /** Didascalia più piccola (griglie a 3 colonne). */
+  compact?: boolean;
+}
+
+const {
+  opera,
+  index,
+  eager = false,
+  headingLevel: Heading = 'h2',
+  sizes = '(min-width: 1400px) 610px, (min-width: 769px) 45vw, calc(100vw - 40px)',
+  compact = false,
+} = Astro.props;
+const { immagine, titolo } = opera.data;
+---
+
+<article class:list={['card', { 'card--compact': compact }]}>
+  <a class="card__link" href={urlOpera(opera)} style={`--vt:${vtName(opera)}`}>
+    <div class="card__media media zoom" style={`aspect-ratio:${immagine.width}/${immagine.height}`}>
+      <Picture
+        src={immagine}
+        alt={altOpera(opera)}
+        widths={[400, 610, 820, 1220]}
+        sizes={sizes}
+        formats={['avif', 'webp']}
+        fallbackFormat="jpg"
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager && index === 0 ? 'high' : undefined}
+        decoding="async"
+      />
+    </div>
+    <Heading class="card__caption">
+      <span class="num card__num">{numero(index)}</span>
+      <span class="h4 card__title"><span class="brush-inline">{titolo}</span></span>
+    </Heading>
+  </a>
+</article>
+
+<style>
+  .card__link {
+    display: block;
+  }
+
+  /* Transizione "condivisa" verso la scheda: solo l'opera cliccata riceve il nome. */
+  .card__link:is(:hover, :focus-visible) :global(img) {
+    view-transition-name: var(--vt);
+  }
+
+  /* Didascalia del tema: "/01" in corsivo + titolo in Syne */
+  .card__caption {
+    display: flex;
+    align-items: baseline;
+    gap: clamp(16px, 1.8vw, 34px);
+    margin-top: clamp(16px, 1.6vw, 28px);
+  }
+
+  .card__num {
+    flex: none;
+    min-width: 1.4em;
+  }
+
+  .card--compact .card__caption {
+    gap: 14px;
+    margin-top: 16px;
+  }
+
+  .card--compact .card__num {
+    font-size: 1.25rem;
+  }
+
+  .card--compact .card__title {
+    font-size: clamp(1.0625rem, 0.95rem + 0.35vw, 1.25rem);
+    line-height: 1.15;
+  }
+</style>

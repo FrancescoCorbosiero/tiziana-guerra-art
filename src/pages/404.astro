@@ -1,0 +1,39 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Pagina non trovata" noindex>
+  <section class="not-found container">
+    <p class="num reveal">/404</p>
+    <h1 class="h1 not-found__title reveal" style="--delay:.08s">Pagina non trovata</h1>
+    <p class="text not-found__text reveal" style="--delay:.16s">
+      L'indirizzo potrebbe essere cambiato con il nuovo sito. Tutte le opere sono nella Galleria.
+    </p>
+    <div class="not-found__links reveal" style="--delay:.24s">
+      <a class="btn-text" href="/galleria/"><span class="brush brush--on">Esplora la Galleria</span></a>
+      <a class="btn-text" href="/"><span class="brush">Torna alla home</span></a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    padding-top: clamp(72px, 10vw, 180px);
+  }
+
+  .not-found__title {
+    margin-top: 12px;
+  }
+
+  .not-found__text {
+    max-width: 44ch;
+    margin-top: 20px;
+  }
+
+  .not-found__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 48px;
+    margin-top: 36px;
+  }
+</style>

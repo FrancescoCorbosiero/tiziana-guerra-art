@@ -1,0 +1,72 @@
+---
+import { urlCategoria, type CategoriaConOpere } from '~/lib/opere';
+
+interface Props {
+  categorie: CategoriaConOpere[];
+  totale: number;
+  /** id della categoria attiva; assente = "Tutte". */
+  attiva?: string;
+}
+
+const { categorie, totale, attiva } = Astro.props;
+const voci = [
+  { href: '/pitture/', label: 'Tutte', count: totale, current: !attiva },
+  ...categorie.map(({ categoria, opere }) => ({
+    href: urlCategoria(categoria.id),
+    label: categoria.data.titolo,
+    count: opere.length,
+    current: attiva === categoria.id,
+  })),
+];
+---
+
+{
+  categorie.length > 0 && (
+    <nav class="category-filter container" aria-label="Filtra per categoria">
+      <ul role="list">
+        {voci.map((v) => (
+          <li>
+            <a href={v.href} aria-current={v.current ? 'page' : undefined}>
+              <span class="brush">{v.label}</span>
+              <sup class="num">{v.count}</sup>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<style>
+  .category-filter {
+    padding-top: clamp(40px, 5vw, 72px);
+  }
+
+  .category-filter ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px clamp(24px, 3vw, 44px);
+  }
+
+  .category-filter a {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 5px;
+    padding-block: 6px;
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: var(--fs-nav);
+    line-height: 0.881;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--c-main);
+  }
+
+  .category-filter .num {
+    position: relative;
+    top: -0.4em;
+    font-size: 1.05rem;
+    line-height: 0;
+    color: var(--c-muted);
+  }
+</style>

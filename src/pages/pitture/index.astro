@@ -1,0 +1,28 @@
+---
+import CategoryFilter from '~/components/CategoryFilter.astro';
+import MasonryGrid from '~/components/MasonryGrid.astro';
+import PageTitle from '~/components/PageTitle.astro';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import { getCategorieConOpere, getOpere } from '~/lib/opere';
+
+const [opere, categorie] = await Promise.all([getOpere(), getCategorieConOpere()]);
+---
+
+<BaseLayout
+  title="Pitture"
+  description="Pitture di Tiziana Guerra: acrilico, spatola e tecniche miste. Scopri le opere e richiedi informazioni."
+  image={opere[0]?.data.immagine}
+>
+  <PageTitle title="Pitture" />
+  <CategoryFilter categorie={categorie} totale={opere.length} />
+
+  <section class="container listing" aria-label="Elenco delle pitture">
+    <MasonryGrid opere={opere} />
+  </section>
+</BaseLayout>
+
+<style>
+  .listing {
+    padding-top: clamp(40px, 5vw, 64px);
+  }
+</style>

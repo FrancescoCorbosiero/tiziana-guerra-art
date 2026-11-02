@@ -1,0 +1,39 @@
+---
+import type { GetStaticPaths } from 'astro';
+import CategoryFilter from '~/components/CategoryFilter.astro';
+import MasonryGrid from '~/components/MasonryGrid.astro';
+import PageTitle from '~/components/PageTitle.astro';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import { getCategorieConOpere, getOpere, type CategoriaConOpere } from '~/lib/opere';
+
+export const getStaticPaths = (async () => {
+  const categorie = await getCategorieConOpere();
+  return categorie.map((voce) => ({ params: { categoria: voce.categoria.id }, props: { voce } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  voce: CategoriaConOpere;
+}
+
+const { categoria, opere } = Astro.props.voce;
+const [tutte, categorie] = await Promise.all([getOpere(), getCategorieConOpere()]);
+---
+
+<BaseLayout
+  title={`${categoria.data.titolo} — Pitture`}
+  description={categoria.data.descrizione ?? `Pitture di Tiziana Guerra: ${categoria.data.titolo.toLowerCase()}.`}
+  image={opere[0]?.data.immagine}
+>
+  <PageTitle title={categoria.data.titolo} />
+  <CategoryFilter categorie={categorie} totale={tutte.length} attiva={categoria.id} />
+
+  <section class="container listing" aria-label={`Pitture: ${categoria.data.titolo}`}>
+    <MasonryGrid opere={opere} label={categoria.data.titolo} />
+  </section>
+</BaseLayout>
+
+<style>
+  .listing {
+    padding-top: clamp(40px, 5vw, 64px);
+  }
+</style>

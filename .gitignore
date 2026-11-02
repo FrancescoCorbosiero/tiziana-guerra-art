@@ -1,0 +1,24 @@
+# build
+dist/
+.astro/
+
+# dipendenze
+node_modules/
+
+# log
+npm-debug.log*
+
+# ambiente
+.env
+.env.*
+!.env.example
+
+# sistema
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# import da WordPress (materiale grezzo, non versionato)
+wp-export/

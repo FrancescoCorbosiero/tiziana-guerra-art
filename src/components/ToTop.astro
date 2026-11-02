@@ -1,0 +1,82 @@
+<a class="to-top" href="#top" data-to-top>
+  <span>Torna su</span>
+</a>
+
+<style>
+  /* Come nel tema: cerchio da 85px in "difference", si vede sia su chiaro sia su scuro */
+  .to-top {
+    position: fixed;
+    right: 25px;
+    bottom: 90px;
+    z-index: 40;
+    display: grid;
+    place-items: center;
+    width: 85px;
+    height: 85px;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    color: #fff;
+    mix-blend-mode: difference;
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: 0.625rem; /* 10px */
+    line-height: 1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.15s ease,
+      visibility 0s linear 0.15s,
+      color var(--t-fast) ease-out,
+      background-color var(--t-fast) ease-out;
+  }
+
+  .to-top.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity 0.3s ease,
+      visibility 0s,
+      color var(--t-fast) ease-out,
+      background-color var(--t-fast) ease-out;
+  }
+
+  .to-top:hover,
+  .to-top:focus-visible {
+    color: #000;
+    background: #fff;
+  }
+
+  @media (max-width: 680px) {
+    .to-top {
+      right: 14px;
+      bottom: 24px;
+      width: 64px;
+      height: 64px;
+    }
+  }
+</style>
+
+<script>
+  const btn = document.querySelector<HTMLElement>('[data-to-top]');
+  if (btn) {
+    let pending = false;
+    const update = () => {
+      pending = false;
+      btn.classList.toggle('is-visible', window.scrollY > window.innerHeight * 0.75);
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!pending) {
+          pending = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    update();
+  }
+</script>

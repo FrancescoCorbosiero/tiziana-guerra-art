@@ -1,0 +1,145 @@
+---
+import { Picture } from 'astro:assets';
+import { nav, site } from '~/config/site';
+import { altOpera, getOpera } from '~/lib/opere';
+import OverlayClose from './OverlayClose.astro';
+
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const opera = await getOpera(site.operaMenu);
+---
+
+<div id="menu" popover class="overlay menu-overlay" role="dialog" aria-label="Menu">
+  <div class="overlay__bar">
+    <OverlayClose target="menu" />
+  </div>
+
+  <div class="menu-overlay__body">
+    <nav aria-label="Menu principale">
+      <ul role="list" class="menu-list">
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    {
+      opera && (
+        <div class="menu-overlay__image" aria-hidden="true">
+          <Picture
+            src={opera.data.immagine}
+            alt={altOpera(opera)}
+            widths={[360, 480, 720]}
+            sizes="25vw"
+            formats={['avif', 'webp']}
+            fallbackFormat="jpg"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  /* il pulsante "Chiudi" sta sopra; il menu è centrato su tutta l'altezza, come nel tema */
+  .menu-overlay > :global(.overlay__bar) {
+    position: absolute;
+    inset: 0 0 auto 0;
+    z-index: 1;
+  }
+
+  .menu-overlay__body {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 100%;
+    padding: var(--header-h) var(--gutter) 40px;
+  }
+
+  .menu-list li {
+    margin: 0 0 25px;
+  }
+
+  .menu-list li:last-child {
+    margin: 0;
+  }
+
+  .menu-list a {
+    display: block;
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: 2.375rem; /* 38px */
+    line-height: 1.083;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    color: var(--c-main);
+  }
+
+  /* Al passaggio del mouse e sulla pagina corrente il testo passa al serif (come nel tema) */
+  .menu-list a:is(:hover, :focus-visible, [aria-current='page']) {
+    font-family: var(--f-serif);
+    font-weight: 400;
+  }
+
+  .menu-overlay__image {
+    display: none;
+  }
+
+  @media (min-width: 481px) {
+    .menu-list a {
+      font-size: 3.125rem; /* 50px */
+    }
+  }
+
+  @media (min-width: 769px) {
+    .menu-overlay__image {
+      position: absolute;
+      top: 50%;
+      right: 10%;
+      display: block;
+      max-width: 25vw;
+      transform: translateY(-50%);
+    }
+
+    .menu-overlay__image :global(img) {
+      width: auto;
+      max-width: 25vw;
+      max-height: 72vh;
+    }
+  }
+
+  @media (min-width: 1025px) {
+    /* allineato alla griglia da 1300px del tema */
+    .menu-overlay__body {
+      padding-left: max(var(--gutter), calc((100% - 1300px) / 2));
+    }
+
+    .menu-list li {
+      margin-bottom: 18px;
+    }
+
+    .menu-list a {
+      font-size: 4.375rem; /* 70px */
+    }
+  }
+
+  @media (min-width: 1367px) {
+    .menu-list a {
+      font-size: 5rem; /* 80px */
+    }
+  }
+
+  @media (min-width: 1441px) {
+    .menu-list a {
+      font-size: 7.5rem; /* 120px */
+    }
+  }
+</style>

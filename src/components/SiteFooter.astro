@@ -1,0 +1,127 @@
+---
+import { footerNav, site } from '~/config/site';
+
+const anno = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="site-footer__top">
+    <p class="h5 site-footer__tagline">{site.footerTagline}</p>
+
+    <nav class="site-footer__col" aria-labelledby="footer-website">
+      <h2 class="site-footer__title" id="footer-website">Website</h2>
+      <ul role="list">
+        {
+          footerNav.map((item) => (
+            <li>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="site-footer__col">
+      <h2 class="site-footer__title">Social</h2>
+      <ul role="list">
+        {
+          site.social.map((s) => (
+            <li>
+              <a href={s.url} rel="noopener" target="_blank">
+                {s.label}
+              </a>
+            </li>
+          ))
+        }
+        {
+          site.contatti.email && (
+            <li>
+              <a href={`mailto:${site.contatti.email}`}>Email</a>
+            </li>
+          )
+        }
+      </ul>
+    </div>
+
+    {
+      site.privacyUrl && (
+        <div class="site-footer__col">
+          <h2 class="site-footer__title">Altro</h2>
+          <ul role="list">
+            <li>
+              <a href={site.privacyUrl}>Privacy Policy</a>
+            </li>
+          </ul>
+        </div>
+      )
+    }
+  </div>
+
+  <div class="site-footer__bottom">
+    <p>© {anno} {site.name}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--c-cream);
+  }
+
+  .site-footer__top {
+    display: grid;
+    gap: 36px 40px;
+    padding: clamp(64px, 8vw, 120px) clamp(20px, 6.6vw, 125px) 39px;
+  }
+
+  .site-footer__tagline {
+    margin: 0;
+    max-width: 26ch;
+  }
+
+  .site-footer__title {
+    margin: 0 0 14px;
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--c-text);
+  }
+
+  .site-footer__col ul {
+    display: grid;
+    gap: 4px;
+  }
+
+  .site-footer__col a {
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.35;
+    color: var(--c-body);
+  }
+
+  .site-footer__col a:hover,
+  .site-footer__col a:focus-visible {
+    color: var(--c-text);
+    text-decoration: underline;
+    text-decoration-color: var(--c-accent);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 0.25em;
+  }
+
+  .site-footer__bottom {
+    padding: 0 clamp(20px, 6.6vw, 125px) 43px;
+  }
+
+  .site-footer__bottom p {
+    margin: 0;
+    font-size: 1.125rem;
+    color: var(--c-muted);
+  }
+
+  @media (min-width: 769px) {
+    .site-footer__top {
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      align-items: start;
+    }
+  }
+</style>

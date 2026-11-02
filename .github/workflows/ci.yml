@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      ASTRO_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Controllo tipi e contenuti
+        run: npm run check
+      - name: Build del sito
+        run: npm run build
+
+  contatti:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server/contatti
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: server/contatti/package-lock.json
+      - run: npm ci
+      - name: Test del modulo di contatto
+        run: npm test

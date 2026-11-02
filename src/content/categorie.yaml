@@ -1,0 +1,15 @@
+# Categorie delle pitture (come nel menu "Pitture" del sito WordPress).
+# La chiave è l'identificativo usato nelle schede (campo `categorie`) e nell'indirizzo:
+# /pitture/categoria/<chiave>/
+
+acrilico:
+  titolo: Acrilico
+  ordine: 1
+
+spatola:
+  titolo: Spatola
+  ordine: 2
+
+caffe:
+  titolo: Caffè
+  ordine: 3

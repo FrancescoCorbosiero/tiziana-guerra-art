@@ -1,0 +1,26 @@
+---
+import MasonryGrid from '~/components/MasonryGrid.astro';
+import PageTitle from '~/components/PageTitle.astro';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import { getOpere } from '~/lib/opere';
+
+const opere = await getOpere();
+---
+
+<BaseLayout
+  title="Galleria"
+  description={`Galleria delle opere di Tiziana Guerra: ${opere.map((o) => o.data.titolo).slice(0, 6).join(', ')}…`}
+  image={opere[0]?.data.immagine}
+>
+  <PageTitle title="Galleria" />
+
+  <section class="container listing" aria-label="Tutte le opere">
+    <MasonryGrid opere={opere} colonne={3} gutter="normal" eager={3} />
+  </section>
+</BaseLayout>
+
+<style>
+  .listing {
+    padding-top: clamp(56px, 7vw, 120px);
+  }
+</style>

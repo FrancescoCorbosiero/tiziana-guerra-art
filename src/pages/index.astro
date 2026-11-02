@@ -1,0 +1,385 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Picture } from 'astro:assets';
+import { getEntry } from 'astro:content';
+import Carousel from '~/components/Carousel.astro';
+import Marquee from '~/components/Marquee.astro';
+import { site } from '~/config/site';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import { altOpera, getOpera, getOpereInEvidenza, urlOpera } from '~/lib/opere';
+
+const home = await getEntry('home', 'home');
+if (!home) throw new Error('Manca src/content/home/home.md');
+const { titolo, descrizioneSeo, hero, intro, frasi, chiSono } = home.data;
+
+// Le due opere dell'hero: un'immagine libera oppure un'opera della collezione (con link alla scheda)
+const heroItems = await Promise.all(
+  hero.map(async (h) => {
+    const opera = h.opera ? await getOpera(h.opera.id) : undefined;
+    const immagine: ImageMetadata | undefined = h.immagine ?? opera?.data.immagine;
+    return {
+      titolo: h.titolo,
+      immagine,
+      href: opera ? urlOpera(opera) : undefined,
+      alt: opera ? altOpera(opera) : `${h.titolo} — dipinto di ${site.author}`,
+    };
+  }),
+);
+const carosello = await getOpereInEvidenza(8);
+const paragrafi = (t: string) => t.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+
+const jsonLd = [
+  { '@context': 'https://schema.org', '@type': 'WebSite', name: site.name, url: site.url, inLanguage: 'it-IT' },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: site.author,
+    alternateName: 'Angelart',
+    url: site.url,
+    jobTitle: 'Artista',
+    sameAs: site.social.map((s) => s.url),
+  },
+];
+---
+
+<BaseLayout
+  title="Tiziana Guerra Artista Pittrice"
+  description={descrizioneSeo}
+  image={heroItems[1]?.immagine ?? heroItems[0]?.immagine}
+  jsonLd={jsonLd}
+  header="switch"
+>
+  <!-- HERO: "Vita e rinascita" + due opere con didascalia verticale -->
+  <section class="hero" aria-labelledby="hero-title">
+    <h1 id="hero-title" class="hero__title reveal">{titolo}</h1>
+
+    <div class="hero__works">
+      {
+        heroItems.map((item, i) => {
+          const Tag = item.href ? 'a' : 'div';
+          return (
+            <figure class:list={['hero__work', `hero__work--${i === 0 ? 'small' : 'big'}`]}>
+              <figcaption class="h6 hero__label">{item.titolo}</figcaption>
+              <Tag class="hero__media cover appear-zoom" href={item.href}>
+                {item.immagine && (
+                  <Picture
+                    src={item.immagine}
+                    alt={item.alt}
+                    widths={i === 0 ? [360, 472, 720, 944] : [600, 900, 1105, 1500, 2000]}
+                    sizes={i === 0 ? '(min-width: 1897px) 472px, 26vw' : '(min-width: 1897px) 1105px, 60vw'}
+                    formats={['avif', 'webp']}
+                    fallbackFormat="jpg"
+                    priority={i === 1}
+                    loading={i === 1 ? undefined : 'eager'}
+                  />
+                )}
+              </Tag>
+            </figure>
+          );
+        })
+      }
+    </div>
+  </section>
+
+  <!-- /01 Introduzione -->
+  <section class="intro" aria-labelledby="intro-title">
+    <div class="intro__text">
+      <p class="num">/01</p>
+      <h2 id="intro-title" class="h1 intro__title">{intro.titolo}</h2>
+      <p class="text intro__p">{intro.testo}</p>
+      <a class="btn-text intro__link" href={intro.link.href}>
+        <span class="brush brush--on">{intro.link.testo}</span>
+      </a>
+    </div>
+    {
+      intro.immagine && (
+        <figure class="intro__figure">
+          <Picture
+            src={intro.immagine}
+            alt={intro.immagineAlt}
+            widths={[331, 662]}
+            sizes="(min-width: 1025px) 650px, 90vw"
+            formats={['avif', 'webp']}
+            fallbackFormat="jpg"
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+      )
+    }
+  </section>
+
+  <!-- Carosello delle opere in evidenza -->
+  {carosello.length > 0 && <Carousel opere={carosello} />}
+
+  <!-- Frasi che scorrono -->
+  {frasi.length > 0 && <Marquee frasi={frasi} />}
+
+  <!-- Chi sono / La mia arte / Partecipazioni & eventi -->
+  <section class="about" aria-label="Chi sono">
+    <div class="about__images">
+      {
+        chiSono.immagini.map((img, i) => (
+          <figure class:list={['about__image cover appear-zoom', `about__image--${i}`]}>
+            <Picture
+              src={img.immagine}
+              alt={img.alt}
+              widths={[400, 720, 1080, 1440]}
+              sizes="(min-width: 1025px) 720px, 90vw"
+              formats={['avif', 'webp']}
+              fallbackFormat="jpg"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        ))
+      }
+    </div>
+
+    <div class="about__text">
+      {
+        chiSono.blocchi.map((b, i) => (
+          <div class="about__block">
+            <p class="num">/{String(i + 1).padStart(2, '0')}</p>
+            <h2 class="h2 about__title">{b.titolo}</h2>
+            {paragrafi(b.testo).map((p) => (
+              <p class="text">{p}</p>
+            ))}
+          </div>
+        ))
+      }
+
+      <div class="about__block about__block--events">
+        <p class="num">/{String(chiSono.blocchi.length + 1).padStart(2, '0')}</p>
+        <h2 class="h3 about__title">{chiSono.eventi.titolo}</h2>
+        <dl class="events">
+          {
+            chiSono.eventi.anni.map((a) => (
+              <div class="events__year">
+                <dt class="h6">{a.anno} —</dt>
+                <dd class="text">{a.voci.join(' · ')}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <a class="btn-text about__more" href="/chi-sono/">
+          <span class="brush">Biografia completa</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ---------- Hero ---------- */
+  .hero {
+    padding: 24px 20px 0;
+  }
+
+  .hero__title {
+    margin: 0;
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: clamp(2.5rem, 0.2rem + 10.4vw, 11.25rem); /* 180px su desktop */
+    line-height: 0.833;
+    text-transform: uppercase;
+    color: #000;
+    max-width: 11ch;
+    hyphens: none;
+  }
+
+  .hero__works {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    margin-top: clamp(48px, 8vw, 160px);
+  }
+
+  .hero__work {
+    position: relative;
+    margin: 0;
+  }
+
+  .hero__label {
+    margin-bottom: 12px;
+  }
+
+  .hero__media {
+    display: block;
+  }
+
+  .hero__work--small .hero__media {
+    aspect-ratio: 472 / 458;
+  }
+
+  .hero__work--big .hero__media {
+    aspect-ratio: 1105 / 942;
+  }
+
+  @media (min-width: 769px) {
+    .hero__works {
+      grid-template-columns: 512fr 1105fr;
+      align-items: center;
+      gap: 30px;
+      padding-inline: clamp(0px, 5.6vw, 105px);
+    }
+
+    /* didascalie verticali a sinistra dell'immagine, come nel tema */
+    .hero__work {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: end;
+      gap: 19px;
+    }
+
+    .hero__label {
+      margin: 0;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      white-space: nowrap;
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .hero {
+      padding-top: 230px; /* il titolo inizia sotto all'header "switch" */
+    }
+  }
+
+  /* ---------- /01 Introduzione ---------- */
+  .intro {
+    display: grid;
+    gap: 40px;
+    align-items: center;
+    padding: clamp(96px, 12vw, 260px) clamp(20px, 6.6vw, 125px) 0;
+  }
+
+  .intro__title {
+    margin-top: 12px;
+    max-width: 22ch;
+  }
+
+  .intro__p {
+    margin: 17px 0 0;
+    max-width: 60ch;
+  }
+
+  .intro__link {
+    margin-top: 30px;
+  }
+
+  .intro__figure {
+    margin: 0;
+    justify-self: center;
+    width: min(100%, 650px);
+  }
+
+  .intro__figure :global(img) {
+    width: 100%;
+  }
+
+  @media (min-width: 1025px) {
+    .intro {
+      grid-template-columns: 1063fr 584fr;
+      gap: 60px;
+    }
+
+    .intro__figure {
+      justify-self: end;
+    }
+  }
+
+  :global(.carousel) {
+    margin-top: clamp(80px, 10vw, 180px);
+  }
+
+  :global(.marquee) {
+    margin-top: clamp(80px, 9vw, 150px);
+  }
+
+  /* ---------- Chi sono ---------- */
+  .about {
+    display: grid;
+    gap: 56px;
+    padding: clamp(96px, 10vw, 190px) clamp(20px, 6.6vw, 125px) 0;
+  }
+
+  .about__images {
+    display: grid;
+    gap: 20px;
+  }
+
+  .about__image {
+    margin: 0;
+  }
+
+  .about__image--0 {
+    aspect-ratio: 629 / 500;
+    width: 88%;
+    margin-left: 12%;
+  }
+
+  .about__image--1 {
+    aspect-ratio: 709 / 600;
+  }
+
+  .about__text {
+    display: grid;
+    gap: clamp(56px, 6vw, 90px);
+    align-content: start;
+    text-align: center;
+  }
+
+  .about__block .num {
+    margin: 0 0 12px;
+  }
+
+  .about__title {
+    margin-bottom: 20px;
+  }
+
+  .about__block .text {
+    max-width: 52ch;
+    margin: 0 auto 14px;
+  }
+
+  .about__block--events {
+    text-align: left;
+  }
+
+  .about__block--events .num,
+  .about__block--events .about__title {
+    text-align: center;
+  }
+
+  .events {
+    display: grid;
+    gap: 18px;
+  }
+
+  .events__year dt {
+    margin-bottom: 4px;
+  }
+
+  .about__block .events dd {
+    max-width: none;
+    margin: 0;
+    font-size: 1.0625rem;
+  }
+
+  .about__more {
+    margin-top: 32px;
+  }
+
+  @media (min-width: 1025px) {
+    .about {
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .about__text {
+      padding-top: 40px;
+    }
+  }
+</style>

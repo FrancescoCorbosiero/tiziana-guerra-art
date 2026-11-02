@@ -1,0 +1,124 @@
+---
+import { Picture } from 'astro:assets';
+import ContactForm from '~/components/ContactForm.astro';
+import PageTitle from '~/components/PageTitle.astro';
+import { site } from '~/config/site';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import torreGuida from '~/assets/pagine/la-torre-guida.webp';
+
+const { email, telefono, whatsapp, luogo } = site.contatti;
+type Recapito = { label: string; value: string; href?: string; external?: boolean };
+const candidati: (Recapito | undefined)[] = [
+  email ? { label: 'Email', value: email, href: `mailto:${email}` } : undefined,
+  telefono ? { label: 'Telefono', value: telefono, href: `tel:${telefono.replace(/[^\d+]/g, '')}` } : undefined,
+  whatsapp ? { label: 'WhatsApp', value: 'Scrivimi su WhatsApp', href: `https://wa.me/${whatsapp}`, external: true } : undefined,
+  ...site.social.map((s) => ({ label: s.label, value: '@' + s.url.replace(/\/$/, '').split('/').pop(), href: s.url, external: true })),
+  luogo ? { label: 'Dove', value: luogo } : undefined,
+];
+const recapiti = candidati.filter((r): r is Recapito => Boolean(r));
+---
+
+<BaseLayout title="Contatti" description={`Per informazioni e richieste sulle opere di ${site.author}, inviami un messaggio.`}>
+  <PageTitle title="Contatti" />
+
+  <section class="contacts container">
+    <div class="contacts__main">
+      <h2 class="h3 contacts__title">Per informazioni e richieste, inviami un messaggio</h2>
+      {site.contactFormEndpoint && <ContactForm action={site.contactFormEndpoint} />}
+    </div>
+
+    <aside class="contacts__aside" aria-label="Recapiti">
+      <dl class="contacts__list">
+        {
+          recapiti.map((r) => (
+            <div>
+              <dt class="h6">{r.label}</dt>
+              <dd>
+                {r.href ? (
+                  <a class="contacts__value" href={r.href} {...(r.external ? { rel: 'noopener', target: '_blank' } : {})}>
+                    <span class="brush-inline">{r.value}</span>
+                  </a>
+                ) : (
+                  <span class="contacts__value">{r.value}</span>
+                )}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    <figure class="contacts__figure">
+      <Picture
+        src={torreGuida}
+        alt="La torre guida — dipinto di Tiziana Guerra"
+        widths={[480, 720, 1024]}
+        sizes="(min-width: 1025px) 420px, 90vw"
+        formats={['avif', 'webp']}
+        fallbackFormat="jpg"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+    </aside>
+  </section>
+</BaseLayout>
+
+<style>
+  .contacts {
+    display: grid;
+    gap: 56px;
+    padding-top: clamp(56px, 6vw, 100px);
+  }
+
+  .contacts__title {
+    max-width: 30ch;
+  }
+
+  .contacts__list {
+    display: grid;
+    gap: 28px;
+    margin-top: clamp(36px, 4vw, 56px);
+  }
+
+  .contacts__list dt {
+    margin-bottom: 6px;
+  }
+
+  .contacts__value {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: var(--fs-h4);
+    line-height: 1.15;
+    color: var(--c-text);
+    overflow-wrap: anywhere;
+  }
+
+  .contacts__figure {
+    margin: 0;
+  }
+
+  .contacts__figure :global(img) {
+    width: 100%;
+  }
+
+  .contacts__aside {
+    display: grid;
+    gap: 40px;
+    align-content: start;
+  }
+
+  .contacts__aside .contacts__list {
+    margin-top: 0;
+  }
+
+  .contacts__aside .contacts__value {
+    font-size: var(--fs-h5);
+  }
+
+  @media (min-width: 1025px) {
+    .contacts {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+      gap: 80px;
+      align-items: start;
+    }
+  }
+</style>

@@ -1,0 +1,28 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+---
+
+<!-- Mostrata quando il modulo viene inviato senza JavaScript -->
+<BaseLayout title="Messaggio inviato" noindex>
+  <section class="esito container">
+    <p class="num">/grazie</p>
+    <h1 class="h1">Messaggio inviato</h1>
+    <p class="text">Grazie per avermi scritto: riceverai una risposta al più presto.</p>
+    <a class="btn-text" href="/galleria/"><span class="brush brush--on">Torna alla Galleria</span></a>
+  </section>
+</BaseLayout>
+
+<style>
+  .esito {
+    padding-top: clamp(72px, 10vw, 180px);
+  }
+
+  .esito .h1 {
+    margin-top: 12px;
+  }
+
+  .esito .text {
+    max-width: 44ch;
+    margin: 20px 0 36px;
+  }
+</style>

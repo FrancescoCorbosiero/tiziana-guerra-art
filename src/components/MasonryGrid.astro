@@ -1,0 +1,90 @@
+---
+import ArtworkCard from './ArtworkCard.astro';
+import { colonneMasonry, type Opera } from '~/lib/opere';
+
+interface Props {
+  opere: Opera[];
+  /** Numero di immagini caricate subito (quelle visibili senza scorrere). */
+  eager?: number;
+  label?: string;
+  headingLevel?: 'h2' | 'h3';
+  /** Spaziatura del tema: "huge" (Pitture) o "normal" (elenchi più compatti). */
+  gutter?: 'huge' | 'normal';
+  /** 2 colonne (Pitture, come nel tema) o 3 (Galleria, correlate). */
+  colonne?: 2 | 3;
+}
+
+const { opere, eager = 2, label = 'Opere', headingLevel, gutter = 'huge', colonne: n = 2 } = Astro.props;
+const voci = opere.map((item, index) => ({ item, index }));
+const colonne = colonneMasonry(voci, n, { didascalia: n === 3 ? 0.28 : 0.2 });
+const sizes =
+  n === 3
+    ? '(min-width: 1400px) 413px, (min-width: 769px) 30vw, calc(100vw - 40px)'
+    : '(min-width: 1400px) 610px, (min-width: 769px) 45vw, calc(100vw - 40px)';
+---
+
+{/* Su mobile una colonna in ordine (01, 02, 03…); da tablet due colonne "masonry" come nel tema. */}
+<div class:list={['masonry', `masonry--${gutter}`, `masonry--${n}`]} role="list" aria-label={label}>
+  {
+    colonne.map((colonna) => (
+      <div class="masonry__col">
+        {colonna.map(({ item, index }) => (
+          <div role="listitem" class="masonry__item" style={`--order:${index}`}>
+            <ArtworkCard
+              opera={item}
+              index={index}
+              eager={index < eager}
+              headingLevel={headingLevel}
+              sizes={sizes}
+              compact={n === 3}
+            />
+          </div>
+        ))}
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .masonry {
+    --row-gap: clamp(56px, 6vw, 96px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--row-gap);
+  }
+
+  .masonry--normal {
+    --row-gap: clamp(40px, 3.5vw, 60px);
+  }
+
+  .masonry__col {
+    display: contents;
+  }
+
+  .masonry__item {
+    order: var(--order);
+  }
+
+  @media (min-width: 769px) {
+    .masonry {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+      column-gap: clamp(40px, 6.15vw, 80px); /* gutter "huge" del tema */
+    }
+
+    .masonry--normal {
+      column-gap: 30px;
+    }
+
+    .masonry--3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .masonry__col {
+      display: flex;
+      flex-direction: column;
+      gap: var(--row-gap);
+    }
+  }
+</style>

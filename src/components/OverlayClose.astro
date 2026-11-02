@@ -1,0 +1,46 @@
+---
+interface Props {
+  /** id del popover da chiudere */
+  target: string;
+  label?: string;
+}
+const { target, label = 'Chiudi' } = Astro.props;
+---
+
+<button class="overlay-close" type="button" popovertarget={target} popovertargetaction="hide">
+  <span class="overlay-close__text">{label}</span>
+  <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+    <path d="M2.5 2.5l11 11M13.5 2.5l-11 11" stroke="currentColor" stroke-width="3.4" stroke-linecap="square"></path>
+  </svg>
+</button>
+
+<style>
+  .overlay-close {
+    display: inline-flex;
+    align-items: center;
+    gap: 26px;
+    padding: 10px 0;
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: var(--fs-nav);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--c-main);
+  }
+
+  .overlay-close svg {
+    transition: transform var(--t-med) var(--ease-out);
+  }
+
+  .overlay-close:hover svg {
+    transform: rotate(90deg);
+  }
+
+  @media (max-width: 599px) {
+    .overlay-close {
+      font-size: 0.875rem;
+      gap: 14px;
+    }
+  }
+</style>
