@@ -61,6 +61,10 @@ docs/                   documentazione di progetto
   - apici singoli;
   - circa 120 caratteri per riga;
   - virgole finali.
+- **Impaginazione**:
+  - tutte le sezioni stanno nel contenitore da 1300px (`.container`) e sulla griglia a 12 colonne `.grid-12` (da 769px, spazio `--grid-gap`): titoli, testi, immagini e piè di pagina partono dallo stesso bordo;
+  - fanno eccezione solo le parti a tutta larghezza volute dal tema: header, carosello (che parte dal bordo del contenitore ed esce a destra) e frasi scorrevoli;
+  - testi di lettura a 60–70 caratteri per riga (`max-width` in `ch`).
 - **CSS**:
   - i valori del tema stanno nelle variabili di `global.css` (`--c-*`, `--f-*`, `--fs-*`, `--ease-*`);
   - ogni componente ha il suo `<style>` scoped;
@@ -75,6 +79,10 @@ docs/                   documentazione di progetto
   - `priority` solo sull'immagine principale (LCP);
   - le foto non vengono mai ingrandite oltre l'originale.
 - **Ritagli** (classe `.cover`): l'`aspect-ratio` va sul contenitore. Il punto di fuoco si imposta con `--pos`, letto dai campi `posizione` / `immaginePosizione` nei contenuti.
+- **Opere**:
+  - mai ritagliate: si mostrano intere;
+  - nelle griglie l'anteprima è alta al massimo 1,6 volte la larghezza (`rapportoAnteprima` in `lib/opere.ts`); oltre, l'opera sta intera su un passe-partout crema;
+  - nella scheda, da tablet, l'opera sta su un passe-partout con le sue proporzioni (`--r`, contenute tra 0,62 e 1,25) e alto al massimo quanto lo schermo (`--stage-max`).
 - **JavaScript**:
   - solo negli `<script>` di Astro, che diventano file esterni: la CSP non ammette script inline;
   - inline sono ammessi solo i blocchi JSON-LD e le speculation rules.
@@ -89,6 +97,7 @@ docs/                   documentazione di progetto
 ## Insidie note
 
 - **Specificità negli stili scoped**: Astro aggiunge `[data-astro-cid-…]` a ogni selettore composto. Per questo `.a > *` ha più specificità di `.b` e la batte anche se `.b` sta in una media query successiva. Meglio usare selettori espliciti.
+- **Figli di `.grid-12`**: da 769px ogni figlio diretto va posizionato con `grid-column` anche sul tablet (per esempio `1 / -1`). Altrimenti finisce in una sola delle 12 colonne.
 - **Slash finale**: `trailingSlash: 'always'` più il rewrite di nginx fanno sì che ogni link interno finisca con "/". Il rewrite esclude `/api/`, perché un redirect su una POST farebbe perdere il messaggio.
 - **JavaScript sempre esterno**: `vite.build.assetsInlineLimit` impedisce di mettere il JS inline. Serve alla CSP.
 - **Altezza degli header**:

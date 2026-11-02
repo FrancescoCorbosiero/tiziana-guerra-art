@@ -46,7 +46,7 @@ npm run check     # controllo tipi e contenuti
 | `/chi-sono/` | Angelart (ritratto e presentazione), biografia, premio con *Chimera*, eventi anno per anno (`#eventi-2025`…) | `/chi-sono/` |
 | `/pitture/` | Tutte le opere su due colonne, filtro per categoria | `/portfolio-tag/pitture/` |
 | `/pitture/categoria/<categoria>/` | Acrilico, Spatola, Caffè | `/portfolio-category/…` |
-| `/pitture/<opera>/` | Scheda: foto con zoom, titolo, descrizione, dimensioni, anno, tecnica, categoria, "Richiedi informazioni" | `/portfolio-item/<opera>/` |
+| `/pitture/<opera>/` | Scheda: foto su passe-partout con zoom, titolo, descrizione, dimensioni, anno, tecnica, categoria, "Richiedi informazioni" | `/portfolio-item/<opera>/` |
 | `/galleria/` | Tutte le opere su 3 colonne, zoom al passaggio del mouse | `/portfolio/` |
 | `/contatti/` | Modulo di contatto (inoltro via AWS SES), email e Instagram | `/contatti-2/` |
 | `/privacy-policy/` | Informativa privacy | `/privacy-policy-3/` |
@@ -229,5 +229,9 @@ Correzioni già fatte rispetto al vecchio sito:
   - la scheda ha il pulsante "Richiedi informazioni";
   - nella scheda, le frecce ← → della tastiera passano all'opera precedente o successiva;
   - la pagina Chi sono è stata reimpaginata su una griglia a 12 colonne con proporzioni corrette. L'impaginazione Elementor originale aveva testi su righe troppo lunghe, il ritratto tagliato ed eventi centrati difficili da leggere. I dettagli sono in [docs/porting-wordpress.md](docs/porting-wordpress.md#6-chi-sono-prima-e-dopo);
+  - tutto il sito usa la stessa griglia: home, schede, contatti e piè di pagina partono dallo stesso bordo. Con Elementor ogni sezione aveva i suoi margini. I dettagli sono in [docs/porting-wordpress.md](docs/porting-wordpress.md#7-il-resto-del-sito-prima-e-dopo);
+  - nella scheda l'opera sta su un passe-partout crema con le sue proporzioni. Su desktop titolo, dati e "Richiedi informazioni" stanno a destra, già visibili nella prima schermata;
+  - nelle griglie le opere molto verticali (oltre 1,6:1) restano intere su un passe-partout, invece di diventare alte come uno schermo e mezzo;
   - in stampa escono solo i contenuti, senza header, menu e pulsanti.
 - Tutti i valori (colori, font, dimensioni) sono variabili CSS in `src/styles/global.css`.
+- **Griglia**: contenitore da 1300px (quello del tema) e 12 colonne (`.grid-12`, da 769px). Nuove sezioni vanno messe lì dentro, così restano allineate al resto.
