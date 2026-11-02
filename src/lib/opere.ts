@@ -50,6 +50,17 @@ export const urlCategoria = (id: string) => `/pitture/categoria/${id}/`;
 /** Nome per le View Transitions (immagine che "vola" dalla griglia alla scheda). */
 export const vtName = (o: Opera) => `opera-${o.id.replace(/[^a-z0-9_-]/gi, '-')}`;
 
+/**
+ * Nelle griglie (Pitture, Galleria, correlate) un'anteprima non è mai più alta di 1,6 volte la sua
+ * larghezza: le opere più verticali (es. 80 × 40 cm) restano intere, centrate su un passe-partout.
+ */
+export const RAPPORTO_MAX_ANTEPRIMA = 1.6;
+
+export function rapportoAnteprima(o: Opera): number {
+  const { width, height } = o.data.immagine;
+  return Math.min(height / width, RAPPORTO_MAX_ANTEPRIMA);
+}
+
 /** "/01", "/02"… come nel tema originale. */
 export const numero = (i: number) => `/${String(i + 1).padStart(2, '0')}`;
 
@@ -112,10 +123,9 @@ export function colonneMasonry<T extends { item: Opera }>(
   const altezze = Array.from({ length: colonne }, (_, i) => (i === colonne - 1 && colonne > 1 ? sfalsamento : 0));
   const risultato: T[][] = Array.from({ length: colonne }, () => []);
   for (const voce of voci) {
-    const { width, height } = voce.item.data.immagine;
     const col = altezze.indexOf(Math.min(...altezze));
     risultato[col]!.push(voce);
-    altezze[col]! += height / width + didascalia;
+    altezze[col]! += rapportoAnteprima(voce.item) + didascalia;
   }
   return risultato;
 }

@@ -65,6 +65,10 @@ const linkRichiesta = (motivo: 'info' | 'acquisto') =>
       })}#modulo`
     : mailtoOpera(opera, motivo, pageUrl);
 const haTesto = Boolean(opera.body?.trim());
+// Passe-partout (da tablet): riquadro crema con le proporzioni dell'opera, contenute tra 0,62 e 1,25,
+// così le opere molto larghe o molto alte non diventano strisce né torri.
+const rapporto = data.immagine.height / data.immagine.width;
+const rapportoRiquadro = Math.min(1.25, Math.max(0.62, rapporto)).toFixed(3);
 
 type Dettaglio = { label: string; value: string; links?: { label: string; href: string }[] };
 const dettagli = [
@@ -133,92 +137,64 @@ const jsonLd = [
   type="article"
   jsonLd={jsonLd}
 >
-  <article class="artwork container">
-    <button class="artwork__stage" type="button" popovertarget="zoom-0" aria-label="Ingrandisci l'immagine">
-      <Picture
-        src={data.immagine}
-        alt={altOpera(opera)}
-        widths={[640, 960, 1300, 1800, 2400]}
-        sizes="(min-width: 1400px) 1300px, calc(100vw - 40px)"
-        formats={['avif', 'webp']}
-        fallbackFormat="jpg"
-        priority
-        style={`view-transition-name:${vtName(opera)}`}
-      />
-      <span class="artwork__zoom-hint" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="16" height="16"
-          ><path d="M10 4H4v6M14 4h6v6M10 20H4v-6M14 20h6v-6" fill="none" stroke="currentColor" stroke-width="1.6"
-          ></path></svg
-        >
-        Ingrandisci
-      </span>
-    </button>
-
-    {
-      data.dettagli.length > 0 && (
-        <ul role="list" class="artwork__details">
-          {data.dettagli.map((d, i) => (
-            <li>
-              <button class="artwork__detail" type="button" popovertarget={`zoom-${i + 1}`} aria-label="Ingrandisci il dettaglio">
-                <Picture
-                  src={d.immagine}
-                  alt={d.alt ?? `${data.titolo}, dettaglio ${i + 1}`}
-                  widths={[400, 640, 960]}
-                  sizes="(min-width: 769px) 33vw, 50vw"
-                  formats={['avif', 'webp']}
-                  fallbackFormat="jpg"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </button>
-            </li>
-          ))}
-        </ul>
-      )
-    }
-
-    <div class="artwork__grid">
-      <div class="artwork__main">
-        <h1 class="h1 artwork__title">{data.titolo}</h1>
-        {
-          haTesto && (
-            <div class="prose text artwork__text">
-              <Content />
-            </div>
-          )
-        }
-        <div class="artwork__actions">
-          {
-            disponibile && (
-              <a class="btn" href={linkRichiesta('acquisto')}>
-                Acquista
-              </a>
-            )
-          }
-          <a class:list={['btn', { 'btn--ghost': disponibile }]} href={linkRichiesta('info')}>
-            Richiedi informazioni
-          </a>
-        </div>
-        {
-          site.contatti.email && (
-            <p class="artwork__contact">
-              Oppure scrivi a <a href={mailtoOpera(opera, 'info', pageUrl)}>{site.contatti.email}</a>
-              {whatsapp && (
-                <>
-                  {' · '}
-                  <a href={whatsapp} rel="noopener" target="_blank">
-                    WhatsApp
-                  </a>
-                </>
-              )}
-            </p>
-          )
-        }
-      </div>
+  <article class="artwork grid-12 container" style={`--r:${rapportoRiquadro}`}>
+    <div class="artwork__media">
+      <button class="artwork__stage" type="button" popovertarget="zoom-0" aria-label="Ingrandisci l'immagine">
+        <Picture
+          src={data.immagine}
+          alt={altOpera(opera)}
+          widths={[640, 960, 1300, 1800, 2400]}
+          sizes="(min-width: 1440px) 660px, (min-width: 1025px) 47vw, calc(100vw - 40px)"
+          formats={['avif', 'webp']}
+          fallbackFormat="jpg"
+          priority
+          style={`view-transition-name:${vtName(opera)}`}
+        />
+        <span class="artwork__zoom-hint" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16"
+            ><path d="M10 4H4v6M14 4h6v6M10 20H4v-6M14 20h6v-6" fill="none" stroke="currentColor" stroke-width="1.6"
+            ></path></svg
+          >
+          Ingrandisci
+        </span>
+      </button>
 
       {
+        data.dettagli.length > 0 && (
+          <ul role="list" class="artwork__details">
+            {data.dettagli.map((d, i) => (
+              <li>
+                <button class="artwork__detail" type="button" popovertarget={`zoom-${i + 1}`} aria-label="Ingrandisci il dettaglio">
+                  <Picture
+                    src={d.immagine}
+                    alt={d.alt ?? `${data.titolo}, dettaglio ${i + 1}`}
+                    widths={[400, 640, 960]}
+                    sizes="(min-width: 769px) 33vw, 50vw"
+                    formats={['avif', 'webp']}
+                    fallbackFormat="jpg"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+
+    <div class="artwork__info">
+      <h1 class="h1 artwork__title">{data.titolo}</h1>
+      {
+        haTesto && (
+          <div class="prose text artwork__text">
+            <Content />
+          </div>
+        )
+      }
+      {
         dettagli.length > 0 && (
-          <dl class="artwork__info">
+          <dl class="artwork__facts">
             {dettagli.map((d) => (
               <div>
                 <dt class="h6">{d.label}:</dt>
@@ -235,6 +211,33 @@ const jsonLd = [
               </div>
             ))}
           </dl>
+        )
+      }
+      <div class="artwork__actions">
+        {
+          disponibile && (
+            <a class="btn" href={linkRichiesta('acquisto')}>
+              Acquista
+            </a>
+          )
+        }
+        <a class:list={['btn', { 'btn--ghost': disponibile }]} href={linkRichiesta('info')}>
+          Richiedi informazioni
+        </a>
+      </div>
+      {
+        site.contatti.email && (
+          <p class="artwork__contact">
+            Oppure scrivi a <a href={mailtoOpera(opera, 'info', pageUrl)}>{site.contatti.email}</a>
+            {whatsapp && (
+              <>
+                {' · '}
+                <a href={whatsapp} rel="noopener" target="_blank">
+                  WhatsApp
+                </a>
+              </>
+            )}
+          </p>
         )
       }
     </div>
@@ -325,8 +328,19 @@ const jsonLd = [
 </script>
 
 <style>
+  /*
+   * Telefono: foto a tutta larghezza alle sue proporzioni, poi titolo e dati.
+   * Da tablet: l'opera su un passe-partout crema con le sue proporzioni (--r, contenute).
+   * Desktop: opera a sinistra (7 colonne), titolo, dati e "Richiedi informazioni" a destra (5),
+   * tutto nella prima schermata, qualunque sia il formato del quadro.
+   */
   .artwork {
-    padding-top: clamp(32px, 5vw, 80px);
+    --pad-top: clamp(24px, 4vw, 64px);
+    /* altezza massima del passe-partout: lo schermo meno header e margini, così entra tutto */
+    --stage-max: calc(100svh - var(--header-h) - var(--pad-top) - 32px);
+    display: grid;
+    align-items: start;
+    padding-top: var(--pad-top);
   }
 
   .artwork__stage {
@@ -341,7 +355,6 @@ const jsonLd = [
     display: contents;
   }
 
-  /* come nel tema: foto allineata a sinistra con il titolo, alle sue dimensioni naturali */
   .artwork__stage :global(img) {
     width: auto;
     max-width: 100%;
@@ -390,15 +403,12 @@ const jsonLd = [
     height: auto;
   }
 
-  .artwork__grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 40px;
-    margin-top: clamp(32px, 3vw, 44px);
+  .artwork__info {
+    margin-top: clamp(28px, 3vw, 40px);
   }
 
   .artwork__title {
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     letter-spacing: -0.01em;
     overflow-wrap: break-word;
     hyphens: auto;
@@ -408,11 +418,37 @@ const jsonLd = [
     margin: 10px 0;
   }
 
+  .artwork__facts {
+    display: grid;
+    gap: 6px;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--c-line);
+  }
+
+  .artwork__facts div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 8px;
+  }
+
+  .artwork__facts dt {
+    flex: none;
+  }
+
+  .artwork__facts dd a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--c-accent);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 0.2em;
+  }
+
   .artwork__actions {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    margin-top: clamp(24px, 2.6vw, 40px);
+    margin-top: clamp(24px, 2.6vw, 36px);
   }
 
   .artwork__contact {
@@ -423,30 +459,6 @@ const jsonLd = [
 
   .artwork__contact a {
     text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
-
-  .artwork__info {
-    display: grid;
-    gap: 6px;
-    align-content: start;
-  }
-
-  .artwork__info div {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0 8px;
-  }
-
-  .artwork__info dt {
-    flex: none;
-  }
-
-  .artwork__info dd a:hover {
-    text-decoration: underline;
-    text-decoration-color: var(--c-accent);
-    text-decoration-thickness: 3px;
     text-underline-offset: 0.2em;
   }
 
@@ -462,14 +474,61 @@ const jsonLd = [
     margin-top: clamp(72px, 8vw, 130px);
   }
 
-  @media (min-width: 1025px) {
-    .artwork__grid {
-      grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
-      gap: 60px;
+  /* Da tablet: passe-partout crema, alto al massimo quanto lo schermo */
+  @media (min-width: 769px) {
+    .artwork__media,
+    .artwork__info,
+    .artwork__pager {
+      grid-column: 1 / -1;
+    }
+
+    .artwork__media {
+      container-type: inline-size;
+    }
+
+    .artwork__stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: min(var(--stage-max), calc(100cqi * var(--r, 1)));
+      min-height: 320px;
+      padding: clamp(20px, 3vw, 44px);
+      background: var(--c-mat);
+    }
+
+    .artwork__stage :global(img) {
+      max-height: 100%;
     }
 
     .artwork__info {
-      padding-top: 6px;
+      max-width: 720px;
+    }
+  }
+
+  /* Desktop: opera e informazioni affiancate */
+  @media (min-width: 1025px) {
+    .artwork__media {
+      grid-column: 1 / span 7;
+    }
+
+    .artwork__info {
+      grid-column: 8 / span 5;
+      max-width: none;
+      margin-top: 0;
+      padding: clamp(20px, 3vw, 44px) 0 0 clamp(0px, 1.6vw, 24px);
+    }
+
+    .artwork__title {
+      font-size: clamp(2rem, 1rem + 1.7vw, 3.125rem);
+    }
+  }
+
+  /* titolo e pulsanti restano in vista se a sinistra ci sono altre foto (dettagli) */
+  @media (min-width: 1025px) and (min-height: 700px) {
+    .artwork__info {
+      position: sticky;
+      top: calc(var(--sticky-h) + 32px);
     }
   }
 

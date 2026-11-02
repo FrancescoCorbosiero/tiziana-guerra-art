@@ -35,6 +35,7 @@
   /* Spazi */
   --gutter: clamp(20px, 4vw, 40px);
   --container: 1300px;
+  --grid-gap: clamp(20px, 2.4vw, 32px); /* spazio tra le colonne della griglia a 12 */
   --section: clamp(80px, 10vw, 160px);
   --header-h: 135px;
   --sticky-h: 70px;
@@ -189,9 +190,16 @@ html:has(.overlay:popover-open) {
   margin-inline: auto;
 }
 
-.container-wide {
-  width: min(100% - 2 * var(--gutter), 1647px);
-  margin-inline: auto;
+/*
+ * Griglia a 12 colonne sul contenitore (da 769px; sotto i blocchi si impilano).
+ * Tutte le pagine la usano per allineare titoli, testi e immagini allo stesso bordo.
+ */
+@media (min-width: 769px) {
+  .grid-12 {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+  }
 }
 
 .section {
@@ -623,9 +631,22 @@ a:focus-visible .brush-inline,
 
   /* elementi "appesi" (sticky) di nuovo nel flusso, fondi crema tolti */
   .cs-year__anno,
-  .cs-events__poster {
+  .cs-events__poster,
+  .artwork__info {
     position: static !important;
     box-shadow: none !important;
+  }
+
+  /* scheda dell'opera: foto senza passe-partout, mai più alta di mezza pagina */
+  .artwork__stage {
+    display: block !important;
+    height: auto !important;
+    padding: 0 !important;
+    background: none !important;
+  }
+
+  .artwork__stage img {
+    max-height: 130mm !important;
   }
 
   .bg-cream,

@@ -5,7 +5,7 @@ const anno = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
-  <div class="site-footer__top">
+  <div class="site-footer__top grid-12 container">
     <p class="h5 site-footer__tagline">{site.footerTagline}</p>
 
     <nav class="site-footer__col" aria-labelledby="footer-website">
@@ -57,7 +57,7 @@ const anno = new Date().getFullYear();
     }
   </div>
 
-  <div class="site-footer__bottom">
+  <div class="site-footer__bottom container">
     <p>© {anno} {site.name}</p>
   </div>
 </footer>
@@ -67,10 +67,11 @@ const anno = new Date().getFullYear();
     background: var(--c-cream);
   }
 
+  /* sulla griglia a 12 colonne del contenitore, come i contenuti delle pagine */
   .site-footer__top {
     display: grid;
-    gap: 36px 40px;
-    padding: clamp(64px, 8vw, 120px) clamp(20px, 6.6vw, 125px) 39px;
+    gap: 36px;
+    padding-block: clamp(64px, 8vw, 120px) 39px;
   }
 
   .site-footer__tagline {
@@ -109,7 +110,7 @@ const anno = new Date().getFullYear();
   }
 
   .site-footer__bottom {
-    padding: 0 clamp(20px, 6.6vw, 125px) 43px;
+    padding-bottom: 43px;
   }
 
   .site-footer__bottom p {
@@ -118,10 +119,34 @@ const anno = new Date().getFullYear();
     color: var(--c-muted);
   }
 
+  /* tablet: frase sopra, tre colonne sotto */
   @media (min-width: 769px) {
     .site-footer__top {
-      grid-template-columns: 2fr 1fr 1fr 1fr;
       align-items: start;
+      row-gap: 48px;
+    }
+
+    .site-footer__tagline {
+      grid-column: 1 / -1;
+    }
+
+    .site-footer__col {
+      grid-column: span 4;
+    }
+  }
+
+  /* desktop: frase su 5 colonne, poi le tre colonne di link */
+  @media (min-width: 1025px) {
+    .site-footer__tagline {
+      grid-column: 1 / span 5;
+    }
+
+    .site-footer__col {
+      grid-column: span 2;
+    }
+
+    .site-footer__tagline + .site-footer__col {
+      grid-column: 7 / span 2;
     }
   }
 </style>

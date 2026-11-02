@@ -47,7 +47,8 @@ const totale = String(opere.length).padStart(2, '0');
 
 <style>
   .carousel {
-    --pad: clamp(20px, 6.6vw, 125px);
+    /* la prima opera parte dal bordo del contenitore, le altre escono a destra fino al bordo dello schermo */
+    --pad: max(var(--gutter), (100% - var(--container)) / 2);
     --slide: min(591px, 78vw);
   }
 

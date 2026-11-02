@@ -55,7 +55,7 @@ const jsonLd = {
 
   {
     intro && (
-      <section class="cs-intro cs-grid container" aria-labelledby="cs-intro-title">
+      <section class="cs-intro grid-12 container" aria-labelledby="cs-intro-title">
         {intro.immagine && (
           <figure
             class="cs-intro__figure cover appear-zoom"
@@ -85,7 +85,7 @@ const jsonLd = {
   }
 
   <section
-    class="cs-bio cs-grid container"
+    class="cs-bio grid-12 container"
     id="biografia"
     aria-labelledby={biografia ? 'cs-bio-title' : undefined}
     aria-label={biografia ? undefined : 'Biografia'}
@@ -108,7 +108,7 @@ const jsonLd = {
   {
     evidenza && (
       <section class="cs-award bg-cream" aria-labelledby="cs-award-title">
-        <div class="cs-award__inner cs-grid container">
+        <div class="cs-award__inner grid-12 container">
           {operaEvidenza && (
             <a
               class="cs-award__image appear-zoom"
@@ -150,7 +150,7 @@ const jsonLd = {
 
   {
     eventi && (
-      <section class="cs-events cs-grid container" id="eventi" aria-labelledby="cs-events-title">
+      <section class="cs-events grid-12 container" id="eventi" aria-labelledby="cs-events-title">
         <header class="cs-events__header">
           {eventi.sopratitolo && <p class="tagline">{eventi.sopratitolo}</p>}
           <h2 class="h2 cs-events__title" id="cs-events-title">
@@ -213,22 +213,7 @@ const jsonLd = {
 </BaseLayout>
 
 <style>
-  /*
-   * Impaginazione su una griglia di 12 colonne (da 769px) allineata al contenitore da 1300px
-   * del tema: titoli, testi e immagini partono tutti dallo stesso bordo sinistro.
-   * Su telefono i blocchi si impilano.
-   */
-  .cs-grid {
-    --cs-gap: clamp(20px, 2.4vw, 32px);
-  }
-
-  @media (min-width: 769px) {
-    .cs-grid {
-      display: grid;
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      column-gap: var(--cs-gap);
-    }
-  }
+  /* Impaginazione sulla griglia comune a 12 colonne (.grid-12 in global.css) */
 
   /* ---------- Titolo ---------- */
   .cs-hero {
@@ -278,7 +263,7 @@ const jsonLd = {
 
   @media (min-width: 769px) {
     .cs-intro {
-      gap: 0 var(--cs-gap);
+      gap: 0 var(--grid-gap);
       align-items: center;
     }
 
@@ -408,7 +393,7 @@ const jsonLd = {
 
   @media (min-width: 769px) {
     .cs-award__inner {
-      gap: 0 var(--cs-gap);
+      gap: 0 var(--grid-gap);
       align-items: center;
     }
 
@@ -551,7 +536,7 @@ const jsonLd = {
   /* Da tablet: anno a sinistra, che resta in vista accanto alla sua lista */
   @media (min-width: 769px) {
     .cs-events {
-      gap: 0 var(--cs-gap);
+      gap: 0 var(--grid-gap);
       align-items: start;
     }
 
@@ -566,7 +551,7 @@ const jsonLd = {
     .cs-year {
       display: grid;
       grid-template-columns: minmax(0, 2fr) minmax(0, 6fr);
-      column-gap: var(--cs-gap);
+      column-gap: var(--grid-gap);
       padding-top: 20px;
     }
 
