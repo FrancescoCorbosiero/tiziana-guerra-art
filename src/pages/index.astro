@@ -33,8 +33,9 @@ const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'Person',
+    '@id': `${site.url}/#artista`, // stessa entità della pagina Chi sono (ProfilePage)
     name: site.author,
-    alternateName: 'Angelart',
+    alternateName: site.pseudonimo,
     url: site.url,
     jobTitle: 'Artista',
     sameAs: site.social.map((s) => s.url),
@@ -120,7 +121,10 @@ const jsonLd = [
     <div class="about__images">
       {
         chiSono.immagini.map((img, i) => (
-          <figure class:list={['about__image cover appear-zoom', `about__image--${i}`]}>
+          <figure
+            class:list={['about__image cover appear-zoom', `about__image--${i}`]}
+            style={img.posizione ? `--pos:${img.posizione}` : undefined}
+          >
             <Picture
               src={img.immagine}
               alt={img.alt}

@@ -2,6 +2,8 @@ export interface SiteConfig {
   name: string;
   logo: string;
   author: string;
+  /** Nome d'arte (dati strutturati schema.org: alternateName). */
+  pseudonimo: string;
   url: string;
   locale: string;
   lang: string;
@@ -28,6 +30,7 @@ export const site: SiteConfig = {
   name: 'Tiziana Guerra Art',
   logo: 'Tiziana Guerra Art',
   author: 'Tiziana Guerra',
+  pseudonimo: 'Angelart',
   url: 'https://tizianaguerra.art',
   locale: 'it_IT',
   lang: 'it',
