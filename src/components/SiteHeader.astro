@@ -1,27 +1,45 @@
 ---
+import NavLinks from './NavLinks.astro';
 import { nav, site } from '~/config/site';
 
+export type HeaderVariant = 'divided' | 'minimal' | 'switch';
+
+interface Props {
+  /**
+   * Varianti del tema originale:
+   * - divided: menu a sinistra, logo al centro (pagine interne)
+   * - minimal: logo e pulsante "Menu" (pagina Chi sono)
+   * - switch: logo al centro e menu verticale a destra, sopra al contenuto (homepage)
+   */
+  variant?: HeaderVariant;
+}
+
+const { variant = 'divided' } = Astro.props;
 const path = Astro.url.pathname;
 const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
 ---
 
-<header class="site-header">
+<header class:list={['site-header', `site-header--${variant}`]}>
   <div class="site-header__inner">
-    <nav class="site-nav" aria-label="Menu principale">
-      <ul role="list">
-        {
-          nav.map((item) => (
-            <li>
-              <a class="site-nav__link brush" href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
-                {item.label}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
+    {variant === 'divided' && <NavLinks label="Menu principale" class="site-header__nav" />}
 
     <a class="site-logo" href="/" aria-label={`${site.name} — Home`}>{site.logo}</a>
+
+    {
+      variant === 'switch' && (
+        <nav class="switch-nav" aria-label="Menu principale">
+          <ul role="list">
+            {nav.map((item) => (
+              <li>
+                <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                  <span class="brush">{item.label}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
 
     <div class="site-actions">
       <button class="search-trigger" type="button" popovertarget="search" aria-label="Cerca tra le opere">
@@ -33,23 +51,45 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
       </button>
       <button class="menu-trigger" type="button" popovertarget="menu" aria-label="Apri il menu">
         <span class="menu-trigger__text" aria-hidden="true">Menu</span>
-        <span class="menu-trigger__icon" aria-hidden="true"><i></i><i></i></span>
+        <span class="menu-trigger__icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
       </button>
     </div>
   </div>
 </header>
 
+<!-- Barra compatta che compare scorrendo (header "sticky" del tema) -->
+<div class="sticky-header" data-sticky-header inert>
+  <div class="sticky-header__inner">
+    <NavLinks label="Menu principale (barra fissa)" class="sticky-header__nav" />
+    <a class="site-logo sticky-header__logo" href="/" aria-label={`${site.name} — Home`}>{site.logo}</a>
+    <div class="site-actions">
+      <button class="search-trigger" type="button" popovertarget="search" aria-label="Cerca tra le opere">
+        <span class="search-trigger__text" aria-hidden="true">Cerca</span>
+        <svg class="search-trigger__icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"></circle>
+          <path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+        </svg>
+      </button>
+      <button class="menu-trigger" type="button" popovertarget="menu" aria-label="Apri il menu">
+        <span class="menu-trigger__text" aria-hidden="true">Menu</span>
+        <span class="menu-trigger__icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <style>
+  /* ---------- Base (mobile: logo + cerca + menu, sempre in alto) ---------- */
   .site-header {
     position: sticky;
     top: 0;
     z-index: 50;
     background: var(--c-bg);
-    box-shadow: 0 0 12px rgb(0 0 0 / 0.06);
     view-transition-name: site-header;
   }
 
-  .site-header__inner {
+  .site-header__inner,
+  .sticky-header__inner {
     position: relative;
     display: flex;
     align-items: center;
@@ -59,36 +99,16 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     padding-inline: var(--gutter);
   }
 
-  /* Menu orizzontale: solo su schermi grandi (sotto i 1200px si usa il menu a tutto schermo) */
-  .site-nav {
+  .site-header :global(.site-header__nav),
+  .switch-nav,
+  .sticky-header :global(.sticky-header__nav) {
     display: none;
-  }
-
-  .site-nav ul {
-    display: flex;
-    gap: clamp(22px, 1.95vw, 37px);
-  }
-
-  .site-nav__link {
-    font-family: var(--f-display);
-    font-stretch: var(--display-stretch);
-    font-weight: var(--display-weight);
-    font-size: 0.9375rem;
-    line-height: 1;
-    text-transform: uppercase;
-    color: var(--c-text);
-    padding-block: 10px;
-  }
-
-  .site-nav__link::after {
-    bottom: 1px;
   }
 
   .site-logo {
     font-family: var(--f-display);
-    font-stretch: var(--display-stretch);
-    font-weight: var(--display-weight);
-    font-size: clamp(0.875rem, 0.55rem + 1.6vw, 1.8125rem);
+    font-weight: 700;
+    font-size: 1.25rem; /* 20px, logo testuale mobile del tema */
     line-height: 1;
     text-transform: uppercase;
     color: var(--c-text);
@@ -104,10 +124,10 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
   .search-trigger {
     display: inline-flex;
     align-items: center;
-    color: #585858;
     font-size: 1.25rem;
     line-height: 1;
-    transition: color var(--t-fast) ease;
+    color: #585858;
+    transition: color var(--t-fast) ease-out;
   }
 
   .search-trigger:hover {
@@ -118,77 +138,74 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     display: none;
   }
 
+  .search-trigger__icon {
+    flex: none;
+    width: 22px;
+    max-width: none;
+  }
+
   .menu-trigger {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     font-family: var(--f-display);
-    font-stretch: var(--display-stretch);
-    font-weight: 600;
-    font-size: var(--fs-label);
-    letter-spacing: 0.06em;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    line-height: 1;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
     color: var(--c-text);
   }
 
+  /* icona a 4 puntini del tema */
   .menu-trigger__icon {
     display: grid;
-    gap: 6px;
-    width: 30px;
+    grid-template-columns: repeat(2, 4px);
+    gap: 4px;
+    transition: transform var(--t-med) var(--ease-out);
   }
 
   .menu-trigger__icon i {
-    display: block;
-    height: 2px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
     background: currentColor;
-    transition: transform var(--t-fast) var(--ease-out);
   }
 
-  .menu-trigger__icon i:last-child {
-    width: 70%;
-    justify-self: end;
+  .menu-trigger:hover .menu-trigger__icon {
+    transform: rotate(45deg);
   }
 
-  .menu-trigger:hover .menu-trigger__icon i:last-child {
-    transform: scaleX(1.43);
-    transform-origin: right;
+  @media (max-width: 479px) {
+    .site-logo {
+      font-size: 1.0625rem;
+    }
   }
 
-  /* Schermi molto stretti: solo icone */
-  @media (max-width: 399px) {
+  @media (max-width: 419px) {
     .menu-trigger__text {
       display: none;
     }
   }
 
-  /* 1200–1799px: logo a sinistra, menu a destra (menu + logo centrato non ci stanno) */
-  @media (min-width: 1200px) {
+  .sticky-header {
+    display: none;
+  }
+
+  /* ---------- Desktop (≥1025px, come il tema) ---------- */
+  @media (min-width: 1025px) {
+    .site-header {
+      position: relative;
+      background: transparent;
+    }
+
     .site-header__inner {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 0 clamp(24px, 3vw, 48px);
+      padding-inline: 40px;
     }
 
     .site-logo {
-      grid-column: 1;
-      grid-row: 1;
-      font-size: 1.5rem;
-    }
-
-    .site-nav {
-      display: block;
-      grid-column: 2;
-      grid-row: 1;
-      justify-self: end;
-    }
-
-    .site-nav ul {
-      gap: 28px;
-    }
-
-    .site-actions {
-      grid-column: 3;
-      grid-row: 1;
+      font-size: 1.875rem; /* 30px */
+      line-height: 1.1;
     }
 
     .search-trigger__text {
@@ -199,34 +216,194 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
       display: none;
     }
 
-    .menu-trigger__text {
+    /* divided: menu a sinistra, logo al centro */
+    .site-header--divided .menu-trigger {
+      display: none;
+    }
+
+    .site-header--divided :global(.site-header__nav) {
+      display: block;
+    }
+
+    /* minimal: logo a sinistra, "Menu" a destra (senza "Cerca", come nel tema) */
+    .site-header--minimal .site-logo {
+      margin-right: auto;
+    }
+
+    .site-header--minimal .search-trigger {
+      display: none;
+    }
+
+    /* switch (home): logo al centro, menu verticale a destra, sopra al contenuto */
+    .site-header--switch {
+      position: absolute;
+      inset: 0 0 auto 0;
+      z-index: 20;
+    }
+
+    .site-header--switch .site-header__inner {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: start;
+      height: 250px;
+      padding-top: 55px;
+    }
+
+    .site-header--switch .site-logo {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .site-header--switch .switch-nav {
+      display: block;
+      grid-column: 3;
+      grid-row: 1;
+      justify-self: end;
+      width: min(100%, 230px);
+    }
+
+    .switch-nav ul {
+      display: grid;
+      gap: 5px;
+    }
+
+    .switch-nav a {
+      display: inline-block;
+      font-family: var(--f-display);
+      font-weight: 600;
+      font-size: 1.1875rem; /* 19px */
+      line-height: 1.158;
+      text-transform: uppercase;
+      color: var(--c-text);
+    }
+
+    /* come nel tema: in home niente "Cerca" in alto (c'è nella barra che compare scorrendo) */
+    .site-header--switch .site-actions {
+      display: none;
+    }
+
+    /* Barra compatta che compare scorrendo */
+    .sticky-header {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 60;
+      display: block;
+      background: var(--c-bg);
+      box-shadow: 0 0 12px rgb(0 0 0 / 0.06);
+      transform: translateY(-105%);
+      transition: transform 0.4s var(--ease-out);
+      view-transition-name: sticky-header;
+    }
+
+    .sticky-header.is-visible {
+      transform: none;
+    }
+
+    .sticky-header__inner {
+      height: var(--sticky-h);
+      padding-inline: 60px;
+    }
+
+    .sticky-header :global(.sticky-header__nav) {
+      display: block;
+    }
+
+    .sticky-header .menu-trigger {
       display: none;
     }
   }
 
-  /* ≥1800px: disposizione del tema originale — menu a sinistra, logo al centro */
-  @media (min-width: 1800px) {
-    .site-header__inner {
-      display: flex;
+  /* 1025–1799px: menu + logo centrato non ci stanno → logo a sinistra, menu a destra */
+  @media (min-width: 1025px) and (max-width: 1799px) {
+    .site-header--divided .site-header__inner,
+    .sticky-header__inner {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 0 32px;
     }
 
-    .site-nav {
-      justify-self: auto;
+    .site-header--divided .site-logo,
+    .sticky-header__logo {
+      grid-column: 1;
+      grid-row: 1;
     }
 
-    .site-nav ul {
-      gap: clamp(30px, 1.95vw, 37px);
+    .site-header--divided :global(.site-header__nav),
+    .sticky-header :global(.sticky-header__nav) {
+      grid-column: 2;
+      grid-row: 1;
+      justify-self: end;
     }
 
-    .site-nav__link {
-      font-size: var(--fs-nav);
+    .site-header--divided .site-actions,
+    .sticky-header .site-actions {
+      grid-column: 3;
+      grid-row: 1;
+    }
+
+    .sticky-header__inner {
+      padding-inline: 40px;
+    }
+  }
+
+  @media (min-width: 1025px) and (max-width: 1279px) {
+    .site-header,
+    .sticky-header {
+      --nav-size: 0.9375rem;
+      --nav-gap: 22px;
     }
 
     .site-logo {
+      font-size: 1.375rem;
+    }
+  }
+
+  @media (min-width: 1280px) and (max-width: 1799px) {
+    .site-header,
+    .sticky-header {
+      --nav-size: 1rem;
+      --nav-gap: 26px;
+    }
+
+    .site-logo {
+      font-size: 1.5rem;
+    }
+  }
+
+  /* ≥1800px: disposizione originale del tema — menu a sinistra, logo al centro */
+  @media (min-width: 1800px) {
+    .site-header--divided .site-logo,
+    .sticky-header__logo {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 1.8125rem;
     }
   }
 </style>
+
+<script>
+  // Mostra la barra compatta dopo aver superato l'header (come l'header "sticky" del tema)
+  const sticky = document.querySelector<HTMLElement>('[data-sticky-header]');
+  if (sticky) {
+    let pending = false;
+    const soglia = () => (document.querySelector('.site-header')?.getBoundingClientRect().height ?? 135) + 180;
+    const update = () => {
+      pending = false;
+      const show = window.scrollY > soglia() && window.matchMedia('(min-width: 1025px)').matches;
+      sticky.classList.toggle('is-visible', show);
+      sticky.toggleAttribute('inert', !show);
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!pending) {
+          pending = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    window.addEventListener('resize', update, { passive: true });
+    update();
+  }
+</script>

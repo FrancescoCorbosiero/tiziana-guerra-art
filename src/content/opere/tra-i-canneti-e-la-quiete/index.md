@@ -1,9 +1,9 @@
 ---
-# Titolo e immagine presi dal sito attuale.
-# ⚠️ Foto provvisoria a bassa risoluzione (ritagliata da uno screenshot): sostituirla con l'originale.
-titolo: Tra i canneti e la quiete
+titolo: "Tra i Canneti e la Quiete"
 immagine: ./tra-i-canneti-e-la-quiete.jpg
-tema: paesaggi
-inEvidenza: true
-ordine: 2
+categorie: [acrilico, spatola]
+tecnica: "Acrilico e Spatola"
+dimensioni: "80 × 40 cm"
+ordine: 3
+# importata da https://tizianaguerra.art/portfolio-item/tra-i-canneti-e-la-quiete/
 ---

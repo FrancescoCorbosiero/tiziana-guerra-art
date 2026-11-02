@@ -1,49 +1,29 @@
 ---
-import { nav, site } from '~/config/site';
+import { footerNav, site } from '~/config/site';
 
 const anno = new Date().getFullYear();
-const { email, telefono, luogo } = site.contatti;
 ---
 
 <footer class="site-footer">
-  <div class="container-wide site-footer__grid">
-    <div class="site-footer__brand">
-      <a class="display site-footer__logo" href="/">{site.logo}</a>
-      <p class="serif-italic site-footer__tagline">{site.tagline}</p>
-    </div>
+  <div class="site-footer__top">
+    <p class="h5 site-footer__tagline">{site.footerTagline}</p>
 
-    <nav class="site-footer__nav" aria-label="Menu nel piè di pagina">
+    <nav class="site-footer__col" aria-labelledby="footer-website">
+      <h2 class="site-footer__title" id="footer-website">Website</h2>
       <ul role="list">
         {
-          nav.map((item) => (
+          footerNav.map((item) => (
             <li>
-              <a class="label" href={item.href}>
-                <span class="brush">{item.label}</span>
-              </a>
+              <a href={item.href}>{item.label}</a>
             </li>
           ))
         }
       </ul>
     </nav>
 
-    <div class="site-footer__contacts">
-      <p class="label site-footer__heading">Contatti</p>
+    <div class="site-footer__col">
+      <h2 class="site-footer__title">Social</h2>
       <ul role="list">
-        {
-          email && (
-            <li>
-              <a href={`mailto:${email}`}>{email}</a>
-            </li>
-          )
-        }
-        {
-          telefono && (
-            <li>
-              <a href={`tel:${telefono.replace(/[^\d+]/g, '')}`}>{telefono}</a>
-            </li>
-          )
-        }
-        {luogo && <li>{luogo}</li>}
         {
           site.social.map((s) => (
             <li>
@@ -53,86 +33,94 @@ const { email, telefono, luogo } = site.contatti;
             </li>
           ))
         }
+        {
+          site.contatti.email && (
+            <li>
+              <a href={`mailto:${site.contatti.email}`}>Email</a>
+            </li>
+          )
+        }
       </ul>
     </div>
+
+    {
+      site.privacyUrl && (
+        <div class="site-footer__col">
+          <h2 class="site-footer__title">Altro</h2>
+          <ul role="list">
+            <li>
+              <a href={site.privacyUrl}>Privacy Policy</a>
+            </li>
+          </ul>
+        </div>
+      )
+    }
   </div>
 
-  <div class="container-wide site-footer__bottom">
-    <p>© {anno} {site.author}. Tutti i diritti riservati.</p>
-    <p>Le immagini delle opere sono protette dal diritto d'autore.</p>
+  <div class="site-footer__bottom">
+    <p>© {anno} {site.name}</p>
   </div>
 </footer>
 
 <style>
   .site-footer {
-    padding-top: clamp(64px, 8vw, 120px);
-    border-top: 1px solid var(--c-line);
-    font-size: var(--fs-small);
+    background: var(--c-cream);
   }
 
-  .site-footer__grid {
+  .site-footer__top {
     display: grid;
-    gap: 48px;
-  }
-
-  .site-footer__logo {
-    display: inline-block;
-    font-size: clamp(1.6rem, 1rem + 2.4vw, 3.25rem);
-    line-height: 1;
-    max-width: 12ch;
+    gap: 36px 40px;
+    padding: clamp(64px, 8vw, 120px) clamp(20px, 6.6vw, 125px) 39px;
   }
 
   .site-footer__tagline {
-    margin: 14px 0 0;
-    font-size: 1.35rem;
-    color: var(--c-muted);
+    margin: 0;
+    max-width: 26ch;
   }
 
-  .site-footer__nav ul {
-    display: grid;
-    gap: 14px;
-  }
-
-  .site-footer__heading {
-    margin-bottom: 14px;
-    color: var(--c-muted);
-  }
-
-  .site-footer__contacts ul {
-    display: grid;
-    gap: 8px;
-    font-size: 1rem;
-  }
-
-  .site-footer__contacts a {
+  .site-footer__title {
+    margin: 0 0 14px;
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
     color: var(--c-text);
   }
 
-  .site-footer__contacts a:hover {
+  .site-footer__col ul {
+    display: grid;
+    gap: 4px;
+  }
+
+  .site-footer__col a {
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.35;
+    color: var(--c-body);
+  }
+
+  .site-footer__col a:hover,
+  .site-footer__col a:focus-visible {
+    color: var(--c-text);
     text-decoration: underline;
     text-decoration-color: var(--c-accent);
     text-decoration-thickness: 3px;
-    text-underline-offset: 0.2em;
+    text-underline-offset: 0.25em;
   }
 
   .site-footer__bottom {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 4px 32px;
-    margin-top: clamp(56px, 7vw, 100px);
-    padding-block: 24px 32px;
-    border-top: 1px solid var(--c-line);
-    color: var(--c-muted);
+    padding: 0 clamp(20px, 6.6vw, 125px) 43px;
   }
 
   .site-footer__bottom p {
     margin: 0;
+    font-size: 1.125rem;
+    color: var(--c-muted);
   }
 
-  @media (min-width: 900px) {
-    .site-footer__grid {
-      grid-template-columns: 1.6fr 1fr 1fr;
+  @media (min-width: 769px) {
+    .site-footer__top {
+      grid-template-columns: 2fr 1fr 1fr 1fr;
       align-items: start;
     }
   }

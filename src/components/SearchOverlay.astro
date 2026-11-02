@@ -1,17 +1,15 @@
 ---
 import OverlayClose from './OverlayClose.astro';
-import { site } from '~/config/site';
 ---
 
 <div id="search" popover class="overlay search-overlay" role="dialog" aria-label="Cerca tra le opere">
   <div class="overlay__bar">
-    <a class="overlay__logo" href="/">{site.logo}</a>
     <OverlayClose target="search" />
   </div>
 
   <div class="search-overlay__body container">
     <form class="search-form" role="search" action="/pitture/" data-search-form>
-      <label class="label search-form__label" for="search-input">Cerca tra le opere</label>
+      <label class="h6 search-form__label" for="search-input">Cerca tra le opere</label>
       <input
         id="search-input"
         class="search-form__input"
@@ -24,7 +22,7 @@ import { site } from '~/config/site';
         data-search-input
       />
     </form>
-    <p class="search-overlay__status serif-italic" role="status" aria-live="polite" data-search-status></p>
+    <p class="tagline search-overlay__status" role="status" aria-live="polite" data-search-status></p>
     <ul class="search-results" role="list" data-search-results></ul>
     <noscript><p class="search-overlay__status">La ricerca richiede JavaScript: sfoglia le opere nella pagina Pitture.</p></noscript>
   </div>
@@ -48,13 +46,12 @@ import { site } from '~/config/site';
     width: 100%;
     padding: 0.15em 0 0.25em;
     border: 0;
-    border-bottom: 2px solid var(--c-ink);
+    border-bottom: 2px solid var(--c-main);
     border-radius: 0;
     background: transparent;
-    color: var(--c-ink);
+    color: var(--c-main);
     font-family: var(--f-display);
-    font-stretch: var(--display-stretch);
-    font-weight: var(--display-weight);
+    font-weight: 700;
     font-size: clamp(1.6rem, 0.9rem + 3.4vw, 4.5rem);
     line-height: 1.15;
     text-transform: uppercase;
@@ -63,12 +60,11 @@ import { site } from '~/config/site';
   }
 
   .search-form__input::placeholder {
-    color: rgb(33 29 19 / 0.28);
+    color: rgb(34 29 20 / 0.3);
     text-transform: none;
     font-family: var(--f-serif);
     font-style: italic;
-    font-weight: 400;
-    font-stretch: 100%;
+    font-weight: 300;
   }
 
   .search-form__input:focus {
@@ -131,12 +127,11 @@ import { site } from '~/config/site';
   .search-results :global(.search-results__title) {
     display: block;
     font-family: var(--f-display);
-    font-stretch: var(--display-stretch);
-    font-weight: var(--display-weight);
+    font-weight: 700;
     font-size: clamp(1rem, 0.8rem + 0.8vw, 1.5rem);
     line-height: 1.15;
     text-transform: uppercase;
-    color: var(--c-ink);
+    color: var(--c-main);
   }
 
   .search-results :global(.search-results__meta) {
@@ -148,8 +143,7 @@ import { site } from '~/config/site';
     font-size: 1.1rem;
     color: var(--c-muted);
     text-transform: none;
-    font-stretch: 100%;
-    font-weight: 400;
+    font-weight: 300;
   }
 
   .search-results :global(a:hover .search-results__title),

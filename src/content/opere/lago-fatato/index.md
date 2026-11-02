@@ -1,12 +1,9 @@
 ---
-# Titolo e immagine presi dal sito attuale.
-# ⚠️ Foto provvisoria a bassa risoluzione (ritagliata da uno screenshot): sostituirla con l'originale.
-titolo: Lago fatato
-immagine: ./lago-fatato.jpg
-tema: paesaggi
-# anno: 2024
-# tecnica: Acrilico su tela
-# dimensioni: 70 × 50 cm
-inEvidenza: true
-ordine: 1
+titolo: "Lago Fatato"
+immagine: ./lago-fatato.webp
+categorie: [acrilico]
+tecnica: "Acrilico"
+dimensioni: "80 × 60 cm"
+ordine: 4
+# importata da https://tizianaguerra.art/portfolio-item/lago-fatato/
 ---

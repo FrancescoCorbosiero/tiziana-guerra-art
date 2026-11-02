@@ -5,52 +5,58 @@ export interface SiteConfig {
   url: string;
   locale: string;
   lang: string;
+  /** Motto (descrizione del sito WordPress). */
   tagline: string;
+  /** Frase grande nel piè di pagina. */
+  footerTagline: string;
   description: string;
   contatti: { email: string; telefono: string; whatsapp: string; luogo: string };
   social: { label: string; url: string }[];
+  /** Opera mostrata a destra nel menu a tutto schermo (id = nome della cartella). */
+  operaMenu: string;
+  /** Pagina della privacy policy (vuoto = nessun link nel piè di pagina). */
+  privacyUrl: string;
   contactFormEndpoint: string;
   mostraPrezzi: boolean;
 }
 
 /**
- * Impostazioni generali del sito.
+ * Impostazioni generali del sito (dati presi dal sito WordPress).
  * Tutto ciò che è vuoto ('' o []) viene semplicemente nascosto.
  */
 export const site: SiteConfig = {
   name: 'Tiziana Guerra Art',
-  /** Testo del logo nell'header. */
   logo: 'Tiziana Guerra Art',
   author: 'Tiziana Guerra',
   url: 'https://tizianaguerra.art',
   locale: 'it_IT',
   lang: 'it',
 
-  /** Sottotitolo usato in homepage e nei metadati. */
-  tagline: 'Pittura',
+  tagline: "L'arte per me è vita e rinascita.",
+  footerTagline: "Per me l'arte è vita e rinascita.",
   description:
-    'Tiziana Guerra Art: dipinti originali, paesaggi, ritratti e opere astratte. Scopri le pitture e richiedi informazioni sulle opere.',
+    'Tiziana Guerra, artista autodidatta italiana. Dipinti dai colori vivaci che trasmettono emozioni positive e rinascita.',
 
   contatti: {
-    // ⚠️ DA VERIFICARE: indirizzo provvisorio, sostituire con quello reale.
-    email: 'info@tizianaguerra.art',
+    email: 'forevertizzy@yahoo.it',
     /** Formato libero, es. '+39 333 123 4567'. */
     telefono: '',
     /** Solo cifre con prefisso internazionale, es. '393331234567'. Abilita il pulsante WhatsApp. */
     whatsapp: '',
-    /** Es. 'Piacenza, Italia'. */
+    /** Es. 'Nova Milanese (MB)'. */
     luogo: '',
   },
 
-  social: [
-    // { label: 'Instagram', url: 'https://www.instagram.com/…' },
-    // { label: 'Facebook', url: 'https://www.facebook.com/…' },
-  ],
+  social: [{ label: 'Instagram', url: 'https://www.instagram.com/tizianaguerra.art/' }],
+
+  operaMenu: 'la-ragazza-doro-e-caffe',
+
+  privacyUrl: '',
 
   /**
    * Modulo di contatto (facoltativo). Il sito è statico: per ricevere i messaggi serve un
    * servizio esterno (Formspree, Web3Forms, Getform…) o un piccolo endpoint sul VPS.
-   * Se vuoto, la pagina Contatti mostra solo email / telefono / WhatsApp.
+   * Se vuoto, la pagina Contatti mostra email e Instagram.
    */
   contactFormEndpoint: '',
 
@@ -58,13 +64,27 @@ export const site: SiteConfig = {
   mostraPrezzi: true,
 };
 
-export type NavItem = { label: string; href: string };
+export type NavItem = { label: string; href: string; children?: { label: string; href: string }[] };
 
-/** Menu principale (stesso ordine del sito WordPress). */
+/** Menu principale (stesse voci del sito WordPress). */
 export const nav: NavItem[] = [
   { label: 'Home', href: '/' },
   { label: 'Chi sono', href: '/chi-sono/' },
-  { label: 'Pitture', href: '/pitture/' },
+  {
+    label: 'Pitture',
+    href: '/pitture/',
+    children: [
+      { label: 'Acrilico', href: '/pitture/categoria/acrilico/' },
+      { label: 'Spatola', href: '/pitture/categoria/spatola/' },
+    ],
+  },
   { label: 'Contatti', href: '/contatti/' },
   { label: 'Galleria', href: '/galleria/' },
+];
+
+/** Colonna "Website" del piè di pagina. */
+export const footerNav: NavItem[] = [
+  { label: 'Chi Sono', href: '/chi-sono/' },
+  { label: 'Pitture', href: '/pitture/' },
+  { label: 'Contatti', href: '/contatti/' },
 ];

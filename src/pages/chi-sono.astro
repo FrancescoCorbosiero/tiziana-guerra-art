@@ -1,133 +1,267 @@
 ---
 import { Picture } from 'astro:assets';
 import { getEntry, render } from 'astro:content';
-import MasonryGrid from '~/components/MasonryGrid.astro';
-import PageHeader from '~/components/PageHeader.astro';
+import { inlineMarkdown } from '~/lib/inline-md';
 import { site } from '~/config/site';
 import BaseLayout from '~/layouts/BaseLayout.astro';
-import { getOpereInEvidenza } from '~/lib/opere';
+import { altOpera, getOpera, urlOpera } from '~/lib/opere';
 
 const pagina = await getEntry('pagine', 'chi-sono');
 if (!pagina) throw new Error('Manca src/content/pagine/chi-sono.md');
 
 const { Content } = await render(pagina);
-const opere = await getOpereInEvidenza(4);
-const { titolo, sottotitolo, immagine, immagineAlt, descrizioneSeo } = pagina.data;
+const { titolo, descrizioneSeo, intro, biografia, evidenza, eventi } = pagina.data;
+const operaEvidenza = evidenza?.opera ? await getOpera(evidenza.opera.id) : undefined;
 ---
 
 <BaseLayout
-  title={titolo}
-  description={descrizioneSeo ?? `${titolo}: biografia e percorso artistico di ${site.author}.`}
-  image={immagine ?? opere[0]?.data.immagine}
+  title="Chi sono"
+  description={descrizioneSeo ?? `Biografia e percorso artistico di ${site.author}.`}
+  image={intro?.immagine}
+  imageAlt={intro?.immagineAlt}
   type="article"
+  header="minimal"
 >
-  <PageHeader eyebrow="Biografia" title={titolo} lead={sottotitolo} />
+  <section class="cs-hero container-wide">
+    <h1 class="h1 cs-hero__title reveal">{titolo}</h1>
+  </section>
 
-  <section class:list={['bio container', { 'bio--with-image': immagine }]}>
+  {
+    intro && (
+      <section class="cs-intro container" aria-labelledby="cs-intro-title">
+        <div class="cs-intro__text">
+          {intro.sopratitolo && <p class="tagline">{intro.sopratitolo}</p>}
+          <h2 class="h2" id="cs-intro-title">
+            {intro.titolo}
+          </h2>
+          {intro.testo && <p class="text cs-intro__p">{intro.testo}</p>}
+          {intro.testo2 && <p class="text cs-intro__p cs-intro__p--soft">{intro.testo2}</p>}
+        </div>
+        {intro.immagine && (
+          <figure class="cs-intro__figure cover appear-zoom">
+            <Picture
+              src={intro.immagine}
+              alt={intro.immagineAlt}
+              widths={[400, 625, 940, 1250]}
+              sizes="(min-width: 1025px) 625px, calc(100vw - 40px)"
+              formats={['avif', 'webp']}
+              fallbackFormat="jpg"
+              priority
+            />
+          </figure>
+        )}
+      </section>
+    )
+  }
+
+  <section class="cs-bio container" aria-labelledby="cs-bio-title">
     {
-      immagine && (
-        <figure class="bio__figure reveal-img">
-          <Picture
-            src={immagine}
-            alt={immagineAlt ?? site.author}
-            widths={[480, 720, 960, 1200]}
-            sizes="(min-width: 900px) 40vw, 100vw"
-            formats={['avif', 'webp']}
-            priority
-          />
-        </figure>
+      biografia && (
+        <header class="cs-center">
+          {biografia.sopratitolo && <p class="tagline cs-upper">{biografia.sopratitolo}</p>}
+          <h2 class="h2" id="cs-bio-title">
+            {biografia.titolo}
+          </h2>
+        </header>
       )
     }
-    <div class="prose bio__text">
+    <div class="prose text cs-bio__text">
       <Content />
     </div>
   </section>
 
   {
-    opere.length > 0 && (
-      <section class="works container" aria-labelledby="works-title">
-        <header class="works__head">
-          <h2 id="works-title" class="display works__title">
-            Alcune opere
-          </h2>
-          <a class="label" href="/pitture/">
-            <span class="brush">Tutte le pitture</span>
-            <span class="arrow" aria-hidden="true">
-              →
-            </span>
+    evidenza && (
+      <section class="cs-highlight container" aria-label="In evidenza">
+        <p class="text cs-highlight__text">{evidenza.testo}</p>
+        {operaEvidenza && (
+          <a class="cs-highlight__image appear-zoom" href={urlOpera(operaEvidenza)}>
+            <Picture
+              src={operaEvidenza.data.immagine}
+              alt={altOpera(operaEvidenza)}
+              widths={[480, 760, 1000, 1400]}
+              sizes="(min-width: 1100px) 1000px, calc(100vw - 40px)"
+              formats={['avif', 'webp']}
+              fallbackFormat="jpg"
+              loading="lazy"
+              decoding="async"
+            />
           </a>
+        )}
+      </section>
+    )
+  }
+
+  {
+    eventi && (
+      <section class="cs-events container" aria-labelledby="cs-events-title">
+        <header class="cs-center">
+          {eventi.sopratitolo && <p class="tagline">{eventi.sopratitolo}</p>}
+          <h2 class="h2" id="cs-events-title">
+            {eventi.titolo}
+          </h2>
         </header>
-        <MasonryGrid opere={opere} eager={0} label="Alcune opere" headingLevel="h3" />
+        <div class="cs-events__list">
+          {eventi.anni.map((a) => (
+            <div class="cs-events__year">
+              <h3 class="cs-events__anno">{a.anno}</h3>
+              <ul role="list">
+                {a.voci.map((v) => (
+                  <li set:html={inlineMarkdown(v)} />
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        {eventi.immagine && (
+          <figure class="cs-events__image">
+            <Picture
+              src={eventi.immagine}
+              alt={eventi.immagineAlt}
+              widths={[400, 570, 860, 1080]}
+              sizes="(min-width: 640px) 570px, calc(100vw - 40px)"
+              formats={['avif', 'webp']}
+              fallbackFormat="jpg"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        )}
       </section>
     )
   }
 </BaseLayout>
 
 <style>
-  .bio {
+  .cs-hero {
+    padding-top: clamp(16px, 2vw, 30px);
+  }
+
+  .cs-hero__title {
+    max-width: 26ch;
+    font-size: clamp(2.25rem, 1.2rem + 3.2vw, 4.375rem); /* 70px */
+  }
+
+  .cs-intro {
     display: grid;
-    gap: clamp(40px, 6vw, 96px);
+    gap: 40px;
+    align-items: start;
+    margin-top: clamp(56px, 7vw, 140px);
   }
 
-  .bio__figure {
+  .cs-intro__text {
+    max-width: 460px;
+  }
+
+  .cs-intro__text .h2 {
+    margin-top: 11px;
+  }
+
+  .cs-intro__p {
+    margin: 30px 0 0;
+  }
+
+  .cs-intro__p--soft {
+    color: var(--c-muted);
+  }
+
+  .cs-intro__figure {
     margin: 0;
-    background: var(--c-mat);
+    aspect-ratio: 625 / 650;
   }
 
-  .bio__figure :global(img) {
+  @media (min-width: 1025px) {
+    .cs-intro {
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      padding-inline: 10px;
+    }
+
+    .cs-intro__figure {
+      justify-self: end;
+      width: min(100%, 625px);
+    }
+  }
+
+  .cs-center {
+    text-align: center;
+  }
+
+  .cs-center .h2 {
+    margin-top: 11px;
+  }
+
+  .cs-upper {
+    text-transform: uppercase;
+  }
+
+  .cs-bio {
+    margin-top: clamp(80px, 9vw, 150px);
+  }
+
+  .cs-bio__text {
+    max-width: 1140px;
+    margin: 32px auto 0;
+  }
+
+  .cs-bio__text :global(p) {
+    margin: 0 0 10px;
+  }
+
+  .cs-highlight {
+    margin-top: clamp(48px, 5vw, 70px);
+    text-align: center;
+  }
+
+  .cs-highlight__text {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .cs-highlight__image {
+    display: block;
+    width: min(100%, 1000px);
+    margin: 20px auto 0;
+  }
+
+  .cs-highlight__image :global(img) {
     width: 100%;
-    height: auto;
   }
 
-  .bio__text {
-    font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.25rem);
+  .cs-events {
+    margin-top: clamp(80px, 9vw, 150px);
   }
 
-  .bio__text :global(p:first-child) {
-    font-family: var(--f-serif);
-    font-size: clamp(1.4rem, 1.05rem + 1.1vw, 2.1rem);
-    line-height: 1.38;
+  .cs-events__list {
+    display: grid;
+    gap: 26px;
+    max-width: 1140px;
+    margin: 32px auto 0;
+    text-align: center;
+  }
+
+  .cs-events__anno {
+    margin: 0 0 4px;
+    font-family: var(--f-body);
+    font-weight: 500;
+    font-size: inherit;
     color: var(--c-text);
   }
 
-  @media (min-width: 900px) {
-    .bio--with-image {
-      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-      align-items: start;
-    }
-
-    .bio__figure {
-      position: sticky;
-      top: calc(var(--header-h) + 40px);
-    }
-
-    .bio:not(.bio--with-image) .bio__text {
-      margin-left: 25%;
-    }
+  .cs-events__list li {
+    color: var(--c-body);
   }
 
-  .works {
-    margin-top: var(--section);
+  .cs-events__list li :global(em) {
+    font-style: italic;
   }
 
-  .works__head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 20px 40px;
-    margin-bottom: clamp(48px, 6vw, 96px);
+  .cs-events__image {
+    width: min(100%, 570px);
+    margin: 40px auto 0;
   }
 
-  .works__title {
-    font-size: var(--fs-h2);
-  }
-
-  .works__head .label {
-    display: inline-flex;
-    gap: 10px;
-    font-size: var(--fs-nav);
-    font-weight: var(--display-weight);
-    letter-spacing: 0;
+  .cs-events__image :global(img) {
+    width: 100%;
   }
 </style>

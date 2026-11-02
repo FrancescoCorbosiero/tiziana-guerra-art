@@ -5,8 +5,8 @@ import { z } from 'astro/zod';
 /**
  * OPERE — una cartella per opera:
  *
- *   src/content/opere/lago-fatato/index.md   ← scheda (frontmatter + testo)
- *   src/content/opere/lago-fatato/foto.jpg   ← fotografia (alta risoluzione)
+ *   src/content/opere/lago-fatato/index.md         ← scheda (frontmatter + descrizione)
+ *   src/content/opere/lago-fatato/lago-fatato.jpg  ← fotografia (alta risoluzione)
  *
  * Il nome della cartella diventa l'indirizzo: /pitture/lago-fatato/
  */
@@ -23,37 +23,31 @@ const opere = defineCollection({
       immagine: image(),
       /** Testo alternativo per chi non vede l'immagine. Se assente viene generato. */
       alt: z.string().optional(),
-      /** Tema (vedi src/content/temi.yaml). */
-      tema: reference('temi'),
+      /** Una o più categorie (vedi src/content/categorie.yaml), es. [acrilico, spatola]. */
+      categorie: z.array(reference('categorie')).min(1),
       anno: z.number().int().min(1900).max(2100).optional(),
-      /** Es. "Acrilico su tela" */
+      /** Es. "Acrilico e Spatola" */
       tecnica: z.string().optional(),
       /** Es. "70 × 50 cm" */
       dimensioni: z.string().optional(),
       /** Se assente, la scheda mostra solo "Richiedi informazioni". */
-      disponibilita: z
-        .enum(['disponibile', 'venduta', 'collezione-privata', 'su-richiesta'])
-        .optional(),
-      /** Mostrato solo se presente, es. "€ 450". */
+      disponibilita: z.enum(['disponibile', 'venduta', 'collezione-privata', 'su-richiesta']).optional(),
+      /** Mostrato solo se l'opera è disponibile, es. "€ 450". */
       prezzo: z.string().optional(),
-      /** Opere mostrate in homepage. */
+      /** Opere del carosello in homepage (sul vecchio sito: tag "Verticali"). */
       inEvidenza: z.boolean().default(false),
-      /** Ordinamento manuale (numeri più bassi prima). Senza: per anno, dal più recente. */
+      /** Ordinamento (numeri più bassi prima): è l'ordine della Galleria del sito WordPress. */
       ordine: z.number().optional(),
       /** Fotografie aggiuntive: dettagli, opera incorniciata, ambientata… */
-      dettagli: z
-        .array(z.object({ immagine: image(), alt: z.string().optional() }))
-        .default([]),
-      /** Breve testo critico citato nella scheda. */
-      citazione: z.object({ testo: z.string(), autore: z.string().optional() }).optional(),
+      dettagli: z.array(z.object({ immagine: image(), alt: z.string().optional() })).default([]),
       /** Le bozze sono visibili solo in sviluppo (npm run dev). */
       bozza: z.boolean().default(false),
     }),
 });
 
-/** TEMI — usati per suddividere le pitture (paesaggi, ritratti, astratti…). */
-const temi = defineCollection({
-  loader: file('./src/content/temi.yaml'),
+/** CATEGORIE — suddivisione delle pitture (Acrilico, Spatola, Caffè…). */
+const categorie = defineCollection({
+  loader: file('./src/content/categorie.yaml'),
   schema: z.object({
     titolo: z.string(),
     descrizione: z.string().optional(),
@@ -61,19 +55,71 @@ const temi = defineCollection({
   }),
 });
 
-/** PAGINE — testi lunghi modificabili in Markdown (es. biografia "Chi sono"). */
+const voceEventi = z.object({ anno: z.number().int(), voci: z.array(z.string()) });
+
+/** HOME — testi e immagini della homepage (src/content/home/home.md). */
+const home = defineCollection({
+  loader: glob({ pattern: 'home.md', base: './src/content/home' }),
+  schema: ({ image }) =>
+    z.object({
+      titolo: z.string(),
+      descrizioneSeo: z.string().optional(),
+      /** Le due opere sotto il titolo: un'immagine libera oppure un'opera della collezione. */
+      hero: z
+        .array(
+          z.object({
+            titolo: z.string(),
+            immagine: image().optional(),
+            opera: reference('opere').optional(),
+          }),
+        )
+        .max(2),
+      intro: z.object({
+        titolo: z.string(),
+        testo: z.string(),
+        link: z.object({ testo: z.string(), href: z.string() }),
+        immagine: image().optional(),
+        immagineAlt: z.string().default(''),
+      }),
+      /** Frasi che scorrono in grande. */
+      frasi: z.array(z.string()).default([]),
+      chiSono: z.object({
+        immagini: z.array(z.object({ immagine: image(), alt: z.string().default('') })).max(2),
+        blocchi: z.array(z.object({ titolo: z.string(), testo: z.string() })),
+        eventi: z.object({ titolo: z.string(), anni: z.array(voceEventi) }),
+      }),
+    }),
+});
+
+/** PAGINE — testi lunghi in Markdown (es. biografia "Chi sono"). */
 const pagine = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/pagine' }),
   schema: ({ image }) =>
     z.object({
       titolo: z.string(),
-      sottotitolo: z.string().optional(),
-      /** Riassunto mostrato in homepage. */
-      estratto: z.string().optional(),
-      immagine: image().optional(),
-      immagineAlt: z.string().optional(),
       descrizioneSeo: z.string().optional(),
+      intro: z
+        .object({
+          sopratitolo: z.string().optional(),
+          titolo: z.string(),
+          testo: z.string().optional(),
+          testo2: z.string().optional(),
+          immagine: image().optional(),
+          immagineAlt: z.string().default(''),
+        })
+        .optional(),
+      biografia: z.object({ sopratitolo: z.string().optional(), titolo: z.string() }).optional(),
+      evidenza: z.object({ testo: z.string(), opera: reference('opere').optional() }).optional(),
+      eventi: z
+        .object({
+          sopratitolo: z.string().optional(),
+          titolo: z.string(),
+          immagine: image().optional(),
+          immagineAlt: z.string().default(''),
+          anni: z.array(voceEventi),
+        })
+        .optional(),
     }),
 });
 
-export const collections = { opere, temi, pagine };
+export const collections = { opere, categorie, home, pagine };

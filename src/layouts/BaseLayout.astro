@@ -2,12 +2,11 @@
 import type { ImageMetadata } from 'astro';
 import { Font } from 'astro:assets';
 import '~/styles/global.css';
-import ContactBand from '~/components/ContactBand.astro';
 import MenuOverlay from '~/components/MenuOverlay.astro';
 import SearchOverlay from '~/components/SearchOverlay.astro';
 import Seo from '~/components/Seo.astro';
 import SiteFooter from '~/components/SiteFooter.astro';
-import SiteHeader from '~/components/SiteHeader.astro';
+import SiteHeader, { type HeaderVariant } from '~/components/SiteHeader.astro';
 import ToTop from '~/components/ToTop.astro';
 import { site } from '~/config/site';
 
@@ -19,11 +18,11 @@ interface Props {
   type?: 'website' | 'article';
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   noindex?: boolean;
-  /** Fascia "Scrivimi" prima del footer. */
-  contactBand?: boolean;
+  /** Variante dell'header (come nel tema: switch in home, minimal in Chi sono, divided altrove). */
+  header?: HeaderVariant;
 }
 
-const { contactBand = true, ...seo } = Astro.props;
+const { header = 'divided', ...seo } = Astro.props;
 
 // Navigazione istantanea: il browser prepara la pagina successiva al passaggio del mouse
 // (Speculation Rules, ignorate dai browser che non le supportano).
@@ -37,6 +36,7 @@ const speculationRules = JSON.stringify({
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Font cssVariable="--font-syne" preload />
     <Font cssVariable="--font-archivo" preload />
     <Font cssVariable="--font-cormorant" />
     <Seo {...seo} />
@@ -50,11 +50,10 @@ const speculationRules = JSON.stringify({
   <body>
     <div id="top"></div>
     <a class="skip-link" href="#contenuto">Vai al contenuto</a>
-    <SiteHeader />
+    <SiteHeader variant={header} />
     <main id="contenuto">
       <slot />
     </main>
-    {contactBand && <ContactBand />}
     <SiteFooter />
     <ToTop />
     <MenuOverlay />

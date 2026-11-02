@@ -21,12 +21,12 @@ const { target, label = 'Chiudi' } = Astro.props;
     gap: 26px;
     padding: 10px 0;
     font-family: var(--f-display);
-    font-stretch: var(--display-stretch);
-    font-weight: var(--display-weight);
+    font-weight: 700;
     font-size: var(--fs-nav);
     line-height: 1;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
-    color: var(--c-ink);
+    color: var(--c-main);
   }
 
   .overlay-close svg {
@@ -39,7 +39,7 @@ const { target, label = 'Chiudi' } = Astro.props;
 
   @media (max-width: 599px) {
     .overlay-close {
-      font-size: var(--fs-label);
+      font-size: 0.875rem;
       gap: 14px;
     }
   }

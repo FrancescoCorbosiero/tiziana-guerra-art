@@ -1,0 +1,103 @@
+---
+import { nav } from '~/config/site';
+
+interface Props {
+  /** Etichetta accessibile della navigazione. */
+  label: string;
+  class?: string;
+}
+
+const { label, class: className } = Astro.props;
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<nav class:list={['nav-links', className]} aria-label={label}>
+  <ul role="list">
+    {
+      nav.map((item) => (
+        <li class:list={{ 'has-children': item.children?.length }}>
+          <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+            <span class="brush">{item.label}</span>
+          </a>
+          {item.children?.length ? (
+            <ul role="list" class="nav-links__sub">
+              {item.children.map((child) => (
+                <li>
+                  <a href={child.href} aria-current={path.startsWith(child.href) ? 'page' : undefined}>
+                    <span class="brush-inline">{child.label}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .nav-links > ul {
+    display: flex;
+    align-items: center;
+    gap: var(--nav-gap, 33px);
+  }
+
+  .nav-links > ul > li {
+    position: relative;
+  }
+
+  .nav-links > ul > li > a {
+    display: inline-block;
+    padding-block: 12px;
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: var(--nav-size, var(--fs-nav));
+    line-height: 0.881;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--c-main);
+  }
+
+  /* Tendina (Pitture → Acrilico, Spatola) */
+  .nav-links__sub {
+    position: absolute;
+    top: 100%;
+    left: -24px;
+    z-index: 5;
+    min-width: 200px;
+    padding: 18px 24px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition:
+      opacity var(--t-fast) ease-out,
+      transform var(--t-fast) ease-out,
+      visibility 0s linear var(--t-fast);
+  }
+
+  .has-children:hover > .nav-links__sub,
+  .has-children:focus-within > .nav-links__sub {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity var(--t-fast) ease-out,
+      transform var(--t-fast) ease-out,
+      visibility 0s;
+  }
+
+  .nav-links__sub a {
+    display: block;
+    padding-block: 6px;
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--c-main);
+  }
+</style>

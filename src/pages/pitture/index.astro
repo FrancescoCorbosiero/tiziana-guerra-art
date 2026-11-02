@@ -1,24 +1,28 @@
 ---
+import CategoryFilter from '~/components/CategoryFilter.astro';
 import MasonryGrid from '~/components/MasonryGrid.astro';
-import PageHeader from '~/components/PageHeader.astro';
-import ThemeFilter from '~/components/ThemeFilter.astro';
+import PageTitle from '~/components/PageTitle.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
-import { getOpere, getTemiConOpere } from '~/lib/opere';
+import { getCategorieConOpere, getOpere } from '~/lib/opere';
 
-const [opere, temi] = await Promise.all([getOpere(), getTemiConOpere()]);
-const conteggio = `${opere.length} ${opere.length === 1 ? 'opera originale' : 'opere originali'}`;
+const [opere, categorie] = await Promise.all([getOpere(), getCategorieConOpere()]);
 ---
 
 <BaseLayout
   title="Pitture"
-  description={`Le pitture di Tiziana Guerra: ${conteggio}, suddivise per tema. Clicca un'opera per la scheda completa.`}
+  description="Pitture di Tiziana Guerra: acrilico, spatola e tecniche miste. Scopri le opere e richiedi informazioni."
   image={opere[0]?.data.immagine}
 >
-  <PageHeader eyebrow="Opere" title="Pitture" lead={conteggio}>
-    <ThemeFilter temi={temi} totale={opere.length} />
-  </PageHeader>
+  <PageTitle title="Pitture" />
+  <CategoryFilter categorie={categorie} totale={opere.length} />
 
-  <section class="container" aria-label="Elenco delle pitture">
+  <section class="container listing" aria-label="Elenco delle pitture">
     <MasonryGrid opere={opere} />
   </section>
 </BaseLayout>
+
+<style>
+  .listing {
+    padding-top: clamp(40px, 5vw, 64px);
+  }
+</style>

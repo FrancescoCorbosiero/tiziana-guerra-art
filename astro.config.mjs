@@ -2,9 +2,6 @@
 import { defineConfig, fontProviders } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-/** @param {string} pkg @param {string} file */
-const fontsource = (pkg, file) => `./node_modules/@fontsource-variable/${pkg}/files/${file}`;
-
 export default defineConfig({
   site: 'https://tizianaguerra.art',
   trailingSlash: 'always',
@@ -34,42 +31,36 @@ export default defineConfig({
     },
   },
 
-  // Font self-hosted (nessuna richiesta a Google: GDPR-friendly), con fallback metrici
-  // generati da Astro per evitare salti di layout al caricamento.
+  // Font del tema originale (Syne, Archivo, Cormorant Infant — licenza OFL), inclusi nel sito:
+  // nessuna richiesta a Google. Astro genera fallback metrici per evitare salti di layout.
   fonts: [
+    {
+      provider: fontProviders.local(),
+      name: 'Syne',
+      cssVariable: '--font-syne',
+      fallbacks: ['Arial', 'sans-serif'],
+      options: {
+        variants: [{ src: ['./src/assets/fonts/syne-latin.woff2'], weight: '400 800', style: 'normal' }],
+      },
+    },
     {
       provider: fontProviders.local(),
       name: 'Archivo',
       cssVariable: '--font-archivo',
       fallbacks: ['Arial', 'sans-serif'],
       options: {
-        variants: [
-          {
-            src: [fontsource('archivo', 'archivo-latin-standard-normal.woff2')],
-            weight: '100 900',
-            stretch: '62% 125%',
-            style: 'normal',
-          },
-        ],
+        variants: [{ src: ['./src/assets/fonts/archivo-latin.woff2'], weight: '100 900', style: 'normal' }],
       },
     },
     {
       provider: fontProviders.local(),
-      name: 'Cormorant Garamond',
+      name: 'Cormorant Infant',
       cssVariable: '--font-cormorant',
       fallbacks: ['Georgia', 'serif'],
       options: {
         variants: [
-          {
-            src: [fontsource('cormorant-garamond', 'cormorant-garamond-latin-wght-normal.woff2')],
-            weight: '300 700',
-            style: 'normal',
-          },
-          {
-            src: [fontsource('cormorant-garamond', 'cormorant-garamond-latin-wght-italic.woff2')],
-            weight: '300 700',
-            style: 'italic',
-          },
+          { src: ['./src/assets/fonts/cormorant-infant-latin.woff2'], weight: '300 700', style: 'normal' },
+          { src: ['./src/assets/fonts/cormorant-infant-italic-latin.woff2'], weight: '300 700', style: 'italic' },
         ],
       },
     },

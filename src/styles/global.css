@@ -1,60 +1,60 @@
 /* ==========================================================================
    Tiziana Guerra Art — design system
-   Ricostruzione dello stile del tema "Ginevra": crema/bianco, tipografia
-   extended in maiuscolo, accenti serif corsivi, pennellata gialla.
+   Valori ripresi dal tema WordPress "Ginevra" (Qode Interactive) usato dal sito
+   originale: font, scala tipografica, colori, misure ed effetti.
    ========================================================================== */
 
 :root {
-  /* Colori (campionati dal sito WordPress) */
+  /* Colori del tema */
   --c-bg: #ffffff;
-  --c-cream: #f5f4ed;
-  --c-ink: #211d13; /* testo su crema */
-  --c-text: #222222; /* titoli */
-  --c-body: #4b4840; /* paragrafi */
-  --c-muted: #6e6a60; /* numeri, etichette */
-  --c-line: #e5e2d8;
-  --c-accent: #fec600; /* pennellata */
-  --c-mat: #f1efe8; /* sfondo immagini in caricamento / passe-partout */
+  --c-cream: #f5f4ed; /* fascia titoli, piè di pagina, menu a tutto schermo */
+  --c-main: #221d14; /* menu */
+  --c-text: #212121; /* titoli e link */
+  --c-body: #4e4e4e; /* testo */
+  --c-muted: #6f6c64; /* testo secondario (più scuro dell'originale #aeada9, per la leggibilità) */
+  --c-line: #e7e5dd;
+  --c-accent: #ffc600; /* pennellata */
+  --c-mat: #f5f4ed;
 
-  /* Tipografia */
-  --f-display: var(--font-archivo, 'Archivo'), Arial, sans-serif;
+  /* Font del tema */
+  --f-display: var(--font-syne, 'Syne'), Arial, sans-serif;
   --f-body: var(--font-archivo, 'Archivo'), Arial, sans-serif;
-  --f-serif: var(--font-cormorant, 'Cormorant Garamond'), Georgia, serif;
-  --display-stretch: 122%;
-  --display-weight: 550;
+  --f-serif: var(--font-cormorant, 'Cormorant Infant'), Georgia, serif;
 
-  --fs-body: 1.0625rem; /* 17px */
-  --fs-small: 0.875rem;
-  --fs-label: 0.8125rem;
-  --fs-nav: 1.09375rem; /* 17.5px come nel tema */
-  --fs-card: clamp(1.125rem, 0.9rem + 0.75vw, 1.8rem); /* titoli opere: 29px su desktop */
-  --fs-h3: clamp(1.4rem, 1rem + 1.4vw, 2.25rem);
-  --fs-h2: clamp(1.9rem, 1.2rem + 2.8vw, 4rem);
-  --fs-page: clamp(2.9rem, 1rem + 8vw, 9.5rem);
-  --fs-hero: clamp(3.4rem, 0.6rem + 11.2vw, 13.5rem);
+  /* Scala tipografica (desktop come nel tema, ridotta in proporzione su schermi piccoli) */
+  --fs-body: clamp(1.0625rem, 0.98rem + 0.3vw, 1.25rem); /* 20px */
+  --fs-h1: clamp(2.25rem, 1.4rem + 2.6vw, 3.75rem); /* 60px */
+  --fs-h2: clamp(2rem, 1.3rem + 2.1vw, 3.125rem); /* 50px */
+  --fs-h3: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem); /* 40px */
+  --fs-h4: clamp(1.375rem, 1.05rem + 0.95vw, 1.875rem); /* 30px */
+  --fs-h5: clamp(1.25rem, 1.05rem + 0.6vw, 1.5625rem); /* 25px */
+  --fs-h6: clamp(0.9375rem, 0.85rem + 0.3vw, 1.125rem); /* 18px */
+  --fs-nav: 1.125rem; /* 18px */
+  --fs-num: clamp(1.25rem, 1.1rem + 0.45vw, 1.5625rem); /* "/01": 25px */
 
   /* Spazi */
-  --gutter: clamp(20px, 4.2vw, 60px);
+  --gutter: clamp(20px, 4vw, 40px);
   --container: 1300px;
-  --container-wide: 1680px;
-  --header-h: 64px;
-  --section: clamp(80px, 11vw, 180px);
+  --section: clamp(80px, 10vw, 160px);
+  --header-h: 135px;
+  --sticky-h: 70px;
 
-  /* Movimento */
+  /* Movimento (curve del tema) */
+  --ease-wave: cubic-bezier(0.33, 1, 0.68, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --t-fast: 0.25s;
+  --t-fast: 0.2s;
   --t-med: 0.6s;
   --t-slow: 1.1s;
 
-  /* Pennellata: maschera SVG (colorata con --c-accent) e versione già gialla per i testi su più righe */
+  /* Pennellata (maschera SVG colorata con --c-accent; versione gialla per i testi su più righe) */
   --brush: url('../assets/brush.svg');
   --brush-fill: url('../assets/brush-fill.svg');
 
   color-scheme: light;
 }
 
-@media (min-width: 1200px) {
+@media (max-width: 1024px) {
   :root {
     --header-h: 70px;
   }
@@ -71,7 +71,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  scroll-padding-top: calc(var(--header-h) + 24px);
+  scroll-padding-top: calc(var(--sticky-h) + 24px);
   scrollbar-gutter: stable;
 }
 
@@ -91,8 +91,8 @@ body {
   color: var(--c-body);
   font-family: var(--f-body);
   font-size: var(--fs-body);
-  line-height: 1.7;
-  font-weight: 400;
+  font-weight: 300;
+  line-height: 1.35;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -116,8 +116,9 @@ img {
 }
 
 a {
-  color: inherit;
+  color: var(--c-text);
   text-decoration: none;
+  transition: color var(--t-fast) ease-out;
 }
 
 button {
@@ -142,7 +143,7 @@ h6 {
 }
 
 p {
-  margin: 0 0 1.25em;
+  margin: 0 0 1em;
   text-wrap: pretty;
 }
 
@@ -158,6 +159,12 @@ blockquote,
 dl,
 dd {
   margin: 0;
+}
+
+strong,
+b {
+  font-weight: 500;
+  color: var(--c-text);
 }
 
 :focus-visible {
@@ -183,7 +190,7 @@ html:has(.overlay:popover-open) {
 }
 
 .container-wide {
-  width: min(100% - 2 * var(--gutter), var(--container-wide));
+  width: min(100% - 2 * var(--gutter), 1647px);
   margin-inline: auto;
 }
 
@@ -191,41 +198,54 @@ html:has(.overlay:popover-open) {
   padding-block: var(--section);
 }
 
-/* L'ultima sezione non raddoppia lo spazio prima del footer */
-main > .section:last-child {
-  padding-bottom: 0;
-}
-
 .bg-cream {
   background: var(--c-cream);
-  color: var(--c-ink);
 }
 
-/* ---------- Tipografia ---------- */
+/* ---------- Tipografia del tema ---------- */
 
-.display {
+.display,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
   font-family: var(--f-display);
-  font-stretch: var(--display-stretch);
-  font-weight: var(--display-weight);
+  font-weight: 700;
   text-transform: uppercase;
-  line-height: 1.04;
   letter-spacing: 0;
   color: var(--c-text);
 }
 
-.bg-cream .display {
-  color: var(--c-ink);
+.h1 {
+  font-size: var(--fs-h1);
+  line-height: 1.083;
 }
 
-.label {
-  font-family: var(--f-display);
-  font-stretch: var(--display-stretch);
-  font-weight: 600;
-  font-size: var(--fs-label);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  line-height: 1.3;
-  color: var(--c-text);
+.h2 {
+  font-size: var(--fs-h2);
+  line-height: 0.9;
+}
+
+.h3 {
+  font-size: var(--fs-h3);
+  line-height: 1;
+}
+
+.h4 {
+  font-size: var(--fs-h4);
+  line-height: 1.1;
+}
+
+.h5 {
+  font-size: var(--fs-h5);
+  line-height: 1;
+}
+
+.h6 {
+  font-size: var(--fs-h6);
+  line-height: 1.158;
 }
 
 .serif {
@@ -233,54 +253,32 @@ main > .section:last-child {
   font-weight: 400;
 }
 
-.serif-italic {
-  font-family: var(--f-serif);
-  font-style: italic;
-  font-weight: 400;
-}
-
-/* Numerazione "/01" del tema */
+/* Sottotitoli in corsivo ("Uno stile costruito…", "/01") */
+.tagline,
 .num {
   font-family: var(--f-serif);
   font-style: italic;
-  font-weight: 400;
+  font-weight: 300;
+  font-size: var(--fs-num);
+  line-height: 1.08;
+  color: #000;
   font-variant-numeric: lining-nums;
-  color: var(--c-muted);
-  line-height: 1;
 }
 
-.lead {
-  font-family: var(--f-serif);
-  font-size: clamp(1.35rem, 1rem + 1.1vw, 2rem);
-  line-height: 1.4;
-  color: var(--c-text);
+.num {
+  font-weight: 400;
 }
 
-.prose {
-  max-width: 68ch;
+.text {
+  color: var(--c-body);
 }
 
 .prose > :last-child {
   margin-bottom: 0;
 }
 
-.prose h2,
-.prose h3 {
-  font-family: var(--f-display);
-  font-stretch: var(--display-stretch);
-  font-weight: var(--display-weight);
-  text-transform: uppercase;
-  color: var(--c-text);
-  line-height: 1.15;
-  margin: 2em 0 0.8em;
-}
-
-.prose h2 {
-  font-size: var(--fs-h3);
-}
-
-.prose h3 {
-  font-size: 1.15rem;
+.prose em {
+  font-style: italic;
 }
 
 .prose a {
@@ -289,44 +287,26 @@ main > .section:last-child {
   text-underline-offset: 0.2em;
 }
 
-.prose blockquote {
-  margin: 2em 0;
-  padding-left: 1.2em;
-  border-left: 2px solid var(--c-accent);
-  font-family: var(--f-serif);
-  font-style: italic;
-  font-size: 1.45em;
-  line-height: 1.4;
-  color: var(--c-text);
-}
-
-.prose strong {
-  color: var(--c-text);
-  font-weight: 600;
-}
-
-/* ---------- Pennellata gialla (hover dei link, voce attiva) ---------- */
+/* ---------- Pennellata gialla (menu e link testuali, come nel tema) ---------- */
 
 .brush {
   position: relative;
   display: inline-block;
-  isolation: isolate; /* la pennellata resta dietro al testo ma sopra lo sfondo */
+  isolation: isolate;
 }
 
 .brush::after {
   content: '';
   position: absolute;
-  left: -0.45em;
-  right: -0.7em;
-  bottom: -0.62em;
-  height: 0.6em;
-  max-height: 11px;
-  min-height: 7px;
+  left: -7px;
+  right: -12px;
+  bottom: -7px;
+  height: 12px;
   background: var(--c-accent);
   -webkit-mask: var(--brush) no-repeat 0 0 / 100% 100%;
   mask: var(--brush) no-repeat 0 0 / 100% 100%;
   clip-path: inset(0 100% 0 0);
-  transition: clip-path var(--t-med) var(--ease-out);
+  transition: clip-path var(--t-med) var(--ease-wave);
   pointer-events: none;
   z-index: -1;
 }
@@ -336,20 +316,26 @@ main > .section:last-child {
 .brush[aria-current='page']::after,
 .brush.is-active::after,
 a:hover .brush::after,
-a:focus-visible .brush::after {
+a:focus-visible .brush::after,
+a[aria-current='page'] .brush::after {
+  clip-path: inset(0 0 0 0);
+}
+
+/* Variante sempre visibile (pulsante testuale "Esplora la Galleria") */
+.brush--on::after {
   clip-path: inset(0 0 0 0);
 }
 
 /* Variante "inline": segue il testo anche quando va a capo (titoli delle opere) */
 .brush-inline {
-  --brush-h: 0.34em;
+  --brush-h: 0.36em;
   background-image: var(--brush-fill);
   background-repeat: no-repeat;
   background-position: -0.15em 100%;
   background-size: 0% var(--brush-h);
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
-  transition: background-size var(--t-med) var(--ease-out);
+  transition: background-size var(--t-med) var(--ease-wave);
 }
 
 a:hover .brush-inline,
@@ -358,104 +344,42 @@ a:focus-visible .brush-inline,
   background-size: calc(100% + 0.3em) var(--brush-h);
 }
 
-/* Variante grande per link testuali importanti (es. "Scrivimi") */
-.brush-lg::after {
-  height: 0.28em;
-  max-height: none;
-  bottom: -0.12em;
-}
+/* ---------- Pulsante testuale del tema ---------- */
 
-/* ---------- Testo che "rotola" da extended a serif (menu, liste temi) ---------- */
-
-.roll {
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: top;
-  padding-bottom: 0.08em;
-}
-
-.roll__a,
-.roll__b {
-  display: block;
-  transition: transform var(--t-med) var(--ease-out);
-}
-
-.roll__b {
-  position: absolute;
-  inset: 100% auto auto 0;
-  height: 100%;
-  display: flex;
+.btn-text {
+  display: inline-flex;
   align-items: center;
-  white-space: nowrap;
-  font-family: var(--f-serif);
-  font-weight: 400;
-  font-stretch: 100%;
-  font-size: 1.095em; /* stessa altezza delle maiuscole della versione extended */
-  letter-spacing: 0;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 0.9375rem; /* 15px */
+  line-height: 1.74;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-text);
 }
 
-a:hover .roll .roll__a,
-a:focus-visible .roll .roll__a,
-a:hover .roll .roll__b,
-a:focus-visible .roll .roll__b,
-.roll.is-active .roll__a,
-.roll.is-active .roll__b {
-  transform: translateY(-100%);
-}
-
-/* ---------- Immagini ---------- */
-
-.media {
-  position: relative;
-  overflow: hidden;
-  background: var(--c-mat);
-}
-
-.media img {
-  width: 100%;
-  height: auto;
-}
-
-/* Zoom al passaggio del mouse (richiesto per la galleria) */
-.zoom img {
-  transition:
-    transform var(--t-slow) var(--ease-out),
-    opacity var(--t-med) var(--ease-out);
-  transform-origin: 50% 50%;
-}
-
-@media (hover: hover) {
-  a:hover .zoom img,
-  a:focus-visible .zoom img {
-    transform: scale(1.06);
-  }
-}
-
-/* ---------- Pulsanti ---------- */
-
+/* Pulsante pieno (richiesta informazioni) */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.75em;
-  min-height: 54px;
-  padding: 0.9em 1.9em;
+  min-height: 56px;
+  padding: 0.9em 2.2em;
   border: 1px solid var(--c-text);
   background: var(--c-text);
   color: #fff;
   font-family: var(--f-display);
-  font-stretch: var(--display-stretch);
-  font-weight: 600;
-  font-size: var(--fs-label);
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   line-height: 1.2;
   text-align: center;
   transition:
-    background-color var(--t-fast) ease,
-    color var(--t-fast) ease,
-    border-color var(--t-fast) ease;
+    background-color var(--t-fast) ease-out,
+    color var(--t-fast) ease-out,
+    border-color var(--t-fast) ease-out;
 }
 
 .btn:hover,
@@ -477,14 +401,47 @@ a:focus-visible .roll .roll__b,
   color: #fff;
 }
 
-.arrow {
-  display: inline-block;
-  transition: transform var(--t-fast) var(--ease-out);
+/* ---------- Immagini ---------- */
+
+.media {
+  position: relative;
+  overflow: hidden;
+  background: var(--c-mat);
 }
 
-a:hover .arrow,
-a:focus-visible .arrow {
-  transform: translateX(4px);
+.media img {
+  width: 100%;
+  height: auto;
+}
+
+/* Immagine che riempie un riquadro con proporzioni fisse (aspect-ratio sul contenitore) */
+.cover {
+  position: relative;
+  overflow: hidden;
+  background: var(--c-mat);
+}
+
+.cover > picture {
+  display: contents;
+}
+
+.cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Zoom al passaggio del mouse */
+.zoom img {
+  transition: transform var(--t-slow) var(--ease-out);
+}
+
+@media (hover: hover) {
+  a:hover .zoom img,
+  a:focus-visible .zoom img {
+    transform: scale(1.06);
+  }
 }
 
 /* ---------- Animazioni d'ingresso (solo se l'utente non ha chiesto meno movimento) ---------- */
@@ -495,11 +452,6 @@ a:focus-visible .arrow {
     animation-delay: var(--delay, 0s);
   }
 
-  .reveal-img {
-    animation: reveal-clip 1.4s var(--ease-out) both;
-    animation-delay: var(--delay, 0s);
-  }
-
   @keyframes reveal-up {
     from {
       opacity: 0;
@@ -507,12 +459,25 @@ a:focus-visible .arrow {
     }
   }
 
-  @keyframes reveal-clip {
-    from {
-      clip-path: inset(100% 0 0 0);
+  /* Immagini che "rimpiccioliscono" entrando nello schermo, come nel tema (scroll-driven) */
+  @supports (animation-timeline: view()) {
+    .appear-zoom {
+      overflow: hidden;
     }
-    to {
-      clip-path: inset(0 0 0 0);
+
+    .appear-zoom img {
+      animation: appear-zoom linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+
+    @keyframes appear-zoom {
+      from {
+        transform: scale(1.2);
+      }
+      to {
+        transform: scale(1);
+      }
     }
   }
 
@@ -523,7 +488,7 @@ a:focus-visible .arrow {
 
   ::view-transition-old(root),
   ::view-transition-new(root) {
-    animation-duration: 0.45s;
+    animation-duration: 0.4s;
     animation-timing-function: var(--ease-in-out);
   }
 
@@ -531,6 +496,53 @@ a:focus-visible .arrow {
     animation-duration: 0.55s;
     animation-timing-function: var(--ease-out);
   }
+}
+
+/* ---------- Overlay a tutto schermo (menu, ricerca, zoom) — Popover API, senza JS ---------- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--c-cream);
+  color: var(--c-main);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  opacity: 0;
+  transition:
+    opacity 0.25s linear,
+    overlay 0.25s allow-discrete,
+    display 0.25s allow-discrete;
+}
+
+.overlay:popover-open {
+  opacity: 1;
+}
+
+@starting-style {
+  .overlay:popover-open {
+    opacity: 0;
+  }
+}
+
+.overlay::backdrop {
+  background: transparent;
+}
+
+.overlay__bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  height: var(--header-h);
+  padding-inline: var(--gutter);
 }
 
 /* ---------- Utilità ---------- */
@@ -561,77 +573,4 @@ a:focus-visible .arrow {
 
 .skip-link:focus {
   transform: none;
-}
-
-/* ---------- Overlay a tutto schermo (menu, ricerca, zoom) — Popover API, senza JS ---------- */
-
-.overlay {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  max-height: none;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: var(--c-cream);
-  color: var(--c-ink);
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  opacity: 0;
-  transition:
-    opacity 0.45s var(--ease-out),
-    overlay 0.45s allow-discrete,
-    display 0.45s allow-discrete;
-}
-
-.overlay:popover-open {
-  opacity: 1;
-}
-
-@starting-style {
-  .overlay:popover-open {
-    opacity: 0;
-  }
-}
-
-.overlay::backdrop {
-  background: transparent;
-}
-
-.overlay__bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  height: var(--header-h);
-  padding-inline: var(--gutter);
-}
-
-.overlay__logo {
-  font-family: var(--f-display);
-  font-stretch: var(--display-stretch);
-  font-weight: var(--display-weight);
-  font-size: clamp(0.875rem, 0.55rem + 1.6vw, 1.8125rem);
-  line-height: 1;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.overlay__foot {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 32px;
-  padding: 24px var(--gutter) 32px;
-}
-
-.overlay__foot a {
-  color: var(--c-ink);
-}
-
-.overlay__foot a[href^='mailto:'] {
-  text-transform: none;
-  letter-spacing: 0.02em;
 }
