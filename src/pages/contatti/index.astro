@@ -21,13 +21,13 @@ const recapiti = candidati.filter((r): r is Recapito => Boolean(r));
 <BaseLayout title="Contatti" description={`Per informazioni e richieste sulle opere di ${site.author}, inviami un messaggio.`}>
   <PageTitle title="Contatti" />
 
-  <section class="contacts container">
+  <section class="contacts grid-12 container">
     <div class="contacts__main">
-      <h2 class="h3 contacts__title">Per informazioni e richieste, inviami un messaggio</h2>
+      <h2 class="h3 contacts__title reveal" style="--delay:.3s">Per informazioni e richieste, inviami un messaggio</h2>
       {site.contactFormEndpoint && <ContactForm action={site.contactFormEndpoint} />}
     </div>
 
-    <aside class="contacts__aside" aria-label="Recapiti">
+    <aside class="contacts__aside reveal" style="--delay:.5s" aria-label="Recapiti">
       <dl class="contacts__list">
         {
           recapiti.map((r) => (
@@ -46,26 +46,28 @@ const recapiti = candidati.filter((r): r is Recapito => Boolean(r));
           ))
         }
       </dl>
-    <figure class="contacts__figure">
-      <Picture
-        src={torreGuida}
-        alt="La torre guida — dipinto di Tiziana Guerra"
-        widths={[480, 720, 1024]}
-        sizes="(min-width: 1025px) 420px, 90vw"
-        formats={['avif', 'webp']}
-        fallbackFormat="jpg"
-        loading="lazy"
-        decoding="async"
-      />
-    </figure>
+      <figure class="contacts__figure" data-clip>
+        <Picture
+          src={torreGuida}
+          alt="La torre guida — dipinto di Tiziana Guerra"
+          widths={[480, 720, 1024]}
+          sizes="(min-width: 1440px) 412px, (min-width: 1025px) 30vw, (min-width: 769px) 46vw, calc(100vw - 40px)"
+          formats={['avif', 'webp']}
+          fallbackFormat="jpg"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
     </aside>
   </section>
 </BaseLayout>
 
 <style>
+  /* modulo su 7 colonne, recapiti e immagine su 4 (da tablet affiancati tra loro) */
   .contacts {
     display: grid;
     gap: 56px;
+    align-items: start;
     padding-top: clamp(56px, 6vw, 100px);
   }
 
@@ -76,6 +78,7 @@ const recapiti = candidati.filter((r): r is Recapito => Boolean(r));
   .contacts__list {
     display: grid;
     gap: 28px;
+    align-content: start;
     margin-top: clamp(36px, 4vw, 56px);
   }
 
@@ -114,11 +117,32 @@ const recapiti = candidati.filter((r): r is Recapito => Boolean(r));
     font-size: var(--fs-h5);
   }
 
+  @media (min-width: 769px) {
+    .contacts__main {
+      grid-column: 1 / -1;
+    }
+
+    .contacts__aside {
+      grid-column: 1 / -1;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--grid-gap);
+    }
+  }
+
   @media (min-width: 1025px) {
     .contacts {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
-      gap: 80px;
-      align-items: start;
+      row-gap: 0;
+    }
+
+    .contacts__main {
+      grid-column: 1 / span 7;
+    }
+
+    .contacts__aside {
+      grid-column: 9 / span 4;
+      grid-template-columns: minmax(0, 1fr);
+      /* allineati al titolo del modulo */
+      padding-top: 6px;
     }
   }
 </style>

@@ -1,4 +1,5 @@
 ---
+import Parole from '~/components/Parole.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 ---
 
@@ -6,7 +7,7 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
 <BaseLayout title="Messaggio inviato" noindex>
   <section class="esito container">
     <p class="num">/grazie</p>
-    <h1 class="h1">Messaggio inviato</h1>
+    <h1 class="h1 intro-words"><Parole testo="Messaggio inviato" /></h1>
     <p class="text">Grazie per avermi scritto: riceverai una risposta al più presto.</p>
     <a class="btn-text" href="/galleria/"><span class="brush brush--on">Torna alla Galleria</span></a>
   </section>

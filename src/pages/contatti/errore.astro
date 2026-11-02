@@ -1,5 +1,6 @@
 ---
 import { site } from '~/config/site';
+import Parole from '~/components/Parole.astro';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 ---
 
@@ -7,7 +8,7 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
 <BaseLayout title="Messaggio non inviato" noindex>
   <section class="esito container">
     <p class="num">/ops</p>
-    <h1 class="h1">Messaggio non inviato</h1>
+    <h1 class="h1 intro-words"><Parole testo="Messaggio non inviato" /></h1>
     <p class="text">
       Controlla di aver compilato nome, email e messaggio e di aver accettato l'informativa, poi riprova. Se il
       problema continua, scrivi direttamente a <a href={`mailto:${site.contatti.email}`}>{site.contatti.email}</a>.

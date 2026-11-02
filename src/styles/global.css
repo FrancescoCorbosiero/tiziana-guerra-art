@@ -35,6 +35,7 @@
   /* Spazi */
   --gutter: clamp(20px, 4vw, 40px);
   --container: 1300px;
+  --grid-gap: clamp(20px, 2.4vw, 32px); /* spazio tra le colonne della griglia a 12 */
   --section: clamp(80px, 10vw, 160px);
   --header-h: 135px;
   --sticky-h: 70px;
@@ -46,6 +47,11 @@
   --t-fast: 0.2s;
   --t-med: 0.6s;
   --t-slow: 1.1s;
+  /* altezza del banner in cima alle pagine (Annuncio.astro) su desktop */
+  --annuncio-h: 42px;
+  /* quando partono le intro della prima schermata; con il loader, alla sua uscita */
+  --intro-base: 0.08s;
+  --ease-expo: cubic-bezier(0.19, 1, 0.22, 1); /* le curve del motore di animazioni (src/motion) */
 
   /* Pennellata (maschera SVG colorata con --c-accent; versione gialla per i testi su più righe) */
   --brush: url('../assets/brush.svg');
@@ -58,6 +64,16 @@
   :root {
     --header-h: 70px;
   }
+}
+
+/* con il banner, l'header "switch" della home (sovrapposto alla pagina su desktop) scende sotto di lui */
+html:has(.annuncio) {
+  --annuncio-top: var(--annuncio-h);
+}
+
+/* il loader (Loader.astro) copre la prima schermata per 1,3s: le intro partono alla sua uscita */
+html.con-loader {
+  --intro-base: 1.25s;
 }
 
 /* ---------- Reset essenziale ---------- */
@@ -189,9 +205,16 @@ html:has(.overlay:popover-open) {
   margin-inline: auto;
 }
 
-.container-wide {
-  width: min(100% - 2 * var(--gutter), 1647px);
-  margin-inline: auto;
+/*
+ * Griglia a 12 colonne sul contenitore (da 769px; sotto i blocchi si impilano).
+ * Tutte le pagine la usano per allineare titoli, testi e immagini allo stesso bordo.
+ */
+@media (min-width: 769px) {
+  .grid-12 {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+  }
 }
 
 .section {
@@ -446,18 +469,62 @@ a:focus-visible .brush-inline,
   }
 }
 
-/* ---------- Animazioni d'ingresso (solo se l'utente non ha chiesto meno movimento) ---------- */
+/* ---------- Animazioni d'ingresso ----------
+   Sopra la piega il movimento è CSS: il primo paint non aspetta mai il JavaScript. Sotto la piega
+   lavora il motore di animazioni (src/motion). Fill mode "backwards", come nel core: finita l'intro,
+   le proprietà tornano allo stile normale (e agli effetti che le muovono allo scroll). */
+
+/* Titoli divisi in parole (<Parole>): le maschere non cambiano il layout, neanche senza animazione. */
+.intro-words .iw {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0.14em 0 0.1em;
+  margin: -0.14em 0 -0.1em;
+}
+
+.intro-words .iw > span {
+  display: inline-block;
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .reveal {
-    animation: reveal-up 1.1s var(--ease-out) both;
-    animation-delay: var(--delay, 0s);
+    animation: reveal-up 1.1s var(--ease-out) backwards;
+    animation-delay: calc(var(--intro-base) + var(--delay, 0s));
   }
 
   @keyframes reveal-up {
     from {
       opacity: 0;
       transform: translateY(28px);
+    }
+  }
+
+  /* ogni parola del titolo sale dalla sua maschera, una dopo l'altra */
+  .intro-words .iw > span {
+    animation: intro-word 1.15s var(--ease-expo) backwards;
+    animation-delay: calc(var(--intro-base) + var(--i, 0) * 70ms);
+  }
+
+  @keyframes intro-word {
+    from {
+      transform: translateY(115%);
+    }
+  }
+
+  /* immagini della prima schermata: si aprono dal basso, come un sipario */
+  .intro-clip {
+    animation: intro-clip 1.4s var(--ease-expo) backwards;
+    animation-delay: calc(var(--intro-base) + var(--delay, 0.2s));
+  }
+
+  /* entrambi gli estremi espliciti: da "none" il clip-path non si interpola (salterebbe a metà) */
+  @keyframes intro-clip {
+    from {
+      clip-path: inset(100% 0 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
     }
   }
 
@@ -483,15 +550,10 @@ a:focus-visible .brush-inline,
     }
   }
 
-  /* Transizioni tra pagine (View Transitions API, nessun JavaScript) */
+  /* Transizioni tra pagine (View Transitions API, nessun JavaScript). La pagina che esce si alza,
+     quella nuova si posa: le animazioni sono nel core (src/motion/core/core.css). */
   @view-transition {
     navigation: auto;
-  }
-
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 0.4s;
-    animation-timing-function: var(--ease-in-out);
   }
 
   ::view-transition-group(*) {
@@ -595,11 +657,16 @@ a:focus-visible .brush-inline,
 
   /* niente navigazione, overlay, pulsanti e animazioni */
   .skip-link,
+  .annuncio,
+  .loader,
   .site-header,
   .sticky-header,
   .to-top,
   .overlay,
   .site-footer__top,
+  .site-footer__nav,
+  .site-footer__wordmark,
+  .lens,
   .carousel__controls,
   .cs-events__nav,
   .cs-award__link,
@@ -621,11 +688,48 @@ a:focus-visible .brush-inline,
     transform: none !important;
   }
 
+  /* tutto ciò che il motore di animazioni tiene nascosto finché non entra nello schermo (src/motion):
+     in stampa si vede tutto, anche le parti della pagina che non sono ancora state scorse */
+  [data-motion-pending],
+  [data-reveal],
+  [data-clip],
+  [data-clip] img,
+  [data-hero-away],
+  .split-line,
+  .scrub-word,
+  [data-wordmark-char],
+  [data-kinetic-line],
+  .carousel__track {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+
+  /* la galleria guidata dallo scroll torna un elenco normale */
+  .carousel,
+  .carousel__stage {
+    height: auto !important;
+    position: static !important;
+  }
+
   /* elementi "appesi" (sticky) di nuovo nel flusso, fondi crema tolti */
   .cs-year__anno,
-  .cs-events__poster {
+  .cs-events__poster,
+  .artwork__info {
     position: static !important;
     box-shadow: none !important;
+  }
+
+  /* scheda dell'opera: foto senza passe-partout, mai più alta di mezza pagina */
+  .artwork__stage {
+    display: block !important;
+    height: auto !important;
+    padding: 0 !important;
+    background: none !important;
+  }
+
+  .artwork__stage img {
+    max-height: 130mm !important;
   }
 
   .bg-cream,

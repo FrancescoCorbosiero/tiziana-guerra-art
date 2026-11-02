@@ -1,18 +1,76 @@
 ---
-import { footerNav, site } from '~/config/site';
+import { Picture } from 'astro:assets';
+import { nav, site } from '~/config/site';
+import { altOpera, getCategorieConOpere, getOpere, urlCategoria, urlOpera } from '~/lib/opere';
 
+/*
+ * Piè di pagina, sulla griglia a 12 colonne di tutto il sito:
+ * 1. la frase dell'artista in grande (le parole si accendono scorrendo) e l'invito a scrivere;
+ *    a destra le ultime opere;
+ * 2. le colonne: pagine, pitture per categoria, contatti;
+ * 3. il nome dell'artista a tutta larghezza (le lettere salgono quando entra nello schermo);
+ * 4. copyright, nota sui diritti delle immagini e "Torna su".
+ */
 const anno = new Date().getFullYear();
+const [opere, categorie] = await Promise.all([getOpere(), getCategorieConOpere()]);
+// Le ultime opere: le più recenti nell'ordine della Galleria (numero d'ordine più alto).
+const ultime = [...opere].sort((a, b) => (b.data.ordine ?? 0) - (a.data.ordine ?? 0)).slice(0, 4);
+const { email } = site.contatti;
+const lettere = [...site.author.toUpperCase()];
 ---
 
 <footer class="site-footer">
-  <div class="site-footer__top">
-    <p class="h5 site-footer__tagline">{site.footerTagline}</p>
+  <div class="site-footer__top grid-12 container">
+    <div class="site-footer__invito">
+      <p class="site-footer__frase" data-scrub>{site.footerTagline}</p>
+      {
+        email && (
+          <>
+            <p class="site-footer__cta" data-reveal>Per informazioni sulle opere e sulle mostre, scrivimi</p>
+            <a class="site-footer__mail" href={`mailto:${email}`} data-reveal>
+              <span class="brush-inline">{email}</span>
+            </a>
+          </>
+        )
+      }
+    </div>
 
-    <nav class="site-footer__col" aria-labelledby="footer-website">
-      <h2 class="site-footer__title" id="footer-website">Website</h2>
+    {
+      ultime.length > 0 && (
+        <div class="site-footer__opere" data-reveal>
+          <h2 class="site-footer__title">Ultime opere</h2>
+          <ul role="list" class="site-footer__miniature">
+            {ultime.map((o) => (
+              <li>
+                <a href={urlOpera(o)} title={o.data.titolo}>
+                  <Picture
+                    src={o.data.immagine}
+                    alt={altOpera(o)}
+                    widths={[120, 240]}
+                    sizes="120px"
+                    formats={['avif', 'webp']}
+                    fallbackFormat="jpg"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </a>
+              </li>
+            ))}
+          </ul>
+          <a class="btn-text site-footer__galleria" href="/galleria/">
+            <span class="brush">Tutta la galleria</span>
+          </a>
+        </div>
+      )
+    }
+  </div>
+
+  <div class="site-footer__nav grid-12 container">
+    <nav class="site-footer__col" aria-labelledby="footer-esplora" data-reveal>
+      <h2 class="site-footer__title" id="footer-esplora">Esplora</h2>
       <ul role="list">
         {
-          footerNav.map((item) => (
+          nav.map((item) => (
             <li>
               <a href={item.href}>{item.label}</a>
             </li>
@@ -21,8 +79,34 @@ const anno = new Date().getFullYear();
       </ul>
     </nav>
 
-    <div class="site-footer__col">
-      <h2 class="site-footer__title">Social</h2>
+    {
+      categorie.length > 0 && (
+        <nav class="site-footer__col" aria-labelledby="footer-pitture" data-reveal>
+          <h2 class="site-footer__title" id="footer-pitture">
+            Pitture
+          </h2>
+          <ul role="list">
+            <li>
+              <a href="/pitture/">
+                Tutte
+                <sup class="num site-footer__conta">{opere.length}</sup>
+              </a>
+            </li>
+            {categorie.map(({ categoria, opere: delCaso }) => (
+              <li>
+                <a href={urlCategoria(categoria.id)}>
+                  {categoria.data.titolo}
+                  <sup class="num site-footer__conta">{delCaso.length}</sup>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+
+    <div class="site-footer__col" data-reveal>
+      <h2 class="site-footer__title">Seguimi</h2>
       <ul role="list">
         {
           site.social.map((s) => (
@@ -34,48 +118,60 @@ const anno = new Date().getFullYear();
           ))
         }
         {
-          site.contatti.email && (
+          email && (
             <li>
-              <a href={`mailto:${site.contatti.email}`}>Email</a>
+              <a href={`mailto:${email}`}>Email</a>
             </li>
           )
         }
+        <li>
+          <a href="/contatti/">Modulo di contatto</a>
+        </li>
       </ul>
     </div>
 
-    {
-      site.privacyUrl && (
-        <div class="site-footer__col">
-          <h2 class="site-footer__title">Altro</h2>
-          <ul role="list">
-            <li>
-              <a href={site.privacyUrl}>Privacy Policy</a>
-            </li>
-          </ul>
-        </div>
-      )
-    }
   </div>
 
-  <div class="site-footer__bottom">
-    <p>© {anno} {site.name}</p>
+  <!-- Il nome a tutta larghezza: decorativo (il nome è già nel logo e nel copyright) -->
+  <div class="site-footer__wordmark container" aria-hidden="true">
+    <p class="wordmark" data-wordmark>
+      {
+        lettere.map((c) =>
+          c === ' ' ? (
+            <span class="wordmark__spazio"> </span>
+          ) : (
+            <span class="wordmark__maschera">
+              <span data-wordmark-char>{c}</span>
+            </span>
+          ),
+        )
+      }
+    </p>
+  </div>
+
+  <div class="site-footer__bottom container">
+    <p class="site-footer__legal">
+      © {anno} {site.name}. Le opere e le loro immagini sono protette dal diritto d'autore: per riprodurle serve il
+      permesso dell'artista.
+      {
+        site.privacyUrl && (
+          <>
+            {' '}
+            <a href={site.privacyUrl}>Privacy Policy</a>
+          </>
+        )
+      }
+    </p>
+    <a class="btn-text site-footer__su" href="#top" data-magnetic="0.25">
+      <span class="brush">Torna su</span>
+      <span aria-hidden="true">↑</span>
+    </a>
   </div>
 </footer>
 
 <style>
   .site-footer {
     background: var(--c-cream);
-  }
-
-  .site-footer__top {
-    display: grid;
-    gap: 36px 40px;
-    padding: clamp(64px, 8vw, 120px) clamp(20px, 6.6vw, 125px) 39px;
-  }
-
-  .site-footer__tagline {
-    margin: 0;
-    max-width: 26ch;
   }
 
   .site-footer__title {
@@ -86,6 +182,102 @@ const anno = new Date().getFullYear();
     letter-spacing: 0.02em;
     text-transform: uppercase;
     color: var(--c-text);
+  }
+
+  /* ---------- 1. Frase, invito, ultime opere ---------- */
+  .site-footer__top {
+    display: grid;
+    gap: 56px;
+    align-items: end;
+    padding-block: clamp(72px, 9vw, 140px) clamp(48px, 5vw, 72px);
+  }
+
+  .site-footer__frase {
+    max-width: 16ch;
+    margin: 0;
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: var(--fs-h2);
+    line-height: 0.95;
+    text-transform: uppercase;
+    color: var(--c-text);
+    text-wrap: balance;
+  }
+
+  .site-footer__cta {
+    margin: clamp(28px, 3vw, 44px) 0 6px;
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-size: var(--fs-num);
+    line-height: 1.15;
+    color: #000;
+  }
+
+  .site-footer__mail {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: var(--fs-h5);
+    line-height: 1.2;
+    color: var(--c-text);
+    overflow-wrap: anywhere;
+  }
+
+  .site-footer__miniature {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .site-footer__miniature a {
+    display: grid;
+    place-items: end center;
+    aspect-ratio: 1;
+  }
+
+  /* opere intere (mai ritagliate), allineate in basso come quadri appesi alla stessa altezza */
+  .site-footer__miniature :global(img) {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    transition: transform var(--t-med) var(--ease-out);
+  }
+
+  .site-footer__miniature a:is(:hover, :focus-visible) :global(img) {
+    transform: translateY(-4px);
+  }
+
+  .site-footer__galleria {
+    margin-top: 18px;
+  }
+
+  @media (min-width: 769px) {
+    .site-footer__top {
+      row-gap: 0;
+    }
+
+    .site-footer__invito {
+      grid-column: 1 / span 7;
+    }
+
+    .site-footer__opere {
+      grid-column: 8 / span 5;
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .site-footer__opere {
+      grid-column: 9 / span 4;
+    }
+  }
+
+  /* ---------- 2. Colonne ---------- */
+  .site-footer__nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 36px 20px;
+    padding-block: clamp(36px, 4vw, 56px);
+    border-top: 1px solid rgb(34 29 20 / 0.14);
   }
 
   .site-footer__col ul {
@@ -108,20 +300,84 @@ const anno = new Date().getFullYear();
     text-underline-offset: 0.25em;
   }
 
-  .site-footer__bottom {
-    padding: 0 clamp(20px, 6.6vw, 125px) 43px;
-  }
-
-  .site-footer__bottom p {
-    margin: 0;
-    font-size: 1.125rem;
+  .site-footer__conta {
+    position: relative;
+    top: -0.35em;
+    margin-left: 3px;
+    font-size: 0.95rem;
+    line-height: 0;
     color: var(--c-muted);
   }
 
   @media (min-width: 769px) {
-    .site-footer__top {
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      align-items: start;
+    .site-footer__nav {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--grid-gap);
     }
+
+    .site-footer__col {
+      grid-column: span 4;
+    }
+  }
+
+  /* ---------- 3. Il nome a tutta larghezza ---------- */
+  .site-footer__wordmark {
+    container-type: inline-size;
+  }
+
+  .wordmark {
+    margin: 0;
+    font-family: var(--f-display);
+    font-weight: 700;
+    /* riempie esattamente il contenitore: in Syne "TIZIANA GUERRA" è largo 9,92 volte il corpo */
+    font-size: calc(100cqi / 10);
+    line-height: 0.82;
+    letter-spacing: 0;
+    color: var(--c-main);
+    white-space: nowrap;
+  }
+
+  .wordmark__maschera {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding: 0.06em 0 0.02em;
+    margin: -0.06em 0 -0.02em;
+  }
+
+  .wordmark__maschera > span {
+    display: inline-block;
+  }
+
+  .wordmark__spazio {
+    display: inline-block;
+    width: 0.3em;
+  }
+
+  /* ---------- 4. Riga finale ---------- */
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px 40px;
+    padding-block: clamp(28px, 3vw, 40px) 43px;
+  }
+
+  .site-footer__legal {
+    max-width: 78ch;
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--c-muted);
+  }
+
+  .site-footer__legal a {
+    color: var(--c-text);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .site-footer__su {
+    gap: 10px;
   }
 </style>

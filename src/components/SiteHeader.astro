@@ -237,7 +237,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     /* switch (home): logo al centro, menu verticale a destra, sopra al contenuto */
     .site-header--switch {
       position: absolute;
-      inset: 0 0 auto 0;
+      inset: var(--annuncio-top, 0px) 0 auto 0;
       z-index: 20;
     }
 

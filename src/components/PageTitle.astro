@@ -1,4 +1,6 @@
 ---
+import Parole from './Parole.astro';
+
 interface Props {
   title: string;
 }
@@ -8,7 +10,7 @@ const { title } = Astro.props;
 <!-- Fascia del titolo del tema: crema, alta 240px, titolo a sinistra nella griglia da 1300px -->
 <header class="page-title">
   <div class="container page-title__inner">
-    <h1 class="h1 page-title__text">{title}</h1>
+    <h1 class="h1 page-title__text intro-words"><Parole testo={title} /></h1>
     <slot />
   </div>
 </header>

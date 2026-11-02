@@ -11,48 +11,66 @@ const { opere, label = 'Opere in evidenza' } = Astro.props;
 const totale = String(opere.length).padStart(2, '0');
 ---
 
-{/* Carosello del tema: riquadri quadrati affiancati, scorrimento orizzontale con aggancio. */}
-<section class="carousel" aria-label={label} data-carousel>
-  <ul role="list" class="carousel__track" data-track tabindex="0">
-    {
-      opere.map((opera) => (
-        <li class="carousel__slide">
-          <a href={urlOpera(opera)} style={`--vt:${vtName(opera)}`}>
-            <div class="carousel__media cover zoom">
-              <Picture
-                src={opera.data.immagine}
-                alt={altOpera(opera)}
-                widths={[400, 600, 900, 1200]}
-                sizes="(min-width: 1025px) 591px, 80vw"
-                formats={['avif', 'webp']}
-                fallbackFormat="jpg"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-            <span class="carousel__title">{opera.data.titolo}</span>
-          </a>
-        </li>
-      ))
-    }
-  </ul>
-  <div class="carousel__controls">
-    <button class="carousel__btn" type="button" data-prev aria-label="Opera precedente">←</button>
-    <p class="num carousel__counter" aria-live="polite">
-      <span data-current>01</span> / {totale}
-    </p>
-    <button class="carousel__btn" type="button" data-next aria-label="Opera successiva">→</button>
+{/*
+  Carosello delle opere in evidenza: le opere intere, tutte alla stessa altezza, come quadri appesi.
+  Telefono e tablet: scorrimento orizzontale con aggancio (e frecce). Desktop, con il motore di
+  animazioni: galleria orizzontale guidata dallo scroll verticale (effetto hscroll, src/motion).
+*/}
+<section class="carousel" aria-label={label} data-carousel data-hscroll>
+  <div class="carousel__stage" data-hscroll-stage>
+    <ul role="list" class="carousel__track" data-track data-hscroll-track tabindex="0">
+      {
+        opere.map((opera) => (
+          <li
+            class="carousel__slide"
+            style={`--ar:${opera.data.immagine.width}/${opera.data.immagine.height};--r:${(opera.data.immagine.height / opera.data.immagine.width).toFixed(4)}`}
+          >
+            <a href={urlOpera(opera)} style={`--vt:${vtName(opera)}`}>
+              <div class="carousel__media media zoom">
+                <Picture
+                  src={opera.data.immagine}
+                  alt={altOpera(opera)}
+                  widths={[400, 600, 900, 1200]}
+                  sizes="(min-width: 1025px) 600px, 80vw"
+                  formats={['avif', 'webp']}
+                  fallbackFormat="jpg"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <span class="carousel__title">{opera.data.titolo}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="carousel__controls">
+      <span class="carousel__bar" aria-hidden="true"><span></span></span>
+      <button class="carousel__btn" type="button" data-prev data-hscroll-prev data-magnetic aria-label="Opera precedente">
+        ←
+      </button>
+      <p class="num carousel__counter" aria-live="polite">
+        <span data-current data-hscroll-current>01</span> / {totale}
+      </p>
+      <button class="carousel__btn" type="button" data-next data-hscroll-next data-magnetic aria-label="Opera successiva">
+        →
+      </button>
+    </div>
   </div>
 </section>
 
 <style>
   .carousel {
-    --pad: clamp(20px, 6.6vw, 125px);
-    --slide: min(591px, 78vw);
+    /* la prima opera parte dal bordo del contenitore, le altre escono a destra fino al bordo dello schermo */
+    --pad: max(var(--gutter), (100% - var(--container)) / 2);
+    /* altezza comune delle opere (larghezza: quella delle loro proporzioni, --ar) */
+    --h: clamp(300px, 56svh, 560px);
   }
 
   .carousel__track {
     display: flex;
+    align-items: flex-end;
+    gap: clamp(16px, 2.2vw, 32px);
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-padding-inline: var(--pad);
@@ -71,7 +89,6 @@ const totale = String(opere.length).padStart(2, '0');
 
   .carousel__slide {
     flex: none;
-    width: var(--slide);
     scroll-snap-align: start;
   }
 
@@ -80,8 +97,17 @@ const totale = String(opere.length).padStart(2, '0');
     display: block;
   }
 
+  /* larghezza dalle proporzioni (--r = altezza/larghezza) e mai oltre lo schermo: un'opera orizzontale
+     sul telefono resta intera, solo più bassa delle altre */
   .carousel__media {
-    aspect-ratio: 1;
+    width: min(calc(var(--h) / var(--r)), calc(100vw - 2 * var(--gutter)));
+    aspect-ratio: var(--ar);
+  }
+
+  .carousel__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* il riquadro ha già le proporzioni dell'opera: nessun ritaglio */
   }
 
   .carousel__slide a:is(:hover, :focus-visible) :global(img) {
@@ -126,6 +152,48 @@ const totale = String(opere.length).padStart(2, '0');
     justify-content: flex-end;
     gap: 18px;
     padding: 22px var(--pad) 0;
+  }
+
+  /* barra di avanzamento: solo quando la galleria è guidata dallo scroll (--p dal motore) */
+  .carousel__bar {
+    display: none;
+    width: min(220px, 22vw);
+    height: 2px;
+    margin-right: auto;
+    background: var(--c-line);
+  }
+
+  .carousel__bar span {
+    display: block;
+    height: 100%;
+    background: var(--c-text);
+    transform: scaleX(var(--p, 0));
+    transform-origin: 0 50%;
+  }
+
+  /* ---------- Desktop con il motore: stage fisso, la pagina che scende muove le opere ---------- */
+  .carousel:global(.is-pinned) {
+    --h: min(600px, calc(100svh - 280px));
+    height: calc(100svh + var(--hscroll-dist, 0px));
+  }
+
+  .carousel:global(.is-pinned) .carousel__stage {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100svh;
+    overflow: clip;
+  }
+
+  .carousel:global(.is-pinned) .carousel__track {
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .carousel:global(.is-pinned) .carousel__bar {
+    display: block;
   }
 
   .carousel__counter {
@@ -185,8 +253,10 @@ const totale = String(opere.length).padStart(2, '0');
       const target = slides[Math.min(slides.length - 1, Math.max(0, indice() + delta))];
       if (target) track.scrollTo({ left: target.offsetLeft - parseFloat(getComputedStyle(track).paddingLeft), behavior: 'smooth' });
     };
-    prev.addEventListener('click', () => vai(-1));
-    next.addEventListener('click', () => vai(1));
+    // Con la galleria guidata dallo scroll (desktop) frecce e contatore li gestisce il motore (hscroll).
+    const guidata = () => root.classList.contains('is-pinned');
+    prev.addEventListener('click', () => guidata() || vai(-1));
+    next.addEventListener('click', () => guidata() || vai(1));
     let raf = 0;
     track.addEventListener(
       'scroll',

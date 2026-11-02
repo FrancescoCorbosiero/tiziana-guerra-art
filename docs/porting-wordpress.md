@@ -22,6 +22,7 @@ Dati rilevati dall'HTML pubblico di tizianaguerra.art (novembre 2026):
 | Cookie | Complianz GDPR (banner "Gestisci consenso") |
 | SEO | Rank Math (`sitemap_index.xml`, dati strutturati) |
 | Altro | Smash Balloon Instagram Feed |
+| Loader | Spinner "ginevra" del tema: la scritta segnaposto della demo, "Meet Ginevra", divisa in lettere, e tre foto da 1920px. Mai personalizzato |
 
 Widget Elementor usati dalle pagine principali:
 
@@ -92,6 +93,28 @@ Non c'era accesso al pannello di WordPress. Testi e foto vengono dalle pagine pu
   - foglio di stile per la stampa: solo i contenuti, senza header, menu e pulsanti;
   - link dalla biografia all'opera *Lago Fatato*.
 
+PR [#2](https://github.com/FrancescoCorbosiero/tiziana-guerra-art/pull/2), unita in `main`. Poi, nella stessa sessione:
+
+- **Proporzioni di tutto il sito** (dettagli nel § 7):
+  - griglia comune a 12 colonne;
+  - home riallineata;
+  - scheda delle opere con passe-partout e informazioni a lato;
+  - anteprime delle opere molto verticali contenute;
+  - contatti e piè di pagina sulla stessa griglia.
+
+Ancora nella stessa sessione, animazioni, footer, banner e loader:
+
+- **Motore di animazioni**: copiato da alpacode-motion (commit `7b1a203`), con una mossa per sezione (`src/motion/README.md`).
+- **Footer riscritto**:
+  - frase dell'artista con le parole che si accendono;
+  - invito a scrivere;
+  - ultime opere;
+  - colonne con le categorie;
+  - nome a tutta larghezza;
+  - nota sul diritto d'autore.
+- **Banner in cima alle pagine**: mostra l'ultimo evento di Chi sono.
+- **Loader leggero**: solo alla prima pagina della visita.
+
 ## 4. Da WordPress ad Astro
 
 | WordPress | Nuovo sito |
@@ -108,6 +131,8 @@ Non c'era accesso al pannello di WordPress. Testi e foto vengono dalle pagine pu
 | Rank Math | `Seo.astro` (meta, Open Graph, JSON-LD), `@astrojs/sitemap`, redirect della vecchia sitemap |
 | Ricerca di WordPress | `cerca.json` generato in build e overlay "Cerca" |
 | Instagram Feed | Link al profilo. Un widget caricherebbe contenuti di terzi e richiederebbe il consenso |
+| Spinner del tema ("Meet Ginevra" e 3 foto da 1920px) | `Loader.astro`: il nome dell'artista e la pennellata, solo CSS, circa 1 KB |
+| Animazioni del tema e di Elementor | Intro in CSS sopra la piega e motore alpacode-motion sotto (`src/motion/`) |
 
 ## 5. Registro delle decisioni
 
@@ -125,6 +150,14 @@ Non c'era accesso al pannello di WordPress. Testi e foto vengono dalle pagine pu
 | D10 | **Correzioni ai testi**: solo refusi evidenti, sempre elencati nel README. Nomi e fatti dubbi vanno segnalati, non cambiati | I testi sono dell'artista |
 | D11 | **Chi sono: proporzioni corrette** al posto della fedeltà all'impaginazione Elementor (sessione 2) | Richiesta di Francesco. Stile e contenuti del tema restano invariati |
 | D12 | **Voci degli eventi in formato "Evento / luogo — dettagli"** al posto di un formato strutturato più rigido | Il testo resta leggibile e modificabile come una riga. La pagina separa titolo e dettagli alla prima lineetta lunga |
+| D13 | **Una sola griglia per tutto il sito**: contenitore da 1300px e 12 colonne (`.grid-12`), piè di pagina compreso. L'header resta a tutta larghezza come nel tema | Con Elementor ogni sezione aveva i suoi margini: 20px, 40px, 6,6% della larghezza, contenitore. A 1920px i bordi sinistri andavano da 20 a 310px |
+| D14 | **Scheda dell'opera con passe-partout** (da tablet) e informazioni a lato (desktop) | Con la foto in alto alle dimensioni naturali, le opere verticali lasciavano metà schermo vuoto e titolo e "Richiedi informazioni" finivano sotto la piega. Ora tutto sta nella prima schermata, qualunque sia il formato |
+| D15 | **Opere mai ritagliate**. Nelle griglie, per le opere oltre 1,6:1 si usa un passe-partout | Un'opera 80 × 40 cm occupava da sola uno schermo e mezzo. Tagliarla avrebbe tradito l'opera |
+| D16 | **Animazioni con il motore di alpacode-motion** (GSAP 3.15, Lenis 1.3), copiato e adattato, non importato. Circa 57 KB gzip in più | Richiesta di Francesco. Restano le regole del catalogo: intro in CSS, niente nascosto dal CSS, riduzione del movimento rispettata. Il JavaScript resta un modulo che non blocca il primo paint |
+| D17 | **Carosello della home come galleria orizzontale guidata dallo scroll** (desktop), con le opere intere alla stessa altezza | Come camminare lungo una parete di quadri. Stage sticky in CSS invece del pin di GSAP (decisione D6 del catalogo). Su telefono resta lo scorrimento nativo |
+| D18 | **Loader solo alla prima pagina della visita**, in CSS, deciso prima del primo paint da un piccolo script esterno in `<head>` | Mostrarlo a ogni pagina avrebbe rallentato la navigazione. Lo script è esterno perché la CSP non ammette script inline. Senza JavaScript o con "riduci movimento" non compare |
+| D19 | **Banner alimentato dai contenuti**: senza testo in `site.ts` mostra l'ultimo evento dell'anno più recente di Chi sono | Resta coerente con il sito senza manutenzione. Non copre nulla, quindi non serve chiuderlo |
+| D20 | **`scrub` più leggibile**: le parole partono da opacità 0,5 (il catalogo usa 0,16) | Anche prima di essere "lette" mantengono il contrasto 3:1 richiesto da WCAG |
 
 ## 6. Chi sono: prima e dopo
 
@@ -157,7 +190,37 @@ Nel primo porting la pagina riproduceva fedelmente l'impaginazione Elementor:
   - scorciatoie per anno (`/chi-sono/#eventi-2025`);
   - su desktop la locandina resta fissa a lato.
 
-## 7. Contenuti: correzioni e dubbi
+## 7. Il resto del sito: prima e dopo
+
+### Prima
+
+- **Bordi sinistri diversi in ogni sezione**:
+  - titolo della home a 20px;
+  - header a 40px;
+  - sezioni della home e piè di pagina al 6,6% della larghezza (125px a 1920px);
+  - pagine interne nel contenitore da 1300px (310px a 1920px).
+- **Introduzione della home**: la foto della premiazione, originale di 331px, era allargata fino a 650px, quindi sfocata.
+- **Blocco "Chi sono" della home**:
+  - testi centrati accanto a immagini più basse;
+  - circa 35 eventi in paragrafi fitti separati da "·".
+- **Scheda di un'opera verticale**:
+  - foto alta quanto lo schermo e larga 500px su 1300px disponibili;
+  - titolo, dati e pulsante sotto la piega.
+- **Anteprima de *Il silenzio di Frida*** (80 × 40 cm): alta 1226px nell'elenco Pitture.
+
+### Dopo
+
+- **Griglia unica**: tutto (titolo, opere, testi, carosello, piè di pagina) parte dal bordo del contenitore, a ogni larghezza.
+- **Home**:
+  - hero con opera piccola su 4 colonne e grande su 8, le proporzioni originali del tema;
+  - foto della premiazione alla sua larghezza reale;
+  - "Chi sono / La mia arte" allineati a sinistra e centrati in verticale accanto alle immagini;
+  - eventi in una fascia: un anno per riga, voci su 2–3 colonne, e link a "Tutti gli eventi".
+- **Scheda**: opera su passe-partout crema con le sue proporzioni, alta al massimo quanto lo schermo. Su desktop titolo, testo, dati e pulsanti stanno a destra e si vedono subito. Sul telefono resta la foto a tutta larghezza.
+- **Elenchi**: le opere oltre 1,6:1 stanno intere su passe-partout.
+- **Contatti**: modulo su 7 colonne, recapiti e immagine su 4. Sul tablet recapiti e immagine sono affiancati.
+
+## 8. Contenuti: correzioni e dubbi
 
 Correzioni già fatte, con i dettagli nel README:
 
@@ -178,7 +241,7 @@ Da verificare con l'artista, quindi **non modificati**:
 - "Galleria **Le Thuiller**, Parigi": forse la Galerie **Thuillier**.
 - "Palazzo **Ivanchic**, Venezia": forse Palazzo **Ivancich**.
 
-## 8. Verifiche
+## 9. Verifiche
 
 - **Sessione 1**: axe con 0 violazioni (WCAG 2.1 AA) su tutte le pagine; redirect provati su nginx.
 - **Sessione 2**, su Chi sono:
@@ -186,12 +249,22 @@ Da verificare con l'artista, quindi **non modificati**:
   - screenshot a 390, 800, 1024, 1440 e 1920 px;
   - anno e locandina restano in vista scorrendo;
   - resa di stampa: 6 pagine A4.
+- **Sessione 2, proporzioni di tutto il sito**:
+  - axe con 0 violazioni su tutte le pagine (home, Chi sono, Pitture, categorie, schede verticali e orizzontali, Galleria, Contatti, privacy, 404), a 1440, 1024 e 390px;
+  - screenshot a 390, 800, 1024, 1440 e 1920 px;
+  - frecce, zoom e stampa della scheda provati.
+- **Sessione 2, animazioni**:
+  - axe con 0 violazioni con le animazioni attive, a 1440 e 390px;
+  - pagina completa con "riduci movimento" e senza JavaScript;
+  - stampa completa anche senza aver scorso la pagina;
+  - fotogrammi del loader;
+  - galleria orizzontale, lente, anni della timeline, ancore e overlay provati nel browser.
 - **Ogni volta**:
   - `astro check` con 0 errori;
   - build completa;
   - test del servizio contatti.
 
-## 9. Idee per il futuro
+## 10. Idee per il futuro
 
 - **Modifica dei contenuti senza git**: un editor web che lavora sui file del repository, come Pages CMS o Decap CMS. Può servire se l'artista vuole aggiornare le opere da sola.
 - **Foto e dati delle opere**: foto più grandi per le opere a bassa risoluzione e i dati mancanti (anno, tecnica), come da README › Ancora aperto.

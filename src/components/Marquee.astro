@@ -5,12 +5,16 @@ interface Props {
 const { frasi } = Astro.props;
 ---
 
-{/* Frasi che scorrono (text marquee del tema). Il testo duplicato è nascosto agli screen reader. */}
-<section class="marquee" aria-label="In breve">
+{/*
+  Frasi che scorrono (text marquee del tema). Il testo duplicato è nascosto agli screen reader.
+  Senza JavaScript scorrono da sole (CSS); con il motore di animazioni si muovono solo mentre si scorre
+  la pagina, una riga per verso (effetto kinetic, src/motion): niente si muove da solo.
+*/}
+<section class="marquee" aria-label="In breve" data-kinetic>
   {
     frasi.map((frase, i) => (
       <div class:list={['marquee__row', { 'marquee__row--reverse': i % 2 === 1 }]}>
-        <p class="marquee__track">
+        <p class="marquee__track" data-kinetic-line={i % 2 === 1 ? '-1' : '1'}>
           <span>{frase}</span>
           <span aria-hidden="true">{frase}</span>
         </p>
@@ -64,5 +68,10 @@ const { frasi } = Astro.props;
         transform: translateX(-50%);
       }
     }
+  }
+
+  /* con il motore la riga la muove lo scroll (kinetic): niente animazione automatica */
+  :global(html.has-motion) .marquee__track {
+    animation: none;
   }
 </style>

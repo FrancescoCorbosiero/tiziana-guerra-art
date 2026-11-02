@@ -1,0 +1,125 @@
+---
+import { site } from '~/config/site';
+
+/*
+ * Il loader della prima visita: il nome dell'artista sale lettera per lettera, la pennellata gialla
+ * del tema si disegna sotto, poi il sipario crema si alza sulla pagina. Solo CSS (nessuna immagine,
+ * nessuna libreria): lo mostra la classe "con-loader" che scripts/loader-gate.js mette in <head>.
+ * Il vecchio sito (tema Ginevra) aveva "Meet Ginevra" a lettere e tre foto da 1920px: qui ~1 KB.
+ */
+const lettere = [...site.author.toUpperCase()];
+---
+
+<div class="loader" aria-hidden="true">
+  <p class="loader__nome">
+    {
+      lettere.map((c, i) =>
+        c === ' ' ? (
+          <span class="loader__spazio"> </span>
+        ) : (
+          <span class="loader__lettera">
+            <span style={`--i:${i}`}>{c}</span>
+          </span>
+        ),
+      )
+    }
+  </p>
+  <span class="loader__pennellata"></span>
+</div>
+
+<style>
+  .loader {
+    display: none;
+  }
+
+  /* 0–0,8s il nome · 0,55–1,1s la pennellata · 0,95–1,65s il sipario si alza */
+  :global(html.con-loader) .loader {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: clamp(10px, 1.4vw, 18px);
+    background: var(--c-cream);
+    animation: loader-sipario 0.7s var(--ease-in-out) 0.95s forwards;
+  }
+
+  .loader__nome {
+    margin: 0;
+    padding-inline: var(--gutter);
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: clamp(1.75rem, 0.9rem + 4.4vw, 5rem);
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+    color: var(--c-main);
+    white-space: nowrap;
+  }
+
+  .loader__lettera {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding: 0.08em 0 0.06em;
+    margin: -0.08em 0 -0.06em;
+  }
+
+  .loader__lettera > span {
+    display: inline-block;
+    animation: loader-lettera 0.8s var(--ease-expo) backwards;
+    animation-delay: calc(0.08s + var(--i) * 0.032s);
+  }
+
+  .loader__spazio {
+    display: inline-block;
+    width: 0.32em;
+  }
+
+  .loader__pennellata {
+    width: min(62%, 420px);
+    height: clamp(10px, 1.1vw, 15px);
+    background: var(--c-accent);
+    -webkit-mask: var(--brush) no-repeat 0 0 / 100% 100%;
+    mask: var(--brush) no-repeat 0 0 / 100% 100%;
+    animation: loader-pennellata 0.55s var(--ease-wave) 0.55s backwards;
+  }
+
+  @keyframes loader-lettera {
+    from {
+      transform: translateY(110%);
+    }
+  }
+
+  /* clip-path con entrambi gli estremi espliciti: da "none" non si interpola (salterebbe a metà) */
+  @keyframes loader-pennellata {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  @keyframes loader-sipario {
+    from {
+      clip-path: inset(0 0 0 0);
+    }
+    to {
+      clip-path: inset(0 0 100% 0);
+      visibility: hidden;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(html.con-loader) .loader {
+      display: none;
+    }
+  }
+
+  @media print {
+    :global(html.con-loader) .loader {
+      display: none;
+    }
+  }
+</style>

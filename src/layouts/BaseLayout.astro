@@ -2,6 +2,11 @@
 import type { ImageMetadata } from 'astro';
 import { Font } from 'astro:assets';
 import '~/styles/global.css';
+import '~/motion/core/core.css';
+import '~/motion/effects/split-lines.css';
+import '~/motion/effects/lens.css';
+import Annuncio from '~/components/Annuncio.astro';
+import Loader from '~/components/Loader.astro';
 import MenuOverlay from '~/components/MenuOverlay.astro';
 import SearchOverlay from '~/components/SearchOverlay.astro';
 import Seo from '~/components/Seo.astro';
@@ -9,6 +14,8 @@ import SiteFooter from '~/components/SiteFooter.astro';
 import SiteHeader, { type HeaderVariant } from '~/components/SiteHeader.astro';
 import ToTop from '~/components/ToTop.astro';
 import { site } from '~/config/site';
+// Script classico e bloccante per il loader (file esterno con hash: la CSP non ammette script inline)
+import loaderGate from '~/scripts/loader-gate.js?url';
 
 interface Props {
   title?: string;
@@ -36,6 +43,7 @@ const speculationRules = JSON.stringify({
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline src={loaderGate}></script>
     <Font cssVariable="--font-syne" preload />
     <Font cssVariable="--font-archivo" preload />
     <Font cssVariable="--font-cormorant" />
@@ -49,7 +57,9 @@ const speculationRules = JSON.stringify({
   </head>
   <body>
     <div id="top"></div>
+    <Loader />
     <a class="skip-link" href="#contenuto">Vai al contenuto</a>
+    <Annuncio />
     <SiteHeader variant={header} />
     <main id="contenuto">
       <slot />
@@ -61,6 +71,8 @@ const speculationRules = JSON.stringify({
     <slot name="overlays" />
     <script>
       import '~/scripts/overlays.ts';
+      // Animazioni (motore di alpacode-motion, vedi src/motion/README.md)
+      import '~/motion';
     </script>
   </body>
 </html>

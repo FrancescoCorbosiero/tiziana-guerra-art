@@ -1,6 +1,6 @@
 ---
 import { Picture } from 'astro:assets';
-import { altOpera, numero, urlOpera, vtName, type Opera } from '~/lib/opere';
+import { altOpera, numero, rapportoAnteprima, urlOpera, vtName, type Opera } from '~/lib/opere';
 
 interface Props {
   opera: Opera;
@@ -24,11 +24,17 @@ const {
   compact = false,
 } = Astro.props;
 const { immagine, titolo } = opera.data;
+// Opere molto verticali: riquadro più basso, opera intera su passe-partout (vedi rapportoAnteprima)
+const rapporto = rapportoAnteprima(opera);
+const passepartout = rapporto < immagine.height / immagine.width;
 ---
 
 <article class:list={['card', { 'card--compact': compact }]}>
   <a class="card__link" href={urlOpera(opera)} style={`--vt:${vtName(opera)}`}>
-    <div class="card__media media zoom" style={`aspect-ratio:${immagine.width}/${immagine.height}`}>
+    <div
+      class:list={['card__media media zoom', { 'card__media--passepartout': passepartout }]}
+      style={`aspect-ratio:${passepartout ? `1/${rapporto}` : `${immagine.width}/${immagine.height}`}`}
+    >
       <Picture
         src={immagine}
         alt={altOpera(opera)}
@@ -51,6 +57,15 @@ const { immagine, titolo } = opera.data;
 <style>
   .card__link {
     display: block;
+  }
+
+  .card__media--passepartout :global(picture) {
+    display: contents;
+  }
+
+  .card__media--passepartout :global(img) {
+    height: 100%;
+    object-fit: contain;
   }
 
   /* Transizione "condivisa" verso la scheda: solo l'opera cliccata riceve il nome. */

@@ -20,6 +20,18 @@ export interface SiteConfig {
   privacyUrl: string;
   contactFormEndpoint: string;
   mostraPrezzi: boolean;
+  /** Banner in cima a tutte le pagine (Annuncio.astro). */
+  annuncio: {
+    attivo: boolean;
+    /** Etichetta a sinistra, es. "Novità". Vuota = "Novità <anno dell'ultimo evento>". */
+    etichetta: string;
+    /** Testo (ammessi *corsivo* e **grassetto**). Vuoto = l'ultimo evento dell'anno più recente in Chi sono. */
+    testo: string;
+    /** Link: vuoto = gli eventi di quell'anno in Chi sono. */
+    link: { testo: string; href: string };
+    /** Data (AAAA-MM-GG) dopo la quale il banner sparisce alla build successiva. Vuota = sempre. */
+    fino: string;
+  };
 }
 
 /**
@@ -64,6 +76,18 @@ export const site: SiteConfig = {
 
   /** Mostra il prezzo nelle schede quando è indicato nell'opera. */
   mostraPrezzi: true,
+
+  /**
+   * Banner in cima alle pagine. Con testo vuoto mostra da solo l'ultimo evento inserito in Chi sono
+   * (src/content/pagine/chi-sono.md), così resta aggiornato. Per un avviso diverso basta scriverlo qui.
+   */
+  annuncio: {
+    attivo: true,
+    etichetta: '',
+    testo: '',
+    link: { testo: 'Tutti gli eventi', href: '' },
+    fino: '',
+  },
 };
 
 export type NavItem = { label: string; href: string; children?: { label: string; href: string }[] };
@@ -82,11 +106,4 @@ export const nav: NavItem[] = [
   },
   { label: 'Contatti', href: '/contatti/' },
   { label: 'Galleria', href: '/galleria/' },
-];
-
-/** Colonna "Website" del piè di pagina. */
-export const footerNav: NavItem[] = [
-  { label: 'Chi Sono', href: '/chi-sono/' },
-  { label: 'Pitture', href: '/pitture/' },
-  { label: 'Contatti', href: '/contatti/' },
 ];
