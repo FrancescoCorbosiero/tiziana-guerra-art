@@ -9,7 +9,7 @@ Questa informativa descrive come vengono trattati i dati personali di chi visita
 
 ## Titolare del trattamento
 
-Tiziana Guerra — email: [forevertizzy@yahoo.it](mailto:forevertizzy@yahoo.it)
+Tiziana Guerra — email: [forevertizzy@gmail.com](mailto:forevertizzy@gmail.com)
 
 ## Quali dati trattiamo
 
@@ -48,6 +48,6 @@ I dati non vengono venduti né ceduti a terzi per finalità di marketing. Qualor
 
 Puoi chiedere in qualsiasi momento l'accesso ai tuoi dati, la rettifica, la cancellazione, la limitazione del trattamento, la portabilità, e opporti al trattamento (artt. 15–21 GDPR). Puoi inoltre revocare il consenso in qualsiasi momento, senza pregiudicare la liceità del trattamento effettuato prima della revoca.
 
-Per esercitare questi diritti basta scrivere a [forevertizzy@yahoo.it](mailto:forevertizzy@yahoo.it).
+Per esercitare questi diritti basta scrivere a [forevertizzy@gmail.com](mailto:forevertizzy@gmail.com).
 
 Hai anche il diritto di proporre reclamo al [Garante per la protezione dei dati personali](https://www.garanteprivacy.it).
