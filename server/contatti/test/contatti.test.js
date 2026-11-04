@@ -69,7 +69,7 @@ function sesFinto() {
 }
 
 async function avvia(trasporto) {
-  const config = { to: 'forevertizzy@yahoo.it', from: 'Tiziana Guerra Art <sito@tizianaguerra.art>', modo: 'ses', sito: 'tizianaguerra.art' };
+  const config = { to: 'forevertizzy@gmail.com', from: 'Tiziana Guerra Art <sito@tizianaguerra.art>', modo: 'ses', sito: 'tizianaguerra.art' };
   const server = creaServer({ config, trasporto, log: { info() {}, error() {} } });
   server.listen(0);
   await once(server, 'listening');
@@ -92,10 +92,10 @@ test('POST JSON → inoltro via SES con mittente, destinatario e Reply-To corret
     const input = ses.inviati[0].input;
     assert.ok(ses.inviati[0] instanceof SendEmailCommand);
     assert.equal(input.FromEmailAddress, 'Tiziana Guerra Art <sito@tizianaguerra.art>');
-    assert.deepEqual(input.Destination.ToAddresses, ['forevertizzy@yahoo.it']);
+    assert.deepEqual(input.Destination.ToAddresses, ['forevertizzy@gmail.com']);
     const raw = Buffer.from(input.Content.Raw.Data).toString('utf8');
     assert.match(raw, /^Reply-To: Mario Rossi <mario@example\.com>$/m);
-    assert.match(raw, /^To: forevertizzy@yahoo\.it$/m);
+    assert.match(raw, /^To: forevertizzy@gmail\.com$/m);
   } finally {
     server.close();
   }

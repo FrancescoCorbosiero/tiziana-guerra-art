@@ -53,7 +53,7 @@ export const site: SiteConfig = {
     'Tiziana Guerra, artista autodidatta italiana. Dipinti dai colori vivaci che trasmettono emozioni positive e rinascita.',
 
   contatti: {
-    email: 'forevertizzy@yahoo.it',
+    email: 'forevertizzy@gmail.com',
     /** Formato libero, es. '+39 333 123 4567'. */
     telefono: '',
     /** Solo cifre con prefisso internazionale, es. '393331234567'. Abilita il pulsante WhatsApp. */
