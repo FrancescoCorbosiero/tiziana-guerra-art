@@ -148,9 +148,11 @@ Lo studio applica le richieste di modifica della cliente (Tiziana Guerra) con un
 - Node ≥ 22.23.4, consigliato 24 (`.nvmrc`, CI e `Dockerfile` usano Node 24).
 - Build da checkout pulito: `npm ci && npm run build`. Il sito finito va in `dist/` (formato `directory`, un `index.html` per rotta).
 - Prima di consegnare conviene eseguire anche `npm run check` (0 errori): lo schema dei contenuti blocca la build se un campo è sbagliato.
-- Il deploy non è uno script del repository: sul VPS si esegue `git pull && docker compose up -d --build` (Docker con nginx e il servizio `contatti`, pubblicato da Caddy tramite label). Il ramo predefinito è `main`.
+- Il deploy non è uno script del repository ed è manuale durante il rodaggio: una richiesta `deployed` è su `main` (il ramo predefinito), poi sul VPS si esegue `git pull && docker compose up -d --build` in `/srv/tizianaguerra-art` (Docker con nginx e il servizio `contatti`, pubblicato da Caddy tramite label). Il worker della pipeline non può eseguire `docker compose` sull’host.
 
 ### Contenuto, impaginazione e configurazione
+
+Durante il rodaggio la pipeline può modificare solo `src/content`, `src/assets/pagine` e `src/config/site.ts` (`editable_paths` in `pipeline.yml`). Una richiesta che tocca l’impaginazione va lasciata allo sviluppatore.
 
 | Tipo | Dove | Note |
 |---|---|---|
@@ -160,7 +162,7 @@ Lo studio applica le richieste di modifica della cliente (Tiziana Guerra) con un
 | | `src/content/pagine/chi-sono.md`, `privacy-policy.md` | Biografia, eventi anno per anno, privacy |
 | | `src/assets/pagine/` | Foto usate da home, Chi sono e Contatti |
 | | `src/config/site.ts` | Dati "editoriali" in un file di configurazione: email, social, motto, menu, banner (`annuncio`), opera del menu (`operaMenu`). Qui si cambiano solo i valori, non la struttura |
-| **Impaginazione** | `src/pages/`, `src/components/`, `src/layouts/`, `src/styles/global.css` | Rotte, blocchi del tema, layout comune, design system |
+| **Impaginazione** (fuori dal perimetro della pipeline per ora) | `src/pages/`, `src/components/`, `src/layouts/`, `src/styles/global.css` | Rotte, blocchi del tema, layout comune, design system |
 | **Codice e configurazione** (non toccare per una richiesta di contenuto) | `src/content.config.ts`, `src/lib/`, `src/scripts/`, `src/motion/`, `astro.config.mjs`, `package*.json`, `tsconfig.json`, `deploy/`, `server/`, `Dockerfile`, `docker-compose.yml`, `.github/`, `.env*`, `public/`, `src/assets/fonts/` | Schema, logica, animazioni, build, server, CI, segreti |
 
 ### Come si aggiungono contenuti
@@ -168,7 +170,7 @@ Lo studio applica le richieste di modifica della cliente (Tiziana Guerra) con un
 - **Opera** (l'equivalente dei "post"): nuova cartella in `src/content/opere/` con nome minuscolo e trattini (es. `notte-sul-lago`), la foto originale alla massima qualità e un `index.md` con frontmatter `titolo`, `immagine`, `categorie` (obbligatori) e i campi facoltativi del README (`anno`, `tecnica`, `dimensioni`, `ordine`, `inEvidenza`, `disponibilita`, `prezzo`, `alt`, `dettagli`, `bozza`). Per `ordine` usare il numero successivo all'ultimo.
 - **Evento**: nuova voce nell'anno giusto di `eventi.anni` in `chi-sono.md`, nella forma `Evento / luogo — dettagli`. Il banner mostra da solo l'ultimo evento.
 - **Categoria**: nuova chiave in `categorie.yaml`. La rotta `/pitture/categoria/<chiave>/` si genera da sola appena almeno un’opera usa la categoria; il menu in `site.ts` va aggiornato a mano se la si vuole lì.
-- **Pagina nuova**: un file `.astro` in `src/pages/` che usa `BaseLayout` e i componenti esistenti, con testi in una collezione di `src/content/` se sono lunghi; poi la voce nel `nav` di `site.ts`. Un nuovo campo dei contenuti va nello schema e nel README (vedi Convenzioni).
+- **Pagina nuova** (solo sviluppatore, fuori dal perimetro della pipeline): un file `.astro` in `src/pages/` che usa `BaseLayout` e i componenti esistenti, con testi in una collezione di `src/content/` se sono lunghi; poi la voce nel `nav` di `site.ts`. Un nuovo campo dei contenuti va nello schema e nel README (vedi Convenzioni).
 - Testi in italiano, apostrofi tipografici (’) e lineette lunghe (—); `*corsivo*` e `**grassetto**` nei campi brevi dove indicato.
 
 ### Cosa non deve mai cambiare
