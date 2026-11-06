@@ -1,0 +1,13 @@
+# Istruzioni per la pipeline automatica dello studio (modifiche richieste dalla cliente, build, deploy).
+# Il deploy non è automatico da qui: sul VPS si esegue `git pull && docker compose up -d --build`
+# (vedi README › Deploy), quindi la chiave "deploy" è omessa.
+build: npm ci && npm run build
+output_dir: dist
+editable_paths:
+  - src/content
+  - src/assets/pagine
+  - src/config/site.ts
+  - src/pages
+  - src/components
+  - src/layouts
+  - src/styles
