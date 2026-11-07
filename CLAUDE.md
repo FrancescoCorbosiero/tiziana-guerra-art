@@ -144,15 +144,19 @@ Lo studio applica le richieste di modifica della cliente (Tiziana Guerra) con un
 
 ### Generatore e build
 
-- **Astro 7** (7.4.4 nel `package-lock.json`, `^7.4.4` in `package.json`), output 100% statico, con `@astrojs/sitemap` e `sharp` per le immagini. TypeScript 6 e `@astrojs/check` per i controlli.
+- **Astro 7** (7.4.4 nel `package-lock.json`, `^7.4.4` in `package.json`), output 100% statico, con `@astrojs/sitemap` 3.7.4 e `sharp` 0.35.5 per le immagini; animazioni con GSAP 3.15.0 e Lenis 1.3.27. TypeScript 6.0.3 e `@astrojs/check` 0.9.12 per i controlli.
 - Node ≥ 22.23.4, consigliato 24 (`.nvmrc`, CI e `Dockerfile` usano Node 24).
-- Build da checkout pulito: `npm ci && npm run build`. Il sito finito va in `dist/` (formato `directory`, un `index.html` per rotta).
-- Prima di consegnare conviene eseguire anche `npm run check` (0 errori): lo schema dei contenuti blocca la build se un campo è sbagliato.
-- Il deploy non è uno script del repository ed è manuale durante il rodaggio: una richiesta `deployed` è su `main` (il ramo predefinito), poi sul VPS si esegue `git pull && docker compose up -d --build` in `/srv/tizianaguerra-art` (Docker con nginx e il servizio `contatti`, pubblicato da Caddy tramite label). Il worker della pipeline non può eseguire `docker compose` sull’host.
+- Build da checkout pulito: `npm ci && npm run build` (circa 3 minuti per le varianti delle immagini). Il sito finito va in `dist/` (formato `directory`, un `index.html` per rotta, slash finale sempre).
+- Prima di consegnare conviene eseguire anche `npm run check` (0 errori): lo schema dei contenuti (`src/content.config.ts`) blocca la build se un campo è sbagliato.
+- Il deploy non è uno script del repository: per la pipeline il deploy è il push su `main` (il ramo predefinito). La pubblicazione sul VPS è manuale durante il rodaggio: `git pull && docker compose up -d --build` nella cartella del sito sul server (Docker con nginx e il servizio `contatti`, pubblicato da Caddy tramite label). Il worker della pipeline non può eseguire `docker compose` sull’host.
 
 ### Contenuto, impaginazione e configurazione
 
-Durante il rodaggio la pipeline può modificare solo `src/content`, `src/assets/pagine` e `src/config/site.ts` (`editable_paths` in `pipeline.yml`). Una richiesta che tocca l’impaginazione va lasciata allo sviluppatore.
+Durante il rodaggio la pipeline può modificare solo `src/content`, `src/assets/pagine` e `src/config/site.ts` (`editable_paths` in `pipeline.yml`). Una richiesta che tocca l’impaginazione (struttura delle pagine, stili, componenti, nuove rotte) va lasciata allo sviluppatore e segnalata, non aggirata scrivendo HTML o stili nei contenuti.
+
+In `src/config/site.ts` si possono cambiare **solo i valori editoriali**: `tagline`, `footerTagline`, `description`, `contatti` (email, telefono, whatsapp, luogo), `social`, `operaMenu` (deve essere lo slug di un’opera esistente), `annuncio` e le etichette/voci di `nav` che puntano a rotte esistenti. Non si toccano `url`, `lang`, `locale`, `name`, `logo`, `privacyUrl`, `contactFormEndpoint` (`/api/contatti`, legato a nginx), `mostraPrezzi` senza richiesta esplicita, né le interfacce TypeScript.
+
+Attenzione: l’email in `site.ts` è solo quella **mostrata** sul sito. I messaggi del modulo di contatto vanno a `MAIL_TO` nel file `.env` del server, che non sta nel repository: se la cliente cambia email, va segnalato allo studio che anche `.env` sul VPS va aggiornato.
 
 | Tipo | Dove | Note |
 |---|---|---|

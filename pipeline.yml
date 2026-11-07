@@ -1,11 +1,13 @@
-# Istruzioni per la pipeline automatica dello studio (modifiche richieste dalla cliente, build, deploy).
-# Deploy manuale durante il rodaggio: una richiesta "deployed" è su main; sul VPS si esegue
-# `git pull && docker compose up -d --build` in /srv/tizianaguerra-art. Per questo la chiave "deploy" è omessa.
+# Istruzioni per la pipeline automatica dello studio (richieste della cliente → build → deploy).
+# Generatore: Astro 7 (7.4.4 nel package-lock.json), Node 24 (.nvmrc). Dettagli in CLAUDE.md › Pipeline automatica.
 build: npm ci && npm run build
 output_dir: dist
-# Perimetro stretto per il rodaggio: solo contenuti. Impaginazione (src/pages, src/components,
-# src/layouts, src/styles) da aggiungere dopo le prime richieste.
+# Perimetro stretto per il rodaggio, deciso dallo sviluppatore: solo contenuti.
+# L'impaginazione (src/pages, src/components, src/layouts, src/styles) resta allo sviluppatore.
+# In src/config/site.ts si cambiano solo i valori editoriali (vedi CLAUDE.md), mai la struttura.
 editable_paths:
   - src/content
   - src/assets/pagine
   - src/config/site.ts
+# Nessuna chiave "deploy": il repository non ha uno script di deploy. Il deploy è il push su main;
+# la pubblicazione sul VPS (git pull && docker compose up -d --build) è manuale.
