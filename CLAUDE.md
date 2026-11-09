@@ -14,7 +14,7 @@ Contesto operativo per chi lavora su questo repository, persone o assistenti AI.
   - stessa estetica del tema Ginevra;
   - niente PHP, database o plugin;
   - JavaScript progressivo: tutto funziona anche senza. Le animazioni (motore alpacode-motion con GSAP e Lenis, circa 57 KB gzip) arricchiscono la pagina ma non servono per usarla;
-  - nessun cookie né tracciamento, nessuna richiesta a server di terzi;
+  - nessun cookie né tracciamento, nessuna richiesta a server di terzi (unica eccezione: lo script del badge "Realizzato da Alpacode" nel piè di pagina, da alpacode.it, ammesso nella CSP);
   - accessibilità WCAG 2.1 AA;
   - i vecchi URL di WordPress restano validi grazie ai redirect 301.
 
@@ -181,7 +181,7 @@ Attenzione: l’email in `site.ts` è solo quella **mostrata** sul sito. I messa
 
 - Gli **slug** (nomi delle cartelle) delle opere esistenti, compreso il refuso `soubtrette`, e gli URL delle pagine: romperebbero i link e i redirect 301 da WordPress (`deploy/snippets/redirects.conf`).
 - `trailingSlash: 'always'`, l'esclusione di `/api/` dal rewrite, la CSP senza script inline (`assetsInlineLimit`, niente `<script>` inline salvo JSON-LD e speculation rules).
-- I principi del sito: nessun cookie, nessun tracciamento, nessuna richiesta a server di terzi (font e script inclusi nel sito), funzionamento completo senza JavaScript, WCAG 2.1 AA.
+- I principi del sito: nessun cookie, nessun tracciamento, nessuna richiesta a server di terzi (font e script inclusi nel sito; unica eccezione il badge di alpacode.it nel piè di pagina), funzionamento completo senza JavaScript, WCAG 2.1 AA.
 - L'estetica del tema Ginevra (font, colori, griglia `.container` / `.grid-12`) e la regola che le opere non si ritagliano e non si ingrandiscono oltre l'originale.
 - I testi dell'artista, salvo refusi evidenti (da elencare nel README); nomi e fatti dubbi si segnalano senza correggerli.
 - Segreti e dati di invio: `.env` non va mai versionato; `MAIL_TO`/`MAIL_FROM` e le credenziali SES stanno solo lì.

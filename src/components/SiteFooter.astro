@@ -9,7 +9,7 @@ import { altOpera, getCategorieConOpere, getOpere, urlCategoria, urlOpera } from
  *    a destra le ultime opere;
  * 2. le colonne: pagine, pitture per categoria, contatti;
  * 3. il nome dell'artista a tutta larghezza (le lettere salgono quando entra nello schermo);
- * 4. copyright, nota sui diritti delle immagini e "Torna su".
+ * 4. copyright, nota sui diritti delle immagini, credito Alpacode e "Torna su".
  */
 const anno = new Date().getFullYear();
 const [opere, categorie] = await Promise.all([getOpere(), getCategorieConOpere()]);
@@ -162,11 +162,18 @@ const lettere = [...site.author.toUpperCase()];
         )
       }
     </p>
-    <a class="btn-text site-footer__su" href="#top" data-magnetic="0.25">
-      <span class="brush">Torna su</span>
-      <span aria-hidden="true">↑</span>
-    </a>
+    <div class="site-footer__fine">
+      <!-- Credito di chi ha realizzato il sito: il link resta nell'HTML anche se lo script non arriva -->
+      <alpacode-badge lang="it" theme="light">
+        <a href="https://alpacode.it/">Realizzato da Alpacode</a>
+      </alpacode-badge>
+      <a class="btn-text site-footer__su" href="#top" data-magnetic="0.25">
+        <span class="brush">Torna su</span>
+        <span aria-hidden="true">↑</span>
+      </a>
+    </div>
   </div>
+  <script is:inline src="https://alpacode.it/badge.js" defer></script>
 </footer>
 
 <style>
@@ -379,5 +386,12 @@ const lettere = [...site.author.toUpperCase()];
 
   .site-footer__su {
     gap: 10px;
+  }
+
+  .site-footer__fine {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 40px;
   }
 </style>
